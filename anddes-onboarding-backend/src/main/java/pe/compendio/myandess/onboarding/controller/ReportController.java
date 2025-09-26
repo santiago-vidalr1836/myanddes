@@ -157,7 +157,21 @@ public class ReportController {
     if (StringUtils.hasText(period)) {
       period = period.trim();
       try {
-        if (period.matches("\\d{4}-\\d{2}")) {
+        if ("3m".equalsIgnoreCase(period)) {
+          LocalDate today = LocalDate.now();
+          start = today.minusMonths(3);
+          end = today;
+        } else if ("1m".equalsIgnoreCase(period)) {
+          LocalDate today = LocalDate.now();
+          start = today.minusMonths(1);
+          end = today;
+        } else if ("custom".equalsIgnoreCase(period)) {
+          if (!StringUtils.hasText(startDate) || !StringUtils.hasText(endDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fechas requeridas para periodo personalizado");
+          }
+          start = LocalDate.parse(startDate.trim());
+          end = LocalDate.parse(endDate.trim());
+        } else if (period.matches("\\d{4}-\\d{2}")) {
           YearMonth yearMonth = YearMonth.parse(period);
           start = yearMonth.atDay(1);
           end = yearMonth.atEndOfMonth();
