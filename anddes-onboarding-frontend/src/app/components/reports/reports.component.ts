@@ -82,6 +82,11 @@ export class ReportsComponent implements AfterViewInit {
   private customRange?: DateRangeSelection;
   private lastPeriod: ReportPeriod = '3m';
   private currentType: ReportType = this.typeControl.value;
+  private readonly dateFormatter = new Intl.DateTimeFormat('es-PE', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -206,6 +211,19 @@ export class ReportsComponent implements AfterViewInit {
   getProgressLabel(row: any): string {
     const general = row as GeneralReportRow;
     return `${general.completedActivities}/${general.totalActivities}`;
+  }
+
+  formatPeriodLabel(): string {
+    const period = this.periodControl.value;
+
+    if (period === 'custom' && this.customRange?.start && this.customRange?.end) {
+      const startLabel = this.dateFormatter.format(this.customRange.start);
+      const endLabel = this.dateFormatter.format(this.customRange.end);
+      return `${startLabel} - ${endLabel}`;
+    }
+
+    const option = this.periodOptions.find((item) => item.value === period);
+    return option?.label ?? '';
   }
 
   stateLabel(state: ReportRowState): string {
@@ -339,6 +357,8 @@ export class ReportsComponent implements AfterViewInit {
     );
 
     dialogRef.afterClosed().subscribe((range) => {
+      const previousLabel = this.formatPeriodLabel();
+
       if (range) {
         this.customRange = range;
         this.lastPeriod = 'custom';
@@ -346,6 +366,11 @@ export class ReportsComponent implements AfterViewInit {
         this.load$.next();
       } else {
         this.periodControl.setValue(this.lastPeriod, { emitEvent: false });
+      }
+
+      const currentLabel = this.formatPeriodLabel();
+      if (currentLabel !== previousLabel) {
+        this.cdr.markForCheck();
       }
     });
   }
