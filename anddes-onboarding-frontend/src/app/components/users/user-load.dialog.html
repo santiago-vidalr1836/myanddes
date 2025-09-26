@@ -1,0 +1,32 @@
+<h2 mat-dialog-title [style.background]="'#236EB1'" [style.color]="'#ffffff'">Usuarios Agregados</h2>
+<mat-dialog-content>
+  <div style="margin-top: 15px;"></div>
+  @if (data.newUsers && data.newUsers.length>0) {
+    <p class="newUsers">{{data.newUsers.length}} usuarios agregados</p>
+    @for (userNew of data.newUsers; track userNew) {
+      <p class="label_usuario_fullname">{{userNew.fullname}}</p>
+      <p class="label_usuario_email">{{userNew.email}}</p>
+    }
+  }
+  <div style="margin-top: 15px;"></div>
+  @if (data.modifiedUsers && data.modifiedUsers.length>0) {
+    <p class="label_usuarios_agregados">{{data.modifiedUsers.length}} usuarios editados</p>
+    @for (userModified of data.modifiedUsers; track userModified) {
+      <p class="label_usuario_fullname">{{userModified.fullname}}</p>
+      <p class="label_usuario_email">{{userModified.email}}</p>
+    }
+  }
+  <div style="margin-top: 15px;"></div>
+  @if (data.errors && data.errors.length>0) {
+    <p class="label_usuarios_agregados">{{data.errors.length}} usuarios no agregados</p>
+    <br>
+    <p class="label_usuarios_agregados">Registros inválidos. Asegúrate que sea formato xls y que contenga las columnas nombre, correo, puesto y jefe cargo.</p>
+    @for (error of data.errors; track error) {
+      <p class="label_usuario_fullname">{{error.fullname}}</p>
+      <p class="label_usuario_email">{{error.email}}</p>
+    }
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button color="primary" (click)="onNoClick()" cdkFocusInitial>Cerrar</button>
+</mat-dialog-actions>

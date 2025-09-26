@@ -1,0 +1,59 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">{{user.fullname}}</span>
+        </div>
+        <br>
+        <form #userForm="ngForm" class="form-entity">
+            <br>
+            <span class="label">Nombre</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Nombre" name="fullname" [(ngModel)]="user.fullname" required>
+            </mat-form-field>
+            <br>
+            <span class="label">Puesto</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Puesto" name="job" [(ngModel)]="user.job"  required>
+            </mat-form-field>
+            <br>
+            <span class="label">Jefe a Cargo</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Jefe a Cargo" [formControl]="bossControl"  required [matAutocomplete]="boss">
+                <mat-autocomplete autoActiveFirstOption #boss="matAutocomplete" (optionSelected)="onBossSelected($event)">
+                    @for (user of (filteredUser | async); track user) {
+                        <mat-option [id]="user.id+''" [value]="user.fullname">{{user.fullname}}</mat-option>
+                    }
+                </mat-autocomplete>
+            </mat-form-field>
+            <br>
+            <span class="label">Roles y permisos</span>
+            <mat-selection-list #role class="form-field" name="roles" [(ngModel)]="user.roles">
+                <mat-list-option value="Colaborador" disabled="true" selected="true">Colaborador</mat-list-option>
+                <mat-list-option value="Jefe a Cargo">Jefe a Cargo</mat-list-option>
+            </mat-selection-list>
+            <br>
+            <span class="label">Correo</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Correo Electronico" name="email" [(ngModel)]="user.email" required>
+            </mat-form-field>
+            <br>
+            <span class="label">Foto Perfil</span>
+            @if (user.image) {
+                <img [src]="user.image" class="user-image"/>
+            }@else {
+                <img src="../../assets/img/noimage.png" class="user-image"/>
+            }
+            <br>
+            <br>
+            <button mat-button color="primary" class="button-save" [disabled]="!userForm.valid" (click)="saveUser()">GUARDAR</button>
+            <br>
+            <br>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>

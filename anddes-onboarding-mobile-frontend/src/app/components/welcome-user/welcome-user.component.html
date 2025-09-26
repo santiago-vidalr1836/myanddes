@@ -1,0 +1,24 @@
+<div class="anddes-column welcome-content">
+    <div class="anddes-row title">
+         <img class="welcome-image"src="/assets/img/wave.png">
+         <span class="welcome-title">{{auth.givenName && auth.givenName.length>0?auth.givenName:auth.fullname}}, Bienvenido a bordo!</span>
+    </div>
+    @if (isLoadingResults) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+    <div class="welcome-div">
+        <span class="welcome-message">
+            Te damos la bienvenida a nombre del equipo Gesti&oacute;n del Talento y te guiar&eacute; para que tu inicio en Anddes sea una excelente experiencia.
+
+            <br><br>
+            Para comenzar revisa por favor el video de bienvenida de nuestro gerente general.
+        </span>
+    </div>
+    <div class="welcome-camera">
+        <button mat-stroked-button class="btn-camera" [disabled]="btnDisabled" (click)="openCeoDialog()">
+            <mat-icon class="material-symbols-outlined color-icon">videocam</mat-icon><span class="btn-label">Video Bienvenida</span>
+          </button>
+    </div>
+    <br>
+    <br>
+</div>

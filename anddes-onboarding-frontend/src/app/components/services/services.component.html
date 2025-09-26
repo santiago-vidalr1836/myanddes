@@ -1,0 +1,36 @@
+<div>
+    <span class="title"> Vida en la empresa  
+    </span>
+</div>
+<br>
+<div class="entity-list">
+    <div style="margin: 30px;">
+        <br>
+        <div>
+            @if (isLoadingResults) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            }
+            <div class="services">
+                @for (service of services; track service) {
+                    <mat-card class="service-card">
+                        <!--<mat-card-header>
+                        </mat-card-header>-->
+                        <br>
+                        <div class="service-icon">
+                            <mat-icon [fontIcon]="service.iconWeb" class="material-symbols-outlined"></mat-icon>
+                        </div>
+                        <mat-card-content>
+                            <mat-card-title class="service-title" style="margin-top: 10px !important;">{{service.name}}</mat-card-title>
+                            <p class="content">{{service.description}}</p>
+                        </mat-card-content>
+                        <mat-card-actions class="service-button">
+                            <button mat-button color="primary" (click)="edit(service)" class="service-button">EDITAR</button>
+                        </mat-card-actions>
+                    </mat-card>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<br>

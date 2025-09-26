@@ -1,0 +1,33 @@
+<div>
+    <div class="entity-list">
+        <div>
+            <div>
+                <div class="title-bar">
+                    <button mat-icon-button class="material-symbols-outlined button-back">
+                        <mat-icon>handyman</mat-icon>
+                    </button>
+                    <span class="title">Herramientas</span>
+                </div>
+                @if (isLoadingResults) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+            </div>
+            <div>
+                <div class="tools">
+                    @for (tool of tools; track tool) {
+                        <div class="anddes-column tool-card"> 
+                            <img  class="tool-image" [src]="tool.cover">
+                            <span class="tool-name-text">{{tool.name}}</span>
+                            <span class="tool-description-text">{{tool.description}}</span>
+                            <div class="tool-action">
+                                <button mat-button (click)="openTool(tool)"><span class="tool-button">Abrir</span></button>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<div>
+    <span class="title"> Mi primer d&iacute;a  
+    </span>
+</div>
+<br>
+<div class="entity-list">
+    <div style="margin: 30px;">
+        <br>
+        <div>
+            @if (isLoadingResults) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            }
+            @for (activity of activities; track $index) {
+                <div class="activity">
+                    <button mat-button (click)="processActivity(activity)" class="activity-button">
+                        <span>{{activity.name}}</span>
+                    </button>
+                    <mat-divider></mat-divider>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<br>
+<br>
+
+

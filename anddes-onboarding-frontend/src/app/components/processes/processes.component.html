@@ -1,0 +1,61 @@
+<div>
+    <span class="title"> Procesos  
+    </span>
+  </div>
+  <br>
+  <div class="entity-list">
+    <div style="margin: 30px;">
+    <div align="end">
+      <button mat-flat-button class="btn-form" color="primary" (click)="add()"><mat-icon>add</mat-icon> Nuevo Proceso</button>
+    </div>
+    <br>
+    <div align="end">
+      <button style="margin-left:auto; margin-right:10;" (click)="download()" mat-icon-button>
+        <mat-icon class="material-symbols-outlined">file_download</mat-icon>
+      </button>
+    </div>
+    <br>
+    <div>
+        @if (isLoadingResults) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+        <table mat-table [dataSource]="dataSource" matSort
+        matSortActive="id" matSortDisableClear matSortDirection="desc">
+      
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
+            <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+          </ng-container>
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombe </th>
+            <td mat-cell *matCellDef="let row"> {{row.user.fullname}} </td>
+          </ng-container>
+          <ng-container matColumnDef="startDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Inicio </th>
+            <td mat-cell *matCellDef="let row"> {{row.startDate | date: 'dd/MM/yyyy'}} </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+            <td mat-cell *matCellDef="let row"> {{row.status}} </td>
+          </ng-container>
+          <ng-container matColumnDef="results">
+            <th mat-header-cell *matHeaderCellDef> Elearning </th>
+            <td mat-cell *matCellDef="let row"> {{row.results}} </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button matTooltip="Detalle de Proceso" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [length]="resultsLength" [pageSizeOptions]="[10, 25, 100]" aria-label="Seleccionar p&aacute;gina de procesos"></mat-paginator>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>

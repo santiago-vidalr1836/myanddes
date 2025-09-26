@@ -1,0 +1,172 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$myandess-primary-palette: (
+ 50: #1D4F8E,
+ 100: #236EB1,
+ 200: #2DA0E8,
+ 300: #2DA0E8,
+ 500: #236EB1,
+ 700: #236EB1,
+ A100: #236EB1,
+ contrast: (
+   100: rgba(black, 0.87),
+   500: rgba(black, 0.87),
+   700: rgba(black, 0.87)
+ )
+);
+$myandess-secondary-palette: (
+ 50: #212121,
+ 100: #424242,
+ 200: #757575,
+ 300: #E0E0E0,
+ 500: #424242,
+ 700: #424242,
+ A100: #424242,
+ contrast: (
+   100: rgba(black, 0.87),
+   500: rgba(black, 0.87),
+   700: rgba(black, 0.87)
+ )
+);
+$myanddes-frontend-primary: mat.m2-define-palette($myandess-primary-palette,A100);
+$myanddes-frontend-accent: mat.m2-define-palette($myandess-secondary-palette,A100);
+
+// The warn palette is optional (defaults to red).
+$myanddes-frontend-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$myanddes-frontend-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $myanddes-frontend-primary,
+    accent: $myanddes-frontend-accent,
+    warn: $myanddes-frontend-warn,
+  ),
+  typography: mat.m2-define-typography-config(),
+  density: 0
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($myanddes-frontend-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Rubik, "Helvetica Neue", sans-serif; }
+
+.myanddes-button{
+  color: white;
+}
+.entity-list{
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border: 0.2px solid #757575;
+  border-radius: 8px;
+  opacity: 1;
+}
+.btn-form{
+  color: white !important;
+  font-weight: 700 !important;
+  font: normal normal medium 14px/16px Rubik !important;
+  letter-spacing: 1.25px !important;
+  text-transform: uppercase !important;
+  height: 64px !important;
+}
+.mat-row{
+  font: normal normal normal 12px/16px Rubik !important;
+}
+.title{
+  margin-top: 88px !important;
+  text-align: left !important;
+  font: normal normal 600 35px/42px Rubik !important;
+  letter-spacing: 0px !important;
+  color: #424242 !important;
+  opacity: 1 !important;
+}
+.mat-mdc-form-field {
+  font-size: 14px !important;
+  width: 100% !important;
+}
+.form-entity{
+  display: flex;
+  flex-direction: column !important;
+
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border: 0.5px solid #757575;
+  border-radius: 8px;
+  opacity: 1;
+}
+.label{
+  /* UI Properties */
+  text-align: left;
+  font: normal normal normal 22px/28px Rubik;
+  letter-spacing: 0px;
+  color: #424242;
+  opacity: 1;
+  margin-left: 29px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+.form-field{
+  width: 550px !important;
+  margin-left: 29px !important;
+}
+.user-image{
+  max-width: 56px;
+  border-radius: 50%;
+  margin-left: 29px;
+}
+.button-save{
+  margin-left:80%;
+  text-align: left;
+  font: normal normal normal 22px/28px Rubik;
+  letter-spacing: 0px;
+  color: #044F8B !important;
+  opacity: 1;
+  width: 107px;
+  font-weight: 700 !important;
+}
+.user-title{
+  text-align: left;
+  font: normal normal normal 35px/42px Rubik;
+  letter-spacing: 0px;
+  color: #424242;
+  opacity: 1;
+  font-weight: 500;
+}
+.header{
+  flex-direction: row;
+  justify-content: center;
+}
+quill-editor {
+  display: block !important;
+}
+.ql-editor:focus {
+  border: 1px solid #80bdff !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+.snackbar-error {
+  background-color: red;
+}
+
+.snackbar-success {
+  background-color: green;
+}
+
+.snackbar-info {
+  background-color: blue;
+}

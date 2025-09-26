@@ -1,0 +1,19 @@
+<div class="service-content">
+    <div class="service-title">
+        <span class="service-name">{{service.name}}</span>
+    </div>
+    <mat-accordion multi >
+        @for(detail of service.details; track detail){
+        <mat-expansion-panel [expanded]="detail.id==service.details[0].id" class="detail-accordion">
+            <mat-expansion-panel-header>
+                <mat-panel-title class="detail-title"> {{detail.title}} </mat-panel-title>
+                <mat-panel-description>
+                    <mat-icon class="material-symbols-outlined icon-size">{{detail.icon}}</mat-icon>
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="detail-description" [innerHTML]="detail.description | safeHtml"></div>
+        </mat-expansion-panel>
+        }
+    </mat-accordion>
+</div>
+<br>

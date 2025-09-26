@@ -1,0 +1,57 @@
+.margin-left{
+    margin-left: 56px;
+}
+.margin-top{
+    margin-top: 50px;
+}
+.onsite-date-text{
+    text-align: left;
+    font: normal normal normal 14px/20px Montserrat;
+    letter-spacing: 0.05px;
+    color: #383A38;
+    opacity: 1;
+}
+.onsite-place-text{
+    text-align: left;
+    font: normal normal normal 12px/16px Montserrat;
+    letter-spacing: 0.06px;
+    color: #C2862B;
+    opacity: 1;
+}
+.icon-margin{
+    margin-right: 16px;
+}
+.onsite-question-text{
+    text-align: left;
+    font: normal normal normal 16px/24px Neo Sans Std;
+    letter-spacing: 0.04px;
+    color: #383A38;
+    opacity: 1;  
+}
+.onsite-description-text{
+    margin-top: 9px;
+    margin-right: 56px;
+    margin-bottom: 60px;
+    text-align: left;
+    font: normal normal normal 14px/20px Montserrat;
+    letter-spacing: 0.05px;
+    color: #383A38;
+}
+.title-onsite{
+    text-align: left;
+    font: normal normal normal 22px/28px Neo Sans Std;
+    letter-spacing: 0px;
+    color: #383A38;
+    opacity: 1;
+    margin-top: 55px;
+}
+@media (min-width: 1280px) {
+    ::ng-deep #content-box{
+        margin: 0px 304px 0px 304px !important;
+    }
+}
+@media (min-width: 1600px) {
+    ::ng-deep #content-box{
+        margin: 0px 464px 0px 464px !important;
+    }
+}

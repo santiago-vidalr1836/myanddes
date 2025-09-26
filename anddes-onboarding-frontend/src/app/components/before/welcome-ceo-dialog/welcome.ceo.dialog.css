@@ -1,0 +1,9 @@
+.filename{
+    font-size: 14px;
+    margin-left: 6px;
+}
+.file-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

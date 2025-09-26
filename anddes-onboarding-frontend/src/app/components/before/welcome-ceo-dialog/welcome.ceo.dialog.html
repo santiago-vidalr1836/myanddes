@@ -1,0 +1,37 @@
+<h2 mat-dialog-title [style.background]="'#236EB1'" [style.color]="'#ffffff'">Subir video</h2>
+<mat-dialog-content>
+  @if (isLoadingResults) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+  <div style="margin-top: 35px;"></div>
+  <button mat-stroked-button color="primary" class="btnUpload" (click)="video.click()"><mat-icon>upload</mat-icon>CARGAR VIDEO</button>
+  <input type="file" hidden #video [accept]="acceptedVideo" (change)="onVideoSelected($event)">
+  <br>
+  @if (_CEOPresentation.urlVideo) {
+    <div class="file-row">
+      <span class="filename">{{utilService.getFileNameFromUrl(_CEOPresentation.urlVideo)}}</span>
+      <button mat-icon-button (click)="_CEOPresentation.urlVideo=null">
+          <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  }@else{
+    <br>
+  }
+  <div style="margin-top: 15px;"></div>
+  <button mat-stroked-button color="primary" class="btnUpload" (click)="poster.click()"><mat-icon>upload</mat-icon>CARGAR IMAGEN</button>
+  <input type="file" hidden #poster [accept]="acceptedImage" (change)="onPosterSelected($event)">
+  <br>
+  @if (_CEOPresentation.urlPoster) {
+    <div class="file-row">
+      <span class="filename">{{utilService.getFileNameFromUrl(_CEOPresentation.urlPoster)}}</span>
+      <button mat-icon-button (click)="_CEOPresentation.urlPoster=null">
+          <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  }@else{
+    <br>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button color="primary" (click)="save()" cdkFocusInitial>Guardar</button>
+</mat-dialog-actions>

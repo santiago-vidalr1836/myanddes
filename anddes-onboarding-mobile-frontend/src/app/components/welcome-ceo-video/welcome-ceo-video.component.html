@@ -1,0 +1,8 @@
+<div class="ceo-video">
+    <video class="video" [src]="ceoPresentation.urlVideo" [poster]="ceoPresentation.urlPoster" autoplay controls (ended)="onVideoEnded()"></video>
+    <div class="ceo-button">
+        <button mat-icon-button (click)="closeSheet()" [disabled]="disabled">
+            <mat-icon class="material-symbols-outlined">arrow_forward</mat-icon>
+        </button>
+    </div>
+</div>

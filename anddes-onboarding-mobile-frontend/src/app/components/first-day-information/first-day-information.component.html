@@ -1,0 +1,33 @@
+<div>
+    <div class="entity-list">
+        @if (isLoadingResults) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+        <div>
+            <div>
+                <div class="title-bar">
+                    <button mat-icon-button class="material-symbols-outlined button-back" (click)="goToActivityList()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    <span class="title">{{firstDayInformationActivity.activity.name}}</span>
+                </div>
+                @if (isLoadingResults) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+            </div>
+            <br>
+            <div class="item-section">
+                @for (item of items; track item) {
+                <div class="card-item">
+                    <mat-icon [fontIcon]="item.icon" class="material-symbols-outlined icon-size"></mat-icon>
+                    <span class="item-title">{{item.title}}</span>
+                    <p class="item-content">{{item.description}}</p>
+                    <button mat-button color="primary" (click)="detail(item)"><span class="item-button">Ver m&aacute;s</span></button>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+</div>

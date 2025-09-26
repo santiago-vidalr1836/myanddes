@@ -1,0 +1,38 @@
+<div>
+    <span class="title"> Herramientas  
+    </span>
+</div>
+<br>
+<div class="entity-list">
+    <div style="margin: 30px;">
+        <div [align]="'end'">
+            <button mat-flat-button class="btn-form" color="primary" (click)="add()"><mat-icon>add</mat-icon> Nuevas herramientas</button>
+        </div>
+        <br>
+        <div>
+            @if (isLoadingResults) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            }
+            <div class="tools">
+                @for (tool of tools; track tool) {
+                    <mat-card class="tool-card">
+                        <!--<mat-card-header>
+                        </mat-card-header>-->
+                        @if (tool.cover) {
+                            <img mat-card-image [src]="tool.cover" class="tool-cover">
+                        }
+                        <mat-card-content>
+                            <mat-card-title class="title" style="margin-top: 10px !important;">{{tool.name}}</mat-card-title>
+                            <p class="content">{{tool.description}}</p>
+                        </mat-card-content>
+                        <mat-card-actions align="end">
+                            <button mat-button color="primary" (click)="edit(tool)">EDITAR</button>
+                        </mat-card-actions>
+                    </mat-card>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<br>

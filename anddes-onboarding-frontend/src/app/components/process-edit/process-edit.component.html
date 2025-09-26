@@ -1,0 +1,83 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                {{process.id}}
+            </span>
+        </div>
+        <br>
+        <form #processForm="ngForm" class="form-entity">
+            <div class="process-row">
+                <div class="process-column">
+                    <span class="process-subtitle">COLABORADOR</span>
+                    <span class="process-title">{{process.user.fullname}}</span>
+                </div>
+                <div class="process-column">
+                    <span class="process-subtitle">AVANCE</span>
+                    <span class="process-title">{{process.status}}%</span>        
+                </div>
+                <div class="process-column">
+                    <span class="process-subtitle">PUESTO</span>
+                    <span class="process-title">{{process.user.job}}</span>      
+                </div>
+                <div class="process-column">
+                    <span class="process-subtitle">JEFE A CARGO</span>
+                    <span class="process-title">{{process.user.boss?process.user.boss.fullname:'-'}}</span>      
+                </div>
+            </div>
+            <br>
+            <span class="label">Fecha Inicio</span>
+            <mat-form-field class="form-field">
+                <input matInput [matDatepicker]="picker" name="startDate" [(ngModel)]="process.startDate" required placeholder="Ingresar fecha">
+                <mat-hint>DD/MM/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <br>
+            <br>
+            <span class="label">Avance</span>
+            <div class="avance">
+                @for (property of properties; track $index) {
+                    <section class="example-section">
+                        <span class="example-list-section">
+                        <mat-checkbox class="example-margin"
+                                        [checked]="allComplete(property)"
+                                        color="primary"
+                                        disabled="true"
+                                        [indeterminate]="someComplete(property)">
+                            {{property}}
+                        </mat-checkbox>
+                        </span>
+                        <span class="example-list-section">
+                        <ul>
+                            @for (activity of parentActivities[property]; track activity) {
+                            <li>
+                                <mat-checkbox [name]="activity.activity.name"
+                                            [(ngModel)]="activity.completed"
+                                            color="primary"
+                                            [disabled]="!activity.activity.manual"
+                                            (ngModelChange)="updateAllComplete(property,activity)">
+                                {{activity.activity.name}}
+                                </mat-checkbox>
+                            </li>
+                            }
+                        </ul>
+                        </span>
+                    </section>
+                    
+                }
+            </div>
+            <br>
+            <br>
+            <button mat-button color="primary" class="button-save" [disabled]="!processForm.valid" (click)="save()">GUARDAR</button>
+            <br>
+            <br>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>

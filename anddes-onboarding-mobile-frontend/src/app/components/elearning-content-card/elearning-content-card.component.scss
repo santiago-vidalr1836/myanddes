@@ -1,0 +1,161 @@
+.content-name{
+    margin-top: 43px;
+    //margin-left: 31px;
+    text-align: left;
+    font: normal normal normal 22px/28px Neo Sans Std;
+    letter-spacing: 0px;
+    color: #383A38;
+    opacity: 1;
+}
+.process-activity-content-progress{
+    //margin-left: 33px;
+    margin-right: 33px;
+    //width: auto;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+.paginate{
+    text-align: center;
+    font: normal normal normal 12px/18px Neo Sans Std;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+}
+.card-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.content-actions{
+    justify-content: center;
+    align-items: center;
+}
+.button-div{
+    align-items: end;
+    justify-content: end;
+}
+/*.button-next{
+    margin-right: 33px;
+}*/
+@media (max-width: 1280px) {
+    .content{
+        width: 80%;  
+    }
+
+}
+@media (min-width: 1280px) {
+    .content{
+        width: 50%;    
+    }
+}
+.flexcontainer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    /* adjustment */
+    position: relative;
+    /* new */
+}
+.itemcenter {
+    flex: 0 1 auto;
+    position: absolute;
+    /* new */
+    left: 50%;
+    transform: translateX(-50%);
+}
+.itemleft {
+    flex: 0 1 auto;
+    margin-right: auto;
+    /* new */
+}
+.itemright {
+    flex: 0 1 auto;
+    margin-left: auto;
+    /* new */
+}
+.content-body{
+    font: normal normal normal 14px/20px Montserrat;
+    font-weight: normal;
+}
+.card-option{
+    width: 100% !important; 
+}
+.question-content{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.question-evaluation-label{
+    text-align: left;
+    font: normal normal normal 16px/24px Neo Sans Std;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 25px;
+}
+.question-content-label{
+    text-align: left;
+    font: normal normal normal 14px/18px Montserrat;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 20px;
+}
+.question-answer-label{
+    text-align: left;
+    font: normal normal normal 10px/14px Neo Sans Std;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 15px;
+}
+.question-radio-text{
+    text-align: left;
+    font: normal normal normal 14px/18px Montserrat;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 5px;
+}
+.title-content{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;    
+}
+.result-content{
+    align-items: center;
+    justify-content: center;
+}
+.content-completed{
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    font-weight: 300;
+    color: #424242;
+    margin-bottom: 25px;
+}
+.completed-label{
+    text-align: left;
+    font: normal normal normal 18px/20px Montserrat;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 20px;
+}
+.completed-name{
+    text-align: left;
+    font: normal normal normal 24px/28px Montserrat;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 30px;
+}
+.completed-result{
+    text-align: left;
+    font: normal normal normal 22px/24px Montserrat;
+    letter-spacing: 0.22px;
+    color: #000000;
+    opacity: 1;
+    margin-bottom: 10px;
+}

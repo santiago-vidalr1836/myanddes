@@ -1,0 +1,78 @@
+<div>
+    <div class="entity-list">
+      <div>
+        <div class="title-bar">
+          <button mat-icon-button class="material-symbols-outlined button-back" (click)="goToActivityList()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="title">{{profileActivity.activity.name}}</span>
+        </div>
+        @if (isLoadingResults) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+      </div>
+        <br>
+        <form #profileForm="ngForm" class="form-entity">
+            <br>
+            <span class="label">Nombre Abreviado</span>
+            <br>
+            <mat-form-field class="nickname-form-field">
+                <mat-label class="label">Nombre que usas</mat-label>
+                <input class="text-input"  matInput type="text" placeholder="Nombre que usas" name="nickname" [(ngModel)]="profile.nickname" required>
+                <mat-hint align="start" class="nickname-hint">C&oacute;mo deseas que te llamamemos</mat-hint>
+            </mat-form-field>
+            <br>
+            <span class="foto-label">Foto</span>
+            <br>
+            <span class="foto-label">La foto ser&aacute; utilizada para incorporarla en nuestros sistemas internos</span>
+            @if (profile.image) {
+                <img [src]="profile.image" class="user-image"/>
+            }@else {
+                <img src="./assets/img/noimage.png" class="user-image"/>
+            }
+            <br>
+            <button mat-stroked-button class="btn-upload" (click)="image.click()">
+              <mat-icon class="material-symbols-outlined color-icon">upload</mat-icon><span class="btn-label">Foto Personal</span>
+            </button>
+            <input type="file" hidden #image [accept]="acceptedImage" (change)="onImageSelected($event)">
+            @if(profile.image){
+              <div>
+                <span class="file-label">{{getFilename(profile.image)}}</span>
+                <button mat-button>
+                  <mat-icon class="material-symbols-outlined color-icon">delete</mat-icon>
+                </button>
+              </div>
+            }
+            <br>
+            <mat-form-field class="hobbies-form-field">
+              <mat-label class="label">Hobbies</mat-label>
+              <mat-chip-grid #chipGrid name="hobbies" [(ngModel)]="profile.hobbies">
+                @for (keyword of keywords(); track keyword) {
+                  <mat-chip-row (removed)="removeKeyword(keyword)">
+                    <span class="label">{{keyword}}</span>
+                    <button matChipRemove aria-label="'Remover ' + keyword">
+                      <mat-icon class="material-symbols-outlined">cancel</mat-icon>
+                    </button>
+                  </mat-chip-row>
+                }
+              </mat-chip-grid>
+              <input class="text-input"
+                placeholder="Agregar hobbie..."
+                [matChipInputFor]="chipGrid"
+                (matChipInputTokenEnd)="add($event)"
+              />
+            </mat-form-field>
+            <br>
+          <div class="button-end">
+            <button mat-button color="primary" class="button-save" [disabled]="!profileForm.valid" (click)="save()">
+              <span class="btn-save-label">GUARDAR</span>
+            </button>
+          </div>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,110 @@
+.form-entity{
+    display: flex;
+    flex-direction: column;
+    margin-left: 32px;
+    margin-right: 32px;
+}
+.label{
+    text-align: left;
+    font: normal normal normal 16px/24px 'Neo Sans Std';
+    letter-spacing: 0.04px;
+    color: #383A38;
+    opacity: 1;
+}
+.user-image{
+    border: 1px solid #383A38;
+    opacity: 1;
+    width: 80px;
+    height: 80px;
+    clip-path: circle();
+}
+.foto-label{
+    text-align: left;
+    font: normal normal normal 14px/20px Montserrat;
+    letter-spacing: 0.05px;
+    color: #383A38;
+    opacity: 1;
+}
+.text-input{
+    text-align: left;
+    font: normal normal normal 14px/20px Montserrat !important;
+    letter-spacing: 0.05px;
+    color: #424242;
+    opacity: 1;
+}
+input::placeholder {
+    font: normal normal normal 14px/20px Montserrat !important;
+}
+.nickname-form-field{
+    width: 306px;
+    margin-bottom: 48px;
+}
+.nickname-hint{
+    text-align: left;
+    font: normal normal normal 12px/16px Montserrat;
+    letter-spacing: 0.06px;
+    color: #424242;
+    opacity: 1;
+}
+.foto-label{
+    text-align: left;
+    font: normal normal normal 14px/20px Montserrat;
+    letter-spacing: 0.05px;
+    color: #383A38;
+    opacity: 1;
+    margin-bottom: 16px;
+}
+.btn-upload{
+
+    width: 185px;
+    height: 39px;
+    border: 1px solid #707070;
+    border-radius: 4px;
+    opacity: 1;  
+}
+.btn-label{
+    text-align: left;
+    font: normal normal normal 11px/15px Neo Sans Std;
+    letter-spacing: 1.65px;
+    color: #424242;
+    text-transform: uppercase;
+    opacity: 1;  
+}
+.file-label{
+    text-align: left;
+    font: normal normal normal 11px/15px Montserrat;
+    letter-spacing: 0.05px;
+    color: #424242;
+    opacity: 1;
+}
+.color-icon{
+    color : #383A38
+}
+.hobbies-form-field{
+    width: 306px;
+    margin-top: 51px;
+}
+.btn-save-label{
+    text-align: left;
+    font: normal normal normal 22px/28px Montserrat;
+    letter-spacing: 0px;
+    color: #044F8B;
+    opacity: 1;
+}
+.button-save{
+    margin-right: 10px;
+}
+.button-end{
+    display: inline-block;
+    align-self: flex-end;  
+}
+@media (min-width: 1280px) {
+    ::ng-deep #content-box{
+        margin: 0px 305px 0px 305px !important;
+    }
+}
+@media (min-width: 1600px) {
+    ::ng-deep #content-box{
+        margin: 0px 465px 0px 465px !important;
+    }
+}

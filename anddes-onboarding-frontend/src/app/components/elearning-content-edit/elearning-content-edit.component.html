@@ -1,0 +1,185 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                {{content?content.name:''}}
+            </span>
+        </div>
+        <br>
+        <div class="form-entity">
+            @if (content && content.cards) {
+                @for (card of content.cards; track $index) {
+                    @if (!card.deleted) {
+                        <div class="card">
+                            <div align="end">
+                                <button mat-icon-button [matMenuTriggerFor]="menu">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                    <button mat-menu-item (click)="moveDownCard(card,$index)">
+                                        <mat-icon>arrow_circle_down</mat-icon>
+                                        <span>Bajar</span>
+                                    </button>
+                                    <button mat-menu-item (click)="moveUpCard(card,$index)">
+                                        <mat-icon>arrow_circle_up</mat-icon>
+                                        <span>Subir</span>
+                                    </button>
+                                    <button mat-menu-item (click)="card.deleted=!card.deleted">
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Borrar</span>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                            @if (card.type == TYPE_QUESTION) {
+                                <div>
+                                    <mat-form-field class="form-field">
+                                        <input matInput placeholder="Pregunta" name="name" [(ngModel)]="card.content" required>
+                                    </mat-form-field>
+                                    <br>
+                                    <mat-table #table [dataSource]="getDataSource(card)" class="table">
+                                        <ng-container matColumnDef="correct">
+                                            <mat-header-cell *matHeaderCellDef>Correcto</mat-header-cell>
+                                            <mat-cell *matCellDef="let option,let i = index">
+                                                <div id="wrappercorrect">
+                                                    <button mat-icon-button (click)="setOptionCorrect(card,option)">
+                                                        <mat-icon>
+                                                            @if (option.correct) {
+                                                                radio_button_checked
+                                                            }@else{
+                                                                radio_button_unchecked
+                                                            }
+                                                        </mat-icon>
+                                                    </button>
+                                                </div>
+                                            </mat-cell>
+                                        </ng-container>
+                                        <ng-container matColumnDef="name">
+                                            <mat-header-cell *matHeaderCellDef>
+                                                Opcion
+                                                <button mat-icon-button color="primary" matTooltip="Nueva Opci&oacute;n" (click)="addOption(card)">
+                                                    <mat-icon>add</mat-icon>
+                                                </button>
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let option,let i = index" [style.color]="option.description==defaultTextOption?'#757575':''">
+                                                {{option.description}}
+                                            </mat-cell>
+                                        </ng-container>
+                                        <ng-container matColumnDef="action">
+                                            <mat-header-cell *matHeaderCellDef>
+                                                Acciones
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let option,let i = index" class="action-link">
+                                                <button mat-icon-button matTooltip="Editar" (click)="updateOption(option,i)">
+                                                    <mat-icon>edit</mat-icon>
+                                                </button>
+                                                <button mat-icon-button matTooltip="Remover" (click)="option.deleted=true">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                            </mat-cell>
+                                        </ng-container>
+                                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                                    </mat-table>
+                                </div>
+                            }@else if (card.type==TYPE_TEXT){
+                                <div>
+                                    <mat-form-field class="form-field">
+                                        <input matInput placeholder="T&iacute;tulo tarjeta" name="name" [(ngModel)]="card.title" required>
+                                    </mat-form-field>
+                                    <br>
+                                    <app-html-editor class="html-editor" [content]="card.content" (contentUpdated)="card.content=$event"></app-html-editor>
+                                    <br>
+                                    
+                                </div>
+                            }@else if (card.type==TYPE_VIDEO){
+                                <div>
+                                    <mat-form-field class="form-field">
+                                        <input matInput placeholder="T&iacute;tulo tarjeta" name="name" [(ngModel)]="card.title" required>
+                                    </mat-form-field>
+                                    <br>
+                                    <div class="div-video">
+                                        <button mat-stroked-button color="primary" class="btnUpload" (click)="video.click()">
+                                            <mat-icon>upload</mat-icon>
+                                            CARGAR VIDEO
+                                        </button>
+                                        <input type="file" hidden #video [accept]="acceptedVideo" (change)="onVideoSelected($event,card,$index)">
+                                        <br>
+                                        @if (card.urlVideo) {
+                                            <div class="file-row">
+                                            <span class="filename">{{utilService.getFileNameFromUrl(card.urlVideo)}}</span>
+                                            <button mat-icon-button (click)="card.urlVideo=null">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                            </div>
+                                        }@else{
+                                            @if($index==currentIndex && currentType=='video'){
+                                                <mat-progress-spinner mode="indeterminate" class="progress-spinner" diameter="18"></mat-progress-spinner>
+                                            }@else {
+                                                <br>
+                                            }
+                                        }
+                                    </div>
+                                    <div style="margin-top: 15px;"></div>
+                                    <div class="div-video">
+                                        <button mat-stroked-button color="primary" class="btnUpload" (click)="poster.click()"><mat-icon>upload</mat-icon>CARGAR IMAGEN</button>
+                                        <input type="file" hidden #poster [accept]="acceptedImage" (change)="onPosterSelected($event,card,$index)">
+                                        <br>
+                                        @if (card.urlPoster) {
+                                            <div class="file-row">
+                                            <span class="filename">{{utilService.getFileNameFromUrl(card.urlPoster)}}</span>
+                                            <button mat-icon-button (click)="card.urlPoster=null">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                            </div>
+                                        }@else{
+                                            @if($index==currentIndex && currentType=='poster'){
+                                                <mat-progress-spinner mode="indeterminate" diameter="18"></mat-progress-spinner>
+                                            }@else {
+                                                <br>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            <br>
+                            <div style="margin-left: 26px;">
+                                <mat-slide-toggle labelPosition="before" color="primary" [(ngModel)]="card.draft" >Borrador &nbsp;</mat-slide-toggle>
+                            </div>
+                            <br>
+                            <br>
+                        </div>
+                    }
+                }
+            }
+            <div class="section-add-card"> 
+                <button mat-icon-button [matMenuTriggerFor]="menuAddCard">
+                    <mat-icon style="scale: 1.5;">add</mat-icon>
+                </button>
+                <mat-menu #menuAddCard="matMenu">
+                    <button mat-menu-item (click)="addText()">
+                        <span>Contenido</span>
+                    </button>
+                    <button mat-menu-item (click)="addQuestion()">
+                        <span>Pregunta</span>
+                    </button>
+                    <button mat-menu-item (click)="addVideo()">
+                        <span>Video</span>
+                    </button>
+                </mat-menu>
+            </div>
+            <br>
+            <br>
+        </div>
+        <br>
+        <br>
+        <button mat-button color="primary" class="button-save"  (click)="save()">GUARDAR</button>
+        <br>
+        <br>        
+    </div>
+</div>
+
+

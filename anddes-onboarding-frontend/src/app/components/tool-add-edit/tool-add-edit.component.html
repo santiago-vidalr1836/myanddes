@@ -1,0 +1,55 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                @if (tool.id) {Editar}
+                @else {A&ntilde;adir} Herramienta
+            </span>
+        </div>
+        <br>
+        <form #toolForm="ngForm" class="form-entity">
+            <br>
+            <span class="label">Nombre</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Nombre" name="name" [(ngModel)]="tool.name" required>
+            </mat-form-field>
+            <br>
+            <span class="label">Descripci&oacute;n</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Descripci&oacute;n" name="description" [(ngModel)]="tool.description"  required>
+            </mat-form-field>
+            <br>
+            <span class="label">Link</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Colocar url" name="link" [(ngModel)]="tool.link" required>
+            </mat-form-field>
+            <br>
+            <span class="label">Cover</span>
+            <div class="upload">
+                <button mat-stroked-button color="primary" class="btnUpload" (click)="file.click()"><mat-icon>upload</mat-icon>Cargar Imagen</button>
+                <input type="file" hidden #file [accept]="acceptedFiles" (change)="onFileSelected($event)">
+                @if (tool.cover) {
+                    <span class="filename">{{getFileNameFromUrl(tool.cover)}}</span>
+                    <button mat-icon-button (click)="tool.cover=null">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                }
+            </div>
+            @if (tool.cover) {
+                <img [src]="tool.cover" class="cover-image"/>
+            }
+            <br>
+            <br>
+            <button mat-button color="primary" class="button-save" [disabled]="!toolForm.valid" (click)="saveTool()">GUARDAR</button>
+            <br>
+            <br>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>
+

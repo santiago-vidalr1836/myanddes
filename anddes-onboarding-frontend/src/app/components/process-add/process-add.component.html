@@ -1,0 +1,70 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                Nuevo Proceso
+            </span>
+        </div>
+        <br>
+        <form #processForm="ngForm" class="form-entity">
+            <br>
+            <span class="label">Colaborador</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Buscar" name="userId" [formControl]="userControl"  required [matAutocomplete]="user">
+                <mat-autocomplete autoActiveFirstOption #user="matAutocomplete" (optionSelected)="onUserSelected($event)">
+                    @for (user of (filteredUser | async); track user) {
+                        <mat-option [id]="user.id+''" [value]="user.fullname">{{user.fullname}}</mat-option>
+                    }
+                </mat-autocomplete>
+            </mat-form-field>
+            <br>
+            <span class="label">Fecha Inicio</span>
+            <mat-form-field class="form-field">
+                <input matInput [matDatepicker]="picker" name="startDate" [(ngModel)]="process.startDate" required placeholder="Ingresar fecha">
+                <mat-hint>DD/MM/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <br>
+            <br>
+            <br>
+            <span class="label">Inducci&oacute;n presencial GT</span>
+            <span class="label">Hora</span>
+            <mat-form-field class="form-field">
+                <input  matInput type="time" placeholder="Hora" name="hourOnsite" [(ngModel)]="process.hourOnsite" required>
+            </mat-form-field>
+            <br>
+            <span class="label">Lugar</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Lugar" name="place" [(ngModel)]="process.placeOnsite" required>
+                <mat-icon matSuffix>meeting_room</mat-icon>
+            </mat-form-field>
+            <br>
+            <br>
+            <br>
+            <span class="label">Inducci&oacute;n remota SSA</span>
+            <br>
+            <span class="label">Hora</span>
+            <mat-form-field class="form-field">
+                <input  matInput type="time" placeholder="Hora" name="hourRemote" [(ngModel)]="process.hourRemote" required>
+            </mat-form-field>
+            <span class="label">Link</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Link" name="Link" [(ngModel)]="process.linkRemote" required>
+                <mat-icon matSuffix>link</mat-icon>
+            </mat-form-field>
+            <br>
+            <button mat-button color="primary" class="button-save" [disabled]="!processForm.valid" (click)="save()">GUARDAR</button>
+            <br>
+            <br>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>
+
+

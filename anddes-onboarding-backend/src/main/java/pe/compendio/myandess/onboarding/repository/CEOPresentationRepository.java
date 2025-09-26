@@ -1,0 +1,9 @@
+package pe.compendio.myandess.onboarding.repository;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import pe.compendio.myandess.onboarding.entity.CEOPresentation;
+
+@Repository
+public interface CEOPresentationRepository extends CrudRepository<CEOPresentation,Long> {
+}

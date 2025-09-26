@@ -1,0 +1,119 @@
+.progress-spinner{
+    height: 39px !important;
+    width: 39px !important;
+    margin-top: 48px;
+    float:right;
+    margin-right: 12px;
+}
+.group{
+    border-radius: 16px;
+    opacity: 1;
+    margin-left: 17.33px;
+    //margin-top: 24px;
+    width: 154px;
+    height: 30.08px;
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+.group-name{
+    text-align: left;
+    font: normal normal normal 14px/20px Neo Sans Std;
+    letter-spacing: 0.02px;
+    color: #FFFFFF;
+    opacity: 1;
+    margin-left: 16px;
+    margin-top: 8px;
+}
+.group-background{
+    border-radius: 16px;
+    margin: 16px;
+}
+.group-card{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 1px 3px #00000029;
+    border-radius: 4px;
+    opacity: 0.75;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 16px;
+    margin-right: 16px;
+    flex: 1 1 auto;
+    height: 75.5px;
+    align-items: center;
+    display: flex;
+}
+.activity-button{
+    text-align: left;
+    //font: normal normal medium 14px/20px 'Montserrat';
+    font-family: Montserrat;
+    font-size: 15px;
+    letter-spacing: 0.05px;
+    color: #383A38;
+    opacity: 1;
+}
+@media (min-width: 1280px) {
+    .group-background{
+        width: calc(25vw);
+        display: inline-grid;
+        align-items: start;
+        margin-left: 26px !important;
+    }
+    ::ng-deep #content-box{
+        margin: 0px 79px 0px 79px !important;
+    }
+    .group{
+        width: 150px;
+    }
+}
+@media (min-width: 1600px) {
+    ::ng-deep #content-box{
+        margin: 0px 263px 0px 263px !important;
+    }
+    .group-background{
+        width: calc(20vw);
+        display: inline-grid;
+        align-items: start;
+        margin-left: 26px !important;
+    }
+}
+.process-icon{
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+}
+.process-date{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-right: 16px;
+}
+.process-date-text{
+    font: normal normal normal 11px/14px Neo Sans Std;
+    letter-spacing: 0.02px;
+}
+
+
+/*@media (min-width: 1480px) {
+    .group-background{
+        width: 400px;
+        display: inline-grid;
+        align-items: start;
+    }
+}
+@media (min-width: 1600px) {
+    .group-background{
+        width: 450px;
+        display: inline-grid;
+        align-items: start;
+    }
+}
+@media (min-width: 1700px) {
+    .group-background{
+        width: 500px;
+        display: inline-grid;
+        align-items: start;
+    }
+}*/

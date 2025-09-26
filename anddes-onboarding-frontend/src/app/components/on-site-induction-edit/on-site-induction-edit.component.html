@@ -1,0 +1,32 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                {{activity?activity.name:''}}
+            </span>
+        </div>
+        <br>
+        @if(onSiteInduction){
+            <form #onSiteInductionForm="ngForm" class="form-entity">
+                <br>
+                <span class="label">Descripci&oacute;n</span>
+                <mat-form-field class="form-field">
+                    <textarea rows="3"  maxlength="500"  matInput placeholder="Descripci&oacute;n" name="description" [(ngModel)]="onSiteInduction.description"  required>
+                    </textarea>
+                    <mat-hint align="end">{{onSiteInduction.description?onSiteInduction.description.length:0}} / 500</mat-hint>
+                </mat-form-field>
+                <br>
+                <br>
+                <button mat-button color="primary" class="button-save" [disabled]="!onSiteInductionForm.valid" (click)="save()">GUARDAR</button>
+                <br>
+                <br>
+            </form>
+        }
+        <br>
+        <br>
+    </div>
+</div>

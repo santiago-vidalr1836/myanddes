@@ -1,0 +1,52 @@
+.row-headers{
+    display: flex;
+    flex-direction: row;
+    margin-left: 26px;
+    margin-right: 56px;
+    justify-content: flex-start
+}
+.card-indicator{
+    width: 240px;
+    height: 107px ;
+    border: 1px solid #707070;
+    border-radius: 12px;
+    justify-content: center;
+    align-items: center;
+    margin-right: 40px;
+}
+.donut-inner {
+    margin-top: 100px;
+    margin-left: 100px;
+    margin-bottom: 100px;
+ }
+ .donut-inner h5 {
+    margin-bottom: 5px;
+    margin-top: 0;
+ }
+ .donut-inner span {
+    font-size: 12px;
+ }
+ .indicator-bar-chart-card{
+    width: 564px;
+    height: 386px ;
+    border: 1px solid #707070;
+    border-radius: 12px;
+    justify-content: center;
+    align-items: center;
+    margin-right: 40px;
+ }
+ .indicator-bar-chart{
+   max-width: 80%;
+ }
+ .indicator-doughnut-chart-card{
+   width: 348px;
+   height: 356px ;
+   border: 1px solid #707070;
+   border-radius: 12px;
+   justify-content: center;
+   align-items: center;
+   margin-right: 40px;
+}
+.indicator-doughnut-chart{
+   max-width: 100%;
+}

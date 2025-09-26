@@ -1,0 +1,25 @@
+.label_usuarios_agregados{
+    height: 17px;
+    text-align: left;
+    font: normal normal medium 14px/16px Rubik;
+    letter-spacing: 1.25px;
+    color: #424242;
+    opacity: 1;
+}
+.label_usuario_fullname{
+    height: 27px;
+    /* UI Properties */
+    text-align: left;
+    font: normal normal normal 22px/28px Rubik;
+    letter-spacing: 0px;
+    color: #424242;
+    opacity: 1;
+}
+.label_usuario_email{
+    height: 17px;
+    text-align: left;
+    font: normal normal normal 14px/20px Rubik;
+    letter-spacing: 0.05px;
+    color: #424242;
+    opacity: 1;    
+}

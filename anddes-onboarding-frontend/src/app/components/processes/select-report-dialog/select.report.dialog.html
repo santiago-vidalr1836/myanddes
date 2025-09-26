@@ -1,0 +1,28 @@
+<h2 mat-dialog-title [style.background]="'#236EB1'" [style.color]="'#ffffff'">Descargar</h2>
+<mat-dialog-content class="download-content">
+  <div class="download-option">
+    <div class="download-option-text">
+      <span class="download-option-title">Procesos</span>
+      <span class="download-option-subtitle">CSV con la tabla de todos los procesos realizados hasta la fecha.</span>
+    </div>
+    <div align="end">
+      <button style="margin-left:auto; margin-right:10;" mat-icon-button [mat-dialog-close]="'process'">
+        <mat-icon class="material-symbols-outlined">file_download</mat-icon>
+      </button>
+    </div>
+  </div>
+  <br>
+  <div class="download-option">
+    <div class="download-option-text">
+      <span class="download-option-title">Respuestas elearning</span>
+      <span class="download-option-subtitle">Matriz de respuestas marcadas por los usuarios hasta la fecha, en las inducciones elearning.</span>
+    </div>
+    <div align="end">
+      <button style="margin-left:auto; margin-right:10;" mat-icon-button [mat-dialog-close]="'answers'">
+        <mat-icon class="material-symbols-outlined">file_download</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+</mat-dialog-actions>

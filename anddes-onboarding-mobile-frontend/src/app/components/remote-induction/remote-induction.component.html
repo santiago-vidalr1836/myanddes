@@ -1,0 +1,37 @@
+<div>
+    <div class="entity-list">
+        <div>
+            <div>
+                <div class="title-bar">
+                    <button mat-icon-button class="material-symbols-outlined button-back" (click)="goToActivityList()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    <span class="title-remote">{{remoteActivity.activity.name}}</span>
+                </div>
+                @if (isLoadingResults) {
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+            </div>
+            <div class="margin-left margin-top">
+                <div class="anddes-row">
+                    <mat-icon class="material-symbols-outlined icon-margin">video_call</mat-icon>
+                    <div class="anddes-column">
+                        <span class="remote-date-text">{{process.startDate | date:'EEEE dd MMMM':'':'es' |titlecase}}, {{process.hourRemote}}</span>
+                        <button mat-button (click)="openVideoCall()">
+                            <span class="remote-place-text">{{process.linkRemote}}</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="anddes-column margin-top">
+                    <span class="remote-question-text">¿Qué abordaremos?</span>
+                    @if(remoteInduction){
+                        <span class="remote-description-text">{{remoteInduction.description}}</span>
+                    }
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
+

@@ -1,0 +1,36 @@
+.section-add-card{
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+.card{
+    border: 0.5px solid #000000;
+    border-radius: 12px;
+    opacity: 1;
+    margin: 24px;
+}
+.html-editor{
+    display: inline-block;
+    margin-left: 26px;
+    margin-right: 35px;
+}
+::ng-deep .ql-editor {
+    height: 180px;
+}
+.mat-column-correct{
+    max-width: 150px;
+}
+.mat-column-action{
+    max-width: 180px;
+}
+.table{
+    max-width: 85%;
+    min-width: 50%;
+    margin-left: 26px;
+}
+.div-video{
+    margin-left: 26px;
+}
+.progress-spinner{
+    width: 15px;
+}

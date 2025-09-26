@@ -1,0 +1,35 @@
+<div>
+    <div class="entity-list">
+        <div>
+            <div>
+                <div class="title-bar">
+                    <button mat-icon-button class="material-symbols-outlined button-back" (click)="goToActivityList()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    <span class="title-onsite">{{onsiteActivity.activity.name}}</span>
+                </div>
+                @if (isLoadingResults) {
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+            </div>
+            <div class="margin-left margin-top">
+                <div class="anddes-row">
+                    <mat-icon class="material-symbols-outlined icon-margin">people</mat-icon>
+                    <div class="anddes-column">
+                        <span class="onsite-date-text">{{process.startDate | date:'EEEE dd MMMM':'':'es' |titlecase}}, {{process.hourOnsite}}</span>
+                        <span class="onsite-place-text">{{process.placeOnsite |titlecase}}</span>
+                    </div>
+                </div>
+                <div class="anddes-column margin-top">
+                    <span class="onsite-question-text">¿Qué abordaremos?</span>
+                    @if(onsiteInduction){
+                        <span class="onsite-description-text">{{onsiteInduction.description}}</span>
+                    }
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
+

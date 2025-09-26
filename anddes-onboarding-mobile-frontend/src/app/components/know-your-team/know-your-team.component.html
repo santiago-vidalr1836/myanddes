@@ -1,0 +1,58 @@
+<div>
+    <div class="entity-list">
+        <div>
+            <div>
+                <div class="title-bar">
+                    <button mat-icon-button class="material-symbols-outlined button-back" (click)="goToActivityList()">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    <span class="title">{{knowYourTeamActivity.activity.name}}</span>
+                </div>
+                @if (isLoadingResults) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+            </div>
+            <br>
+            <div class="member-section">
+                <div class="directorio-section">
+                    <button mat-button (click)="openDirectory()">
+                        <mat-icon  class="material-symbols-outlined">schema</mat-icon>
+                        <span class="directorio">Directorio General</span>
+                    </button>
+                </div>
+                @for (member of members; track member) {
+                <div class="member-column member-background" [ngClass]="{'boss-border':members[0].id==member.id}">
+                    <div class="member-row">
+                        <div class="member-image-container">
+                            <img  class="member-image" [src]="member.image?member.image:'./assets/img/noimage.png'">
+                        </div>
+                        <div class="member-column member-margin-16"> 
+                            <span class="member-name">{{member.fullname}}</span>
+                            <span class="member-job">{{member.job}}</span>
+                            @if(member.roles.indexOf("Jefe")>0){
+                                <span class="member-boss">Jefe a cargo</span>
+                            }
+                        </div>
+                    </div>
+                    @if(member.hobbies && member.hobbies.length>0){
+                        <mat-divider class="divider"></mat-divider>
+                        <div class="member-column margin-hobbies">
+                            <span class="hobbie-label">Hobbies</span>
+                            <div class="member-row gap">
+                                @for(hobbie of member.hobbies;track hobbie){
+                                    <div class="hobbie">
+                                        <span class="hobbie-text">{{hobbie | titlecase}}</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }@else{
+                        <div style="margin-top: 15px;"></div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    <br>
+</div>

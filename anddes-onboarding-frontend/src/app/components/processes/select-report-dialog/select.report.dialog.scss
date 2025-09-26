@@ -1,0 +1,31 @@
+.download-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.download-option{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 100px;
+    max-width: calc(73% - 16px);
+    min-width: calc(73% - 16px);
+}
+.download-option-text{
+    display: flex;
+    flex-direction: column;
+}
+.download-option-title{
+    font: normal normal normal 22px/28px Rubik;
+    letter-spacing: 0.13px;
+    color: #424242;
+    opacity: 1;
+    font-weight: 600;
+}
+.download-option-subtitle{
+    text-align: left;
+    font: normal normal normal 16px/24px Rubik;
+    letter-spacing: 0.13px;
+    color: #424242;
+    opacity: 1;
+}

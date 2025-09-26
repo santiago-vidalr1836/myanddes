@@ -1,0 +1,65 @@
+<div class="page">
+  @if (loginDisplay) {
+  <mat-sidenav-container id="sidenav-container-color" [hasBackdrop]="mdcBackdrop" class="page-container">
+    <mat-sidenav #sidenav="matSidenav" class="mat-elevation-z8 no-border" id="sidenav-color" [mode]="drawerMode" [opened]="opened">
+      <div class="menu-logo"> </div>
+      <div class="nav-list-item">
+        <button mat-button class="menu-button" [routerLink]="['/services']" (click)="sidenav.toggle()">
+          <mat-icon class="material-symbols-outlined">mood</mat-icon><span>VIDA EN LA EMPRESA</span>
+        </button>
+      </div>
+      <div class="nav-list-item">
+        <button mat-button class="menu-button" [routerLink]="['/tools']" (click)="sidenav.toggle()">
+          <mat-icon class="material-symbols-outlined">handyman</mat-icon><span>HERRAMIENTAS</span>
+        </button>
+      </div>
+      @if (isOnProcess) {
+      <div class="nav-list-item">
+        <button mat-button class="menu-button" [routerLink]="['/activity-list']" (click)="sidenav.toggle()">
+          <mat-icon class="material-symbols-outlined">door_sliding</mat-icon><span>ONBOARDING</span>
+        </button>
+      </div>
+      <div class="nav-list-item">
+        <button mat-button class="menu-button" [routerLink]="['/elearning-contents']" (click)="sidenav.toggle()">
+          <mat-icon class="material-symbols-outlined">book_online</mat-icon><span>INDUCCION</span>
+        </button>
+      </div>
+      }
+    </mat-sidenav>
+    <mat-sidenav-content class="sidenav-content">
+      <mat-toolbar class="toolbar">
+        @if(!isScreenWelcomed){
+        <button mat-icon-button (click)="sidenav.toggle()" class="white-icon">
+          <mat-icon class="material-symbols-outlined">menu</mat-icon>
+        </button>
+        }
+        <div class="toolbar-logo"></div>
+        <span class="toolbar-spacer"></span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="white-icon">
+          <mat-icon class="material-symbols-outlined">more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon class="material-symbols-outlined">logout</mat-icon>
+            <span>Cerrar Sesi&oacute;n</span>
+          </button>
+        </mat-menu>
+      </mat-toolbar>
+      <div id="content-box">
+        <router-outlet></router-outlet>
+      </div>
+      <br>
+      <br>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  }@else {
+  <div class="container">
+    <div class="container-button">
+      <div class="imgLogo">
+      </div>
+      <br>
+      <button mat-flat-button color="primary" class="buttonLogin" (click)="loginRedirect()">Ingresar</button>
+    </div>
+  </div>
+  }
+</div>

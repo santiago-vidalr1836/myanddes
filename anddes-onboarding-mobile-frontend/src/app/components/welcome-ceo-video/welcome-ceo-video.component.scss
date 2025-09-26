@@ -1,0 +1,28 @@
+.ceo-video{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 59px;
+}
+@media (max-width: 1280px) {
+    .video{
+        width: 80%;
+    }
+    .ceo-button{
+        margin-top: 10px;
+        display: flex;
+        justify-content: end;
+        width: 80%;
+    }
+}
+@media (min-width: 1280px) {
+    .video{
+        width: 50%;
+    }
+    .ceo-button{
+        margin-top: 10px;
+        width: 50%;
+        display: flex;
+        justify-content: end;
+    }
+}

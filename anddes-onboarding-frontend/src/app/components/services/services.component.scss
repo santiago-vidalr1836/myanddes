@@ -1,0 +1,48 @@
+.service-card {
+    width: 345px;
+    border: 1px solid #707070;
+    border-radius: 12px;
+}
+.service-title{
+    margin: 5px;
+    text-align: center;
+    font: normal normal medium 16px/24px Rubik;
+    letter-spacing: 0.04px;
+    color: #000000;
+    opacity: 1;
+    font-weight: 700;
+    margin-bottom: 12px;   
+}
+.content{
+    text-align: justify;
+    margin: 5px;
+}
+.services{
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 25px;
+}
+.service-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 44px;
+    margin-bottom: 18px;
+}
+.material-symbols-outlined {
+   transform: scale(2);  
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+.service-button{
+    align-items: center;
+    justify-content: center;
+
+}
+.service-button{
+    font-weight: 600;
+}

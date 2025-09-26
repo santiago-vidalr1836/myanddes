@@ -1,0 +1,50 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                Informaci&oacute;n para tu primer día
+            </span>
+        </div>
+        <br>
+        @if (firstDayInfomationItem && firstDayInfomationItem.type==TYPE_DEFAULT) {
+            <form #itemForm="ngForm" class="form-entity">
+                <br>
+                <span class="label">{{firstDayInfomationItem.title}}</span>
+                <br>
+                <br>
+                <span class="label">Descripci&oacute;n</span>
+                <mat-form-field class="form-field">
+                    <input matInput placeholder="Descripci&oacute;n" name="description" [(ngModel)]="firstDayInfomationItem.description" required>
+                </mat-form-field>
+                <br>
+                <span class="label">Descripci&oacute;n</span>
+                <app-html-editor class="html-editor" [content]="firstDayInfomationItem.body" (contentUpdated)="firstDayInfomationItem.body=$event"></app-html-editor>
+                <br>
+                <button mat-button color="primary" class="button-save" [disabled]="!itemForm.valid" (click)="save()">GUARDAR</button>
+                <br>
+                <br>
+            </form>
+        }@else {
+            <div class="form-entity">
+                <br>
+                <br>
+                <span class="label">A&ntilde;adir desde vida en la empresa</span>
+                @if (firstDayInfomationItem && firstDayInfomationItem.addFromServices!=undefined) {
+                    <mat-slide-toggle color="primary" class="slide-toggle"  [(ngModel)]="firstDayInfomationItem.addFromServices"></mat-slide-toggle>
+                }
+                <br>
+                <button mat-button color="primary" class="button-save"  (click)="save()">GUARDAR</button>
+                <br>
+                <br>
+            </div>
+            
+        }
+        <br>
+        <br>
+    </div>
+</div>
+

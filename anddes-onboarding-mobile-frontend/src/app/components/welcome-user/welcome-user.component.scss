@@ -1,0 +1,71 @@
+.welcome-content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.title{
+    margin-top: 48px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+.welcome-div{
+    margin-left: 32px;
+    margin-right: 32px;
+    background-color: #F5F5F5;
+    border-radius: 8px;
+    opacity: 1;
+}
+.welcome-title{
+    margin-left: 24px;
+    margin-right: 24px;
+    text-align: left;
+    font: normal normal normal 32px/40px Neo Sans Std;
+    letter-spacing: 0px;
+    color: #00539B;
+    opacity: 1; 
+}
+.welcome-image{
+    margin-left: 16px;
+}
+
+.welcome-message{
+    display: block;
+    text-align: left;
+    font: normal normal normal 16px/24px Montserrat;
+    letter-spacing: 0.13px;
+    color: #383A38;
+    opacity: 1;
+    margin: 24px 16px 35px 16px;
+    margin-top: 24px;
+}
+.welcome-camera{
+    margin-top: 30px;
+}
+.btn-camera{
+    width: 215px;
+    height: 39px;
+    border: 1px solid #707070;
+    border-radius: 4px;
+    opacity: 1;  
+}
+.color-icon{
+    color : #383A38
+}
+.btn-label{
+    text-align: left;
+    font: normal normal normal 11px/15px Neo Sans Std;
+    letter-spacing: 1.65px;
+    color: #424242;
+    text-transform: uppercase;
+    opacity: 1;  
+}
+@media (min-width: 1280px) {
+    ::ng-deep #content-box{
+        margin: 0px 296px 0px 296px !important;
+    }
+}
+@media (min-width: 1600px) {
+    ::ng-deep #content-box{
+        margin: 0px 456px 0px 456px !important;
+    }
+}

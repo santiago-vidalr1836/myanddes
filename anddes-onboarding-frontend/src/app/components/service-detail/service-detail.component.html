@@ -1,0 +1,37 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                {{service?service.name:''}}
+            </span>
+        </div>
+        <br>
+        <div class="form-entity">
+            @if (service && service.details) {
+                @for (detail of service.details; track $index) {
+                    <div class="service-detail-form">
+                        <mat-form-field  class="form-field">
+                            <input matInput placeholder="Nombre" name="name" [(ngModel)]="detail.title" required>
+                        </mat-form-field>
+                        <app-html-editor class="html-editor" [content]="detail.description" (contentUpdated)="detail.description=$event"></app-html-editor>
+                        <mat-slide-toggle class="slide-hidden" color="primary" [(ngModel)]="detail.hidden">
+                            Ocultar
+                        </mat-slide-toggle>
+                    </div>
+                    <mat-divider class="detail-divider"></mat-divider>
+                }
+            }
+            <br>
+            <br>
+            <button mat-button color="primary" class="button-save" (click)="save()">GUARDAR</button>
+            <br>
+            <br>
+        </div>
+    </div>
+    <br>
+    <br>
+</div>

@@ -1,0 +1,241 @@
+.page{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.toolbar-spacer {
+    flex: 1 1 auto;
+}
+.toolbar {
+    height:20%;
+    background-color: #BF55EC;
+}
+
+.biggerbutton {
+    width:  150px!important;
+    height: 100px!important;
+    font-size: 30px!important;
+}
+
+.toolBarButton, .drawerButton {
+    padding: 20px;
+}
+
+.container {
+    height: 80%;
+}
+
+.drawer {
+    background-color: #BF55EC;
+    width: 200px; 
+}
+
+.burger {
+    color: white;
+}
+
+
+@media all and (max-width: 500px) {
+
+    .toolBarButton {
+        display: none;
+    }
+
+    .toolbar {
+        height:5%;
+    }
+
+    .container {
+        height: 95%;
+    }
+
+}
+
+mat-sidenav {
+    //margin: 16px;
+    width: 360px;
+    border-right: none;
+    /* background: #002b5c; */
+    color: #000000;
+    //border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+}
+
+.content {
+    height: calc(100vh - 98px);
+    border-radius: 10px;
+    margin: 16px;
+    margin-left: 32px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 2rem;
+    color: lightgray;
+}
+
+mat-sidenav-container {
+    height: 100%//calc(100vh - 65px);
+}
+
+.menu-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    text-align: left;
+    font: normal normal medium 14px/16px Rubik;
+    letter-spacing: 1.25px;
+    color: #212121;
+    font-weight: bold;
+    opacity: 1;
+}
+
+.avatar {
+    margin-top: 16px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.name {
+    margin-top: 8px;
+    font-weight: normal;
+}
+
+.designation {
+    margin-top: 2px;
+    font-size: 0.7rem;
+    color: lightgrey;
+}
+
+mat-divider {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+#content-box{
+    margin-top: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+#sidenav-container-color {background-color: #ffffff;}
+#sidenav-color { background-color: #236EB1; }
+#toolbar-color { background-color: #ffffff; }
+.logo-sidenav{
+    //width: 100%;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    left: 134px;
+    width: 126px;
+    height: auto;
+    //height: 40px;
+}
+#toolbar-username{
+    font-size: small;
+}
+#info-align{
+    position: absolute;
+    right: 10px;
+}
+.sidenav-content{
+    margin-right: 1px !important;
+}
+.example-tree{
+    background-color: #236EB1;
+}
+.example-tree-invisible {
+  display: none;
+}
+
+.example-tree ul,
+.example-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+/*
+ * This padding sets alignment of the nested nodes.
+ */
+.example-tree .mat-nested-tree-node div[role=group] {
+  padding-left: 40px;
+}
+
+/*
+ * Padding for leaf nodes.
+ * Leaf nodes need to have padding so as to align with other non-leaf nodes
+ * under the same parent.
+ */
+.example-tree div[role=group] > .mat-tree-node {
+  padding-left: 40px;
+}
+
+.container{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+.container-auth{
+    top: 0px;
+    left: 0px;
+    width: 1366px;
+    height: 768px;
+    /* UI Properties */
+    background: #F9F9F9 0% 0% no-repeat padding-box;
+    opacity: 1; 
+}
+.imgBackground{
+    /* Layout Properties */
+    top: 0px;
+    left: 0px;
+    max-width: 45%;
+    /* UI Properties */
+    background: url('../assets/img/istockphoto-1200572323-1024x1024.png');
+    opacity: 1;
+    background-size: cover;
+    background-repeat: no-repeat;
+    flex: 1 1 100%;
+    display: block;
+    box-sizing: border-box;
+}
+.container-button{
+    flex-direction: column;
+    gap: 53px;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    display: flex;
+    width: 100%;
+}
+.imgLogo{
+    top: 256px;
+    left: 839px;
+    width: 371px;
+    height: 104px;
+    /* UI Properties */
+    background: transparent url('../assets/img/logo-azul.png') 0% 0% no-repeat padding-box;
+    background-size: contain;
+    opacity: 1;
+    
+}
+.buttonLogin{
+    width: 127px;
+    height: 56px;
+    /* UI Properties */
+    border-radius: 4px;
+    opacity: 1;
+    color: white !important;
+    font-weight: 700;
+    font-size: 14px;
+}

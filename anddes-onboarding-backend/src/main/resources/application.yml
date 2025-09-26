@@ -1,0 +1,35 @@
+onboarding:
+  files:
+    folder_: /home/server/onboarding/files
+    folder: C:\Users\santiago.vidal\Documents\personal\files
+    url:
+      file_: https://myanddes.anddes.com:8443/files/public/{fileId}/filename/{filename}
+      file: http://localhost:8080/files/public/{fileId}/filename/{filename}
+      video_: https://myanddes.anddes.com:8443/files/public/{fileId}/video/{name}
+      video: http://localhost:8080/files/public/{fileId}/video/{name}
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          algorithm: RS256
+          issuer-uri: https://login.microsoftonline.com/2e7c2c87-0ed1-48f9-a17a-76261219bf54/v2.0
+          jwk-set-uri: https://login.microsoftonline.com/2e7c2c87-0ed1-48f9-a17a-76261219bf54/discovery/keys
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+    url_: jdbc:postgresql://172.16.16.50:5432/myanddes_onboarding?autoReconnect=true
+    url: jdbc:postgresql://192.168.1.64:5432/myanddes_onboarding?autoReconnect=true
+    username: postgres
+    password: 123456
+
+    timeBetweenEvictionRunsMillis: 1000
+    testWhileIdle: true
+    validationQuery: SELECT 1
+
+    hikari:
+      maximum-pool-size: 5

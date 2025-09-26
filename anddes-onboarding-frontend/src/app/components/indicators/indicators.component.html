@@ -1,0 +1,81 @@
+<div>
+    <span class="title"> Anal&iacute;tica  
+    </span>
+</div>
+<br>
+<div class="entity-list">
+    <div style="margin: 30px;">
+        <br>
+        <div>
+            @if (isLoadingResults) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            }
+            <div >
+                <mat-form-field class="form-field">
+                    <mat-label>Filtrar por fecha</mat-label>
+                    <mat-date-range-input
+                      [formGroup]="dateFilter"
+                      [rangePicker]="filterByDate">
+                      <input matStartDate placeholder="Desde" formControlName="start">
+                      <input matEndDate placeholder="Hasta" formControlName="end">
+                    </mat-date-range-input>
+                    <mat-hint>DD/MM/YYYY – DD/MM/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="filterByDate"></mat-datepicker-toggle>
+                    <mat-date-range-picker #filterByDate></mat-date-range-picker>
+                </mat-form-field>
+            </div>
+            <br>
+            <br>
+            <div class="row-headers">
+                <mat-card class="card-indicator">
+                    <div>
+                        <strong>{{indicator.totalProcesses}}</strong>
+                    </div>
+                    <div>
+                        <span style="font-size: small;">Total procesos</span>
+                    </div>
+                </mat-card>
+                <mat-card class="card-indicator">
+                    <div>
+                        <strong>{{indicator.completedProcesses}}</strong>
+                    </div>
+                    <div>
+                        <span style="font-size: small;">Procesos completados</span>
+                    </div>
+                </mat-card>
+                <mat-card class="card-indicator mat-elevation-z0">
+                    <div>
+                        <strong>{{indicator.delayedProcesses}}</strong>
+                    </div>
+                    <div>
+                        <span style="font-size: small;">Procesos con retraso</span>
+                    </div>
+                </mat-card>
+            </div>
+            <br>
+            <br>
+            <div class="row-headers">
+                <mat-card class="indicator-bar-chart-card">
+                    <span>Inducci&oacute;n Elearning</span>
+                    <br>
+                    <canvas baseChart
+                    id="indicator-bar-chart"
+                    class="indicator-bar-chart"
+                    [data]="barChartData"
+                    [options]="barChartOptions"
+                    [type]="barChartType">
+                  </canvas>
+                </mat-card>
+                <mat-card class="indicator-doughnut-chart-card">
+                    <canvas baseChart
+                        id="indicator-doughnut-chart"
+                        class="indicator-doughnut-chart"
+                        [data]="doughnutChartData"
+                        [type]="doughnutChartType"
+                        [options]="doughnutChartOptions">
+                    </canvas>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+</div>

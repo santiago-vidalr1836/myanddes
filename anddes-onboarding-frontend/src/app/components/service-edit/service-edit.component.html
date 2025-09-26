@@ -1,0 +1,35 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                {{service.name}}
+            </span>
+        </div>
+        <br>
+        <form #serviceForm="ngForm" class="form-entity">
+            <br>
+            <span class="label">Nombre</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Nombre" name="name" [(ngModel)]="service.name" required>
+            </mat-form-field>
+            <br>
+            <span class="label">Descripci&oacute;n</span>
+            <mat-form-field class="form-field">
+                <textarea rows="3"  maxlength="500"  matInput placeholder="Descripci&oacute;n" name="description" [(ngModel)]="service.description"  required>
+                </textarea>
+                <mat-hint align="end">{{service.description?service.description.length:0}} / 500</mat-hint>
+            </mat-form-field>
+            <br>
+            <br>
+            <button mat-button color="primary" class="button-save" [disabled]="!serviceForm.valid" (click)="save()">GUARDAR</button>
+            <br>
+            <br>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>

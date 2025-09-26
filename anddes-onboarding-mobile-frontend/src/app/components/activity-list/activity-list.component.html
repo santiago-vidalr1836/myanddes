@@ -1,0 +1,50 @@
+<div>
+    <div class="entity-list">
+        @if (isLoadingResults) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+        <div>
+            <div class="title-bar-activity">
+                <span class="title-activity">Onboarding</span>
+                <span class="toolbar-spacer"></span>
+                <mat-progress-spinner class="progress-spinner" mode="determinate" [value]="progress">
+                </mat-progress-spinner>
+                <span class="progress">{{activityCompleted}}/{{totalActivities}}</span>
+            </div>
+            @for (processActivityGroup of processActivitiesGroups; track processActivityGroup) {
+            <div class="group-background" [style.background-color]="processActivityGroup.colorBackground">
+                <br>
+                <div class="anddes-row">
+                    <div class="group" [style.background-color]="processActivityGroup.color">
+                        <p class="group-name" [ngStyle]="{'color':processActivityGroup.name.startsWith('Mi primera semana')?'#383A38':'#FFFFFF'}">{{processActivityGroup.name}}</p>
+                    </div>
+                    @if(processActivityGroup.name.startsWith('Mi primer d')){
+                        <!--<img src="assets/img/balloon.png">-->
+                        <span class="process-icon">🚀</span>
+                        <div class="process-date">
+                            <span class="process-date-text">{{process.startDate | date:'dd MMMM':'':'es'}}</span>
+                        </div>
+                    }
+                </div>
+                @for(processActivity of processActivityGroup.processActivities;track processActivity){
+                <div class="group-card">
+                    <button mat-button (click)="activity(processActivity)" class="activity-button">
+                        {{processActivity.activity.name}}
+                    </button>
+                    <span class="toolbar-spacer"></span>
+                    <mat-icon class="material-symbols-outlined" style="margin-right: 20px;">
+                        @if (processActivity.completed) {
+                        check_circle_outline
+                        }@else {
+                        circle
+                        }
+                    </mat-icon>
+                </div>
+                }
+                <br>
+            </div>
+            }
+        </div>
+    </div>
+    <br>
+</div>

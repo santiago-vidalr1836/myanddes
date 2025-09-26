@@ -1,0 +1,9 @@
+<h2 mat-dialog-title [style.background]="'#236EB1'" [style.color]="'#ffffff'">Editar Opci&oacute;n</h2>
+<mat-dialog-content>
+  <mat-form-field>
+    <input matInput type="text" name="option" placeholder="Edita la opci&oacute;n" [(ngModel)]="result">
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button matButton color="primary" (click)="save()" cdkFocusInitial>Guardar</button>
+</mat-dialog-actions>

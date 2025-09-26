@@ -1,0 +1,29 @@
+<div>
+    <div class="entity-list">
+        <div>
+            <div>
+                <div class="title-bar">
+                    <button mat-icon-button class="material-symbols-outlined button-back">
+                        <mat-icon>insert_emoticon</mat-icon>
+                    </button>
+                    <span class="title">Vida en la empresa  </span>
+                </div>
+                @if (isLoadingResults) {
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                }
+            </div>
+            <br>
+            <div class="service-section">
+                @for (service of services; track service) {
+                <div class="card-service">
+                    <mat-icon [fontIcon]="service.iconWeb" class="material-symbols-outlined icon-size"></mat-icon>
+                    <span class="service-title">{{service.name}}</span>
+                    <p class="service-content">{{service.description}}</p>
+                    <button mat-button color="primary" (click)="detail(service)"><span class="service-button">Ver m&aacute;s</span></button>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
