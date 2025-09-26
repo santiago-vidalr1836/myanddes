@@ -1,0 +1,748 @@
+package pe.compendio.myandess.onboarding.service;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import pe.compendio.myandess.onboarding.controller.dto.ReportActivityDetailDTO;
+import pe.compendio.myandess.onboarding.controller.dto.ReportElearningDetailDTO;
+import pe.compendio.myandess.onboarding.controller.dto.ReportElearningRowDTO;
+import pe.compendio.myandess.onboarding.controller.dto.ReportGeneralRowDTO;
+import pe.compendio.myandess.onboarding.controller.dto.ReportMatrixRowDTO;
+import pe.compendio.myandess.onboarding.controller.dto.ReportPagedDTO;
+import pe.compendio.myandess.onboarding.entity.Constants;
+import pe.compendio.myandess.onboarding.entity.Process;
+import pe.compendio.myandess.onboarding.entity.ProcessActivity;
+import pe.compendio.myandess.onboarding.entity.ProcessActivityContent;
+import pe.compendio.myandess.onboarding.entity.ProcessActivityContentCard;
+import pe.compendio.myandess.onboarding.repository.ProcessActivityContentCardRepository;
+import pe.compendio.myandess.onboarding.repository.ProcessActivityContentRepository;
+import pe.compendio.myandess.onboarding.repository.ProcessActivityRepository;
+import pe.compendio.myandess.onboarding.repository.ProcessRepository;
+import pe.compendio.myandess.onboarding.util.Mapper;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ReportService {
+
+  private static final String STATE_COMPLETED = "Completado";
+  private static final String STATE_PENDING = "Pendiente";
+  private static final String STATE_APPROVED = "Aprobado";
+  private static final String STATE_REJECTED = "Desaprobado";
+
+  private final ProcessRepository processRepository;
+  private final ProcessActivityRepository processActivityRepository;
+  private final ProcessActivityContentRepository processActivityContentRepository;
+  private final ProcessActivityContentCardRepository processActivityContentCardRepository;
+  private final Mapper mapper;
+
+  public ReportPagedDTO<ReportGeneralRowDTO> getGeneralReport(LocalDate startDate,
+                                                             LocalDate endDate,
+                                                             String state,
+                                                             String search,
+                                                             Integer page,
+                                                             Integer pageSize,
+                                                             String orderBy,
+                                                             String direction) {
+    PageRequest pageRequest = createPageRequest(page, pageSize, orderBy, direction);
+    Page<Process> processPage = fetchProcesses(startDate, endDate, state, search, pageRequest, true);
+    Map<Long, List<ProcessActivity>> activitiesByProcess = loadActivities(processPage.getContent());
+
+    List<ReportGeneralRowDTO> rows = processPage.getContent().stream()
+      .map(process -> buildGeneralRow(process, activitiesByProcess.getOrDefault(process.getId(), Collections.emptyList())))
+      .toList();
+
+    return new ReportPagedDTO<>(processPage.getTotalElements(), rows);
+  }
+
+  public ReportPagedDTO<ReportElearningRowDTO> getElearningReport(LocalDate startDate,
+                                                                  LocalDate endDate,
+                                                                  String state,
+                                                                  String search,
+                                                                  Integer page,
+                                                                  Integer pageSize,
+                                                                  String orderBy,
+                                                                  String direction) {
+    PageRequest fullRequest = createPageRequest(0, Integer.MAX_VALUE, orderBy, direction);
+    Page<Process> processPage = fetchProcesses(startDate, endDate, null, search, fullRequest, false);
+
+    Map<Long, List<ProcessActivity>> activitiesByProcess = loadActivities(processPage.getContent());
+    Map<Long, ProcessActivity> elearningActivityByProcess = extractElearningActivities(activitiesByProcess);
+    Map<Long, List<ProcessActivityContent>> contentsByProcess = loadElearningContents(processPage.getContent());
+    CardAggregation cardAggregation = loadCardAggregation(processPage.getContent());
+
+    List<ReportElearningRowDTO> allRows = processPage.getContent().stream()
+      .map(process -> buildElearningRow(process,
+        elearningActivityByProcess.get(process.getId()),
+        contentsByProcess.getOrDefault(process.getId(), Collections.emptyList()),
+        cardAggregation))
+      .collect(Collectors.toList());
+
+    String normalizedState = normalizeState(state);
+    List<ReportElearningRowDTO> filteredRows = allRows.stream()
+      .filter(row -> filterElearningRow(row, normalizedState))
+      .collect(Collectors.toList());
+
+    Comparator<ReportElearningRowDTO> comparator = buildElearningComparator(orderBy, direction);
+    filteredRows.sort(comparator);
+
+    List<ReportElearningRowDTO> paged = applyPagination(filteredRows, page, pageSize);
+    return new ReportPagedDTO<>(filteredRows.size(), paged);
+  }
+
+  public ReportPagedDTO<ReportMatrixRowDTO> getMatrixReport(LocalDate startDate,
+                                                            LocalDate endDate,
+                                                            String state,
+                                                            String search,
+                                                            Integer page,
+                                                            Integer pageSize,
+                                                            String orderBy,
+                                                            String direction) {
+    PageRequest pageRequest = createPageRequest(page, pageSize, orderBy, direction);
+    Page<Process> processPage = fetchProcesses(startDate, endDate, state, search, pageRequest, true);
+
+    Map<Long, List<ProcessActivity>> activitiesByProcess = loadActivities(processPage.getContent());
+    Map<Long, ProcessActivity> elearningActivityByProcess = extractElearningActivities(activitiesByProcess);
+    Map<Long, List<ProcessActivityContent>> contentsByProcess = loadElearningContents(processPage.getContent());
+    CardAggregation cardAggregation = loadCardAggregation(processPage.getContent());
+
+    Map<Long, ReportGeneralRowDTO> generalRows = processPage.getContent().stream()
+      .collect(Collectors.toMap(Process::getId,
+        process -> buildGeneralRow(process, activitiesByProcess.getOrDefault(process.getId(), Collections.emptyList()))));
+
+    Map<Long, ReportElearningRowDTO> elearningRows = processPage.getContent().stream()
+      .collect(Collectors.toMap(Process::getId,
+        process -> buildElearningRow(process,
+          elearningActivityByProcess.get(process.getId()),
+          contentsByProcess.getOrDefault(process.getId(), Collections.emptyList()),
+          cardAggregation)));
+
+    List<ReportMatrixRowDTO> matrixRows = processPage.getContent().stream()
+      .map(process -> buildMatrixRow(generalRows.get(process.getId()), elearningRows.get(process.getId())))
+      .toList();
+
+    return new ReportPagedDTO<>(processPage.getTotalElements(), matrixRows);
+  }
+
+  public List<ReportActivityDetailDTO> getGeneralDetails(Long processId,
+                                                         LocalDate startDate,
+                                                         LocalDate endDate,
+                                                         String state,
+                                                         String search,
+                                                         String orderBy,
+                                                         String direction) {
+    List<ProcessActivity> activities = processActivityRepository.findByProcess_Id(processId);
+    List<ReportActivityDetailDTO> details = mapper.processActivitiesToReportActivityDetails(activities);
+    details.forEach(detail -> detail.setState(detail.isCompleted() ? STATE_COMPLETED : STATE_PENDING));
+
+    if (startDate != null || endDate != null) {
+      LocalDateTime startBound = startDate != null ? startDate.atStartOfDay() : LocalDateTime.MIN;
+      LocalDateTime endBound = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.MAX;
+      details = details.stream()
+        .filter(detail -> detail.getCompletionDate() != null
+          && !detail.getCompletionDate().isBefore(startBound)
+          && !detail.getCompletionDate().isAfter(endBound))
+        .collect(Collectors.toList());
+    }
+
+    String normalizedState = normalizeState(state);
+    if (StringUtils.hasText(normalizedState) && !"ALL".equals(normalizedState)) {
+      details = details.stream()
+        .filter(detail -> filterByState(detail.getState(), normalizedState))
+        .collect(Collectors.toList());
+    }
+
+    if (StringUtils.hasText(search)) {
+      String lower = search.toLowerCase(Locale.getDefault());
+      details = details.stream()
+        .filter(detail -> detail.getActivityName() != null && detail.getActivityName().toLowerCase(Locale.getDefault()).contains(lower))
+        .collect(Collectors.toList());
+    }
+
+    details.sort(buildActivityDetailComparator(orderBy, direction));
+    return details;
+  }
+
+  public List<ReportElearningDetailDTO> getElearningDetails(Long processId,
+                                                            LocalDate startDate,
+                                                            LocalDate endDate,
+                                                            String state,
+                                                            String search,
+                                                            String orderBy,
+                                                            String direction) {
+    Optional<ProcessActivity> elearningActivityOptional =
+      processActivityRepository.findFirstByProcess_IdAndActivity_Code(processId, Constants.ACTIVITY_INDUCTION_ELEARNING);
+
+    if (elearningActivityOptional.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    ProcessActivity elearningActivity = elearningActivityOptional.get();
+    Process process = elearningActivity.getProcess();
+    if (process == null) {
+      return Collections.emptyList();
+    }
+    LocalDateTime completionDate = elearningActivity.getCompletionDate();
+    if ((startDate != null && (completionDate == null || completionDate.toLocalDate().isBefore(startDate)))
+      || (endDate != null && (completionDate == null || completionDate.toLocalDate().isAfter(endDate)))) {
+      return Collections.emptyList();
+    }
+
+    List<ProcessActivityContent> contents = processActivityContentRepository.findByProcessActivity_Process_Id(processId);
+    CardAggregation cardAggregation = loadCardAggregation(Collections.singletonList(process));
+    Map<Long, Long> readByContent = cardAggregation.getReadByContent();
+    Map<Long, Long> correctByContent = cardAggregation.getCorrectByContent();
+
+    List<ReportElearningDetailDTO> details = contents.stream()
+      .map(content -> {
+        ReportElearningDetailDTO dto = mapper.processActivityContentToReportElearningDetail(content);
+        dto.setMinimumScore(Optional.ofNullable(dto.getMinimumScore()).orElse(0));
+        dto.setAttempts(Optional.ofNullable(dto.getAttempts()).orElse(0));
+        dto.setProgress(Optional.ofNullable(dto.getProgress()).orElse(0));
+        dto.setReadCards(readByContent.getOrDefault(content.getId(), 0L).intValue());
+        dto.setCorrectAnswers(correctByContent.getOrDefault(content.getId(), 0L).intValue());
+        dto.setState(calculateCourseState(dto.getResult(), dto.getMinimumScore(), dto.getProgress()));
+        return dto;
+      })
+      .collect(Collectors.toList());
+
+    String normalizedState = normalizeState(state);
+    if (StringUtils.hasText(normalizedState) && !"ALL".equals(normalizedState)) {
+      details = details.stream()
+        .filter(detail -> filterByState(detail.getState(), normalizedState))
+        .collect(Collectors.toList());
+    }
+
+    if (StringUtils.hasText(search)) {
+      String lower = search.toLowerCase(Locale.getDefault());
+      details = details.stream()
+        .filter(detail -> detail.getCourseName() != null && detail.getCourseName().toLowerCase(Locale.getDefault()).contains(lower))
+        .collect(Collectors.toList());
+    }
+
+    details.sort(buildElearningDetailComparator(orderBy, direction));
+    return details;
+  }
+
+  public Workbook buildWorkbook(String type,
+                                LocalDate startDate,
+                                LocalDate endDate,
+                                String state,
+                                String search,
+                                String orderBy,
+                                String direction) {
+    ReportType reportType = ReportType.from(type);
+    if (reportType == null) {
+      throw new IllegalArgumentException("Tipo de reporte no soportado: " + type);
+    }
+
+    return switch (reportType) {
+      case GENERAL -> buildGeneralWorkbook(startDate, endDate, state, search, orderBy, direction);
+      case ELEARNING -> buildElearningWorkbook(startDate, endDate, state, search, orderBy, direction);
+      case MATRIX -> buildMatrixWorkbook(startDate, endDate, state, search, orderBy, direction);
+    };
+  }
+
+  private Workbook buildGeneralWorkbook(LocalDate startDate,
+                                        LocalDate endDate,
+                                        String state,
+                                        String search,
+                                        String orderBy,
+                                        String direction) {
+    ReportPagedDTO<ReportGeneralRowDTO> report = getGeneralReport(startDate, endDate, state, search,
+      0, Integer.MAX_VALUE, orderBy, direction);
+
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("General");
+    Row header = sheet.createRow(0);
+    header.createCell(0).setCellValue("ID Proceso");
+    header.createCell(1).setCellValue("Colaborador");
+    header.createCell(2).setCellValue("Fecha Inicio");
+    header.createCell(3).setCellValue("Fecha Fin");
+    header.createCell(4).setCellValue("Total Actividades");
+    header.createCell(5).setCellValue("Actividades Completadas");
+    header.createCell(6).setCellValue("Avance (%)");
+    header.createCell(7).setCellValue("Estado");
+
+    int rowIndex = 1;
+    for (ReportGeneralRowDTO row : report.getItems()) {
+      Row excelRow = sheet.createRow(rowIndex++);
+      excelRow.createCell(0).setCellValue(row.getProcessId());
+      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getCollaborator()).orElse(""));
+      excelRow.createCell(2).setCellValue(row.getStartDate() != null ? row.getStartDate().toString() : "");
+      excelRow.createCell(3).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
+      excelRow.createCell(4).setCellValue(row.getTotalActivities());
+      excelRow.createCell(5).setCellValue(row.getCompletedActivities());
+      excelRow.createCell(6).setCellValue(row.getProgress());
+      excelRow.createCell(7).setCellValue(Optional.ofNullable(row.getState()).orElse(""));
+    }
+
+    return workbook;
+  }
+
+  private Workbook buildElearningWorkbook(LocalDate startDate,
+                                          LocalDate endDate,
+                                          String state,
+                                          String search,
+                                          String orderBy,
+                                          String direction) {
+    ReportPagedDTO<ReportElearningRowDTO> report = getElearningReport(startDate, endDate, state, search,
+      0, Integer.MAX_VALUE, orderBy, direction);
+
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("Elearning");
+    Row header = sheet.createRow(0);
+    header.createCell(0).setCellValue("ID Proceso");
+    header.createCell(1).setCellValue("Colaborador");
+    header.createCell(2).setCellValue("Total Cursos");
+    header.createCell(3).setCellValue("Cursos Completados");
+    header.createCell(4).setCellValue("Avance (%)");
+    header.createCell(5).setCellValue("Tarjetas Leídas");
+    header.createCell(6).setCellValue("Respuestas Correctas");
+    header.createCell(7).setCellValue("Estado");
+    header.createCell(8).setCellValue("Fecha Fin");
+
+    int rowIndex = 1;
+    for (ReportElearningRowDTO row : report.getItems()) {
+      Row excelRow = sheet.createRow(rowIndex++);
+      excelRow.createCell(0).setCellValue(row.getProcessId());
+      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getCollaborator()).orElse(""));
+      excelRow.createCell(2).setCellValue(row.getTotalCourses());
+      excelRow.createCell(3).setCellValue(row.getCompletedCourses());
+      excelRow.createCell(4).setCellValue(row.getProgress());
+      excelRow.createCell(5).setCellValue(row.getReadCards());
+      excelRow.createCell(6).setCellValue(row.getCorrectAnswers());
+      excelRow.createCell(7).setCellValue(Optional.ofNullable(row.getState()).orElse(""));
+      excelRow.createCell(8).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
+    }
+
+    return workbook;
+  }
+
+  private Workbook buildMatrixWorkbook(LocalDate startDate,
+                                       LocalDate endDate,
+                                       String state,
+                                       String search,
+                                       String orderBy,
+                                       String direction) {
+    ReportPagedDTO<ReportMatrixRowDTO> report = getMatrixReport(startDate, endDate, state, search,
+      0, Integer.MAX_VALUE, orderBy, direction);
+
+    Workbook workbook = new XSSFWorkbook();
+    Sheet sheet = workbook.createSheet("Matriz");
+    Row header = sheet.createRow(0);
+    header.createCell(0).setCellValue("ID Proceso");
+    header.createCell(1).setCellValue("Colaborador");
+    header.createCell(2).setCellValue("Fecha Inicio");
+    header.createCell(3).setCellValue("Fecha Fin");
+    header.createCell(4).setCellValue("Avance General (%)");
+    header.createCell(5).setCellValue("Estado General");
+    header.createCell(6).setCellValue("Avance Elearning (%)");
+    header.createCell(7).setCellValue("Estado Elearning");
+
+    int rowIndex = 1;
+    for (ReportMatrixRowDTO row : report.getItems()) {
+      Row excelRow = sheet.createRow(rowIndex++);
+      excelRow.createCell(0).setCellValue(row.getProcessId());
+      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getCollaborator()).orElse(""));
+      excelRow.createCell(2).setCellValue(row.getStartDate() != null ? row.getStartDate().toString() : "");
+      excelRow.createCell(3).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
+      excelRow.createCell(4).setCellValue(row.getGeneralProgress());
+      excelRow.createCell(5).setCellValue(Optional.ofNullable(row.getGeneralState()).orElse(""));
+      excelRow.createCell(6).setCellValue(row.getElearningProgress());
+      excelRow.createCell(7).setCellValue(Optional.ofNullable(row.getElearningState()).orElse(""));
+    }
+
+    return workbook;
+  }
+
+  private PageRequest createPageRequest(Integer page, Integer pageSize, String orderBy, String direction) {
+    int pageNumber = page != null && page >= 0 ? page : 0;
+    int size = pageSize != null && pageSize > 0 ? pageSize : Integer.MAX_VALUE;
+    Sort.Direction sortDirection = Sort.Direction.fromOptionalString(direction).orElse(Sort.Direction.ASC);
+    String sortProperty = StringUtils.hasText(orderBy) ? orderBy : "user.fullname";
+    return PageRequest.of(pageNumber, size, Sort.by(sortDirection, sortProperty));
+  }
+
+  private Page<Process> fetchProcesses(LocalDate startDate,
+                                       LocalDate endDate,
+                                       String state,
+                                       String search,
+                                       PageRequest pageRequest,
+                                       boolean filterByProcessState) {
+    LocalDate effectiveStart = startDate != null ? startDate : LocalDate.of(2000, 1, 1);
+    LocalDate effectiveEnd = endDate != null ? endDate : LocalDate.now();
+    if (effectiveStart.isAfter(effectiveEnd)) {
+      LocalDate temp = effectiveStart;
+      effectiveStart = effectiveEnd;
+      effectiveEnd = temp;
+    }
+    String searchTerm = Optional.ofNullable(search).orElse("");
+
+    if (!filterByProcessState) {
+      return processRepository.findAllByStartDateBetweenAndUser_FullnameContainingIgnoreCase(effectiveStart, effectiveEnd, searchTerm, pageRequest);
+    }
+
+    String normalizedState = normalizeState(state);
+    return switch (normalizedState) {
+      case "COMPLETADO" -> processRepository.findAllByStartDateBetweenAndFinishedIsTrueAndUser_FullnameContainingIgnoreCase(effectiveStart, effectiveEnd, searchTerm, pageRequest);
+      case "PENDIENTE" -> processRepository.findAllByStartDateBetweenAndFinishedIsFalseAndUser_FullnameContainingIgnoreCase(effectiveStart, effectiveEnd, searchTerm, pageRequest);
+      case "DELAYED", "DELAYADO" -> processRepository.findAllByStartDateBetweenAndDelayedIsTrueAndUser_FullnameContainingIgnoreCase(effectiveStart, effectiveEnd, searchTerm, pageRequest);
+      default -> processRepository.findAllByStartDateBetweenAndUser_FullnameContainingIgnoreCase(effectiveStart, effectiveEnd, searchTerm, pageRequest);
+    };
+  }
+
+  private Map<Long, List<ProcessActivity>> loadActivities(List<Process> processes) {
+    if (processes == null || processes.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    List<Long> processIds = processes.stream()
+      .map(Process::getId)
+      .filter(Objects::nonNull)
+      .toList();
+    if (processIds.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    List<ProcessActivity> activities = processActivityRepository.findByProcess_IdIn(processIds);
+    return activities.stream()
+      .filter(activity -> activity.getProcess() != null && activity.getProcess().getId() != null)
+      .collect(Collectors.groupingBy(activity -> activity.getProcess().getId()));
+  }
+
+  private Map<Long, ProcessActivity> extractElearningActivities(Map<Long, List<ProcessActivity>> activitiesByProcess) {
+    Map<Long, ProcessActivity> result = new HashMap<>();
+    activitiesByProcess.forEach((processId, activities) -> {
+      Optional<ProcessActivity> activityOptional = activities.stream()
+        .filter(activity -> activity.getActivity() != null && Constants.ACTIVITY_INDUCTION_ELEARNING.equals(activity.getActivity().getCode()))
+        .findFirst();
+      activityOptional.ifPresent(processActivity -> result.put(processId, processActivity));
+    });
+    return result;
+  }
+
+  private Map<Long, List<ProcessActivityContent>> loadElearningContents(List<Process> processes) {
+    if (processes == null || processes.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    List<Long> processIds = processes.stream()
+      .map(Process::getId)
+      .filter(Objects::nonNull)
+      .toList();
+    if (processIds.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    List<ProcessActivityContent> contents = processActivityContentRepository.findByProcessActivity_Process_IdIn(processIds);
+    return contents.stream()
+      .filter(content -> content.getProcessActivity() != null && content.getProcessActivity().getProcess() != null)
+      .collect(Collectors.groupingBy(content -> content.getProcessActivity().getProcess().getId()));
+  }
+
+  private CardAggregation loadCardAggregation(List<Process> processes) {
+    if (processes == null || processes.isEmpty()) {
+      return new CardAggregation();
+    }
+    List<Long> processIds = processes.stream()
+      .map(Process::getId)
+      .filter(Objects::nonNull)
+      .toList();
+    return loadCardAggregationByProcessIds(processIds);
+  }
+
+  private CardAggregation loadCardAggregationByProcessIds(List<Long> processIds) {
+    if (processIds == null || processIds.isEmpty()) {
+      return new CardAggregation();
+    }
+    List<ProcessActivityContentCard> cards = processActivityContentCardRepository.findByProcessActivityContent_ProcessActivity_Process_IdIn(processIds);
+    Map<Long, List<ProcessActivityContentCard>> cardsByContent = new HashMap<>();
+    Map<Long, Long> readByProcess = new HashMap<>();
+    Map<Long, Long> correctByProcess = new HashMap<>();
+    Map<Long, Long> readByContent = new HashMap<>();
+    Map<Long, Long> correctByContent = new HashMap<>();
+
+    for (ProcessActivityContentCard card : cards) {
+      if (card.getProcessActivityContent() == null || card.getProcessActivityContent().getProcessActivity() == null) {
+        continue;
+      }
+      Process process = card.getProcessActivityContent().getProcessActivity().getProcess();
+      if (process == null || process.getId() == null) {
+        continue;
+      }
+      Long processId = process.getId();
+      Long contentId = card.getProcessActivityContent().getId();
+      cardsByContent.computeIfAbsent(contentId, key -> new ArrayList<>()).add(card);
+
+      boolean read = card.getReadDateMobile() != null || card.getReadDateServer() != null;
+      if (read) {
+        readByProcess.merge(processId, 1L, Long::sum);
+        readByContent.merge(contentId, 1L, Long::sum);
+      }
+      if (card.getAnswer() != null && card.getAnswer().isCorrect()) {
+        correctByProcess.merge(processId, 1L, Long::sum);
+        correctByContent.merge(contentId, 1L, Long::sum);
+      }
+    }
+
+    return new CardAggregation(cardsByContent, readByProcess, correctByProcess, readByContent, correctByContent);
+  }
+
+  private ReportGeneralRowDTO buildGeneralRow(Process process, List<ProcessActivity> activities) {
+    int totalActivities = activities.size();
+    long completedActivities = activities.stream().filter(ProcessActivity::isCompleted).count();
+    LocalDateTime finishDate = activities.stream()
+      .map(ProcessActivity::getCompletionDate)
+      .filter(Objects::nonNull)
+      .max(LocalDateTime::compareTo)
+      .orElse(null);
+    double progress = totalActivities == 0 ? 0.0 : (completedActivities * 100.0) / totalActivities;
+
+    String collaborator = process.getUser() != null ? process.getUser().getFullname() : null;
+    String state = process.isFinished() ? STATE_COMPLETED : STATE_PENDING;
+
+    return ReportGeneralRowDTO.builder()
+      .processId(process.getId())
+      .collaborator(collaborator)
+      .startDate(process.getStartDate())
+      .finishDate(finishDate)
+      .totalActivities(totalActivities)
+      .completedActivities((int) completedActivities)
+      .progress(progress)
+      .state(state)
+      .build();
+  }
+
+  private ReportElearningRowDTO buildElearningRow(Process process,
+                                                  ProcessActivity elearningActivity,
+                                                  List<ProcessActivityContent> contents,
+                                                  CardAggregation cardAggregation) {
+    int totalCourses = contents.size();
+    long completedCourses = contents.stream().filter(this::isContentCompleted).count();
+    double progress = totalCourses == 0 ? 0.0 : (completedCourses * 100.0) / totalCourses;
+
+    Long processId = process.getId();
+    long readCards = cardAggregation.getReadByProcess().getOrDefault(processId, 0L);
+    long correctAnswers = cardAggregation.getCorrectByProcess().getOrDefault(processId, 0L);
+
+    LocalDateTime finishDate = elearningActivity != null ? elearningActivity.getCompletionDate() : null;
+    String state = (elearningActivity != null && elearningActivity.isCompleted()) ? STATE_COMPLETED : STATE_PENDING;
+    String collaborator = process.getUser() != null ? process.getUser().getFullname() : null;
+
+    return ReportElearningRowDTO.builder()
+      .processId(processId)
+      .collaborator(collaborator)
+      .totalCourses(totalCourses)
+      .completedCourses((int) completedCourses)
+      .progress(progress)
+      .readCards(readCards)
+      .correctAnswers(correctAnswers)
+      .state(state)
+      .finishDate(finishDate)
+      .build();
+  }
+
+  private ReportMatrixRowDTO buildMatrixRow(ReportGeneralRowDTO generalRow, ReportElearningRowDTO elearningRow) {
+    if (generalRow == null) {
+      return ReportMatrixRowDTO.builder().build();
+    }
+    double elearningProgress = elearningRow != null ? elearningRow.getProgress() : 0.0;
+    String elearningState = elearningRow != null ? elearningRow.getState() : STATE_PENDING;
+
+    return ReportMatrixRowDTO.builder()
+      .processId(generalRow.getProcessId())
+      .collaborator(generalRow.getCollaborator())
+      .startDate(generalRow.getStartDate())
+      .finishDate(generalRow.getFinishDate())
+      .generalProgress(generalRow.getProgress())
+      .generalState(generalRow.getState())
+      .elearningProgress(elearningProgress)
+      .elearningState(elearningState)
+      .build();
+  }
+
+  private boolean isContentCompleted(ProcessActivityContent content) {
+    return content.getProgress() != null || content.getResult() != null;
+  }
+
+  private String calculateCourseState(Integer result, Integer minimumScore, Integer progress) {
+    int minScore = Optional.ofNullable(minimumScore).orElse(0);
+    if (result != null) {
+      return result >= minScore ? STATE_APPROVED : STATE_REJECTED;
+    }
+    return progress != null && progress >= 100 ? STATE_COMPLETED : STATE_PENDING;
+  }
+
+  private boolean filterElearningRow(ReportElearningRowDTO row, String normalizedState) {
+    if (!StringUtils.hasText(normalizedState) || "ALL".equals(normalizedState)) {
+      return true;
+    }
+    return filterByState(row.getState(), normalizedState);
+  }
+
+  private boolean filterByState(String state, String normalizedState) {
+    if (!StringUtils.hasText(normalizedState) || "ALL".equals(normalizedState)) {
+      return true;
+    }
+    if (!StringUtils.hasText(state)) {
+      return false;
+    }
+    return state.equalsIgnoreCase(normalizedState);
+  }
+
+  private List<ReportElearningRowDTO> applyPagination(List<ReportElearningRowDTO> rows, Integer page, Integer pageSize) {
+    return applyPaginationGeneric(rows, page, pageSize);
+  }
+
+  private <T> List<T> applyPaginationGeneric(List<T> rows, Integer page, Integer pageSize) {
+    if (rows == null || rows.isEmpty()) {
+      return Collections.emptyList();
+    }
+    int size = pageSize != null && pageSize > 0 ? pageSize : rows.size();
+    int pageNumber = page != null && page >= 0 ? page : 0;
+    int startIndex = pageNumber * size;
+    if (startIndex >= rows.size()) {
+      return Collections.emptyList();
+    }
+    int endIndex = Math.min(startIndex + size, rows.size());
+    return new ArrayList<>(rows.subList(startIndex, endIndex));
+  }
+
+  private Comparator<ReportElearningRowDTO> buildElearningComparator(String orderBy, String direction) {
+    Comparator<ReportElearningRowDTO> comparator;
+    if ("progress".equalsIgnoreCase(orderBy)) {
+      comparator = Comparator.comparingDouble(ReportElearningRowDTO::getProgress);
+    } else if ("finishDate".equalsIgnoreCase(orderBy)) {
+      comparator = Comparator.comparing(ReportElearningRowDTO::getFinishDate, Comparator.nullsLast(LocalDateTime::compareTo));
+    } else if ("completedCourses".equalsIgnoreCase(orderBy)) {
+      comparator = Comparator.comparingInt(ReportElearningRowDTO::getCompletedCourses);
+    } else {
+      comparator = Comparator.comparing(ReportElearningRowDTO::getCollaborator, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+    }
+    if (Sort.Direction.DESC.name().equalsIgnoreCase(direction)) {
+      comparator = comparator.reversed();
+    }
+    return comparator;
+  }
+
+  private Comparator<ReportActivityDetailDTO> buildActivityDetailComparator(String orderBy, String direction) {
+    Comparator<ReportActivityDetailDTO> comparator;
+    if ("completionDate".equalsIgnoreCase(orderBy)) {
+      comparator = Comparator.comparing(ReportActivityDetailDTO::getCompletionDate, Comparator.nullsLast(LocalDateTime::compareTo));
+    } else if ("state".equalsIgnoreCase(orderBy)) {
+      comparator = Comparator.comparing(ReportActivityDetailDTO::getState, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+    } else {
+      comparator = Comparator.comparing(ReportActivityDetailDTO::getActivityName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+    }
+    if (Sort.Direction.DESC.name().equalsIgnoreCase(direction)) {
+      comparator = comparator.reversed();
+    }
+    return comparator;
+  }
+
+  private Comparator<ReportElearningDetailDTO> buildElearningDetailComparator(String orderBy, String direction) {
+    Comparator<ReportElearningDetailDTO> comparator;
+    if ("result".equalsIgnoreCase(orderBy)) {
+      comparator = Comparator.comparing(detail -> Optional.ofNullable(detail.getResult()).orElse(0));
+    } else if ("state".equalsIgnoreCase(orderBy)) {
+      comparator = Comparator.comparing(ReportElearningDetailDTO::getState, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+    } else {
+      comparator = Comparator.comparing(ReportElearningDetailDTO::getCourseName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+    }
+    if (Sort.Direction.DESC.name().equalsIgnoreCase(direction)) {
+      comparator = comparator.reversed();
+    }
+    return comparator;
+  }
+
+  private String normalizeState(String state) {
+    if (!StringUtils.hasText(state)) {
+      return "ALL";
+    }
+    return state.trim().toUpperCase(Locale.getDefault());
+  }
+
+  private enum ReportType {
+    GENERAL("general"),
+    ELEARNING("elearning"),
+    MATRIX("matrix");
+
+    private final String value;
+
+    ReportType(String value) {
+      this.value = value;
+    }
+
+    static ReportType from(String value) {
+      if (!StringUtils.hasText(value)) {
+        return null;
+      }
+      for (ReportType type : values()) {
+        if (type.value.equalsIgnoreCase(value)) {
+          return type;
+        }
+      }
+      return null;
+    }
+  }
+
+  private static class CardAggregation {
+    private final Map<Long, List<ProcessActivityContentCard>> cardsByContent;
+    private final Map<Long, Long> readByProcess;
+    private final Map<Long, Long> correctByProcess;
+    private final Map<Long, Long> readByContent;
+    private final Map<Long, Long> correctByContent;
+
+    CardAggregation() {
+      this(new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    CardAggregation(Map<Long, List<ProcessActivityContentCard>> cardsByContent,
+                    Map<Long, Long> readByProcess,
+                    Map<Long, Long> correctByProcess,
+                    Map<Long, Long> readByContent,
+                    Map<Long, Long> correctByContent) {
+      this.cardsByContent = cardsByContent;
+      this.readByProcess = readByProcess;
+      this.correctByProcess = correctByProcess;
+      this.readByContent = readByContent;
+      this.correctByContent = correctByContent;
+    }
+
+    Map<Long, List<ProcessActivityContentCard>> getCardsByContent() {
+      return cardsByContent;
+    }
+
+    Map<Long, Long> getReadByProcess() {
+      return readByProcess;
+    }
+
+    Map<Long, Long> getCorrectByProcess() {
+      return correctByProcess;
+    }
+
+    Map<Long, Long> getReadByContent() {
+      return readByContent;
+    }
+
+    Map<Long, Long> getCorrectByContent() {
+      return correctByContent;
+    }
+  }
+}
