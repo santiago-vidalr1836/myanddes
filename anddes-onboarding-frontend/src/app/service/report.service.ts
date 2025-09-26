@@ -65,7 +65,7 @@ export class ReportService {
       .set('pageSize', query.pageSize);
 
     if (query.search) {
-      params = params.set('filter', query.search);
+      params = params.set('search', query.search);
     }
     if (query.startDate) {
       params = params.set('startDate', query.startDate);
