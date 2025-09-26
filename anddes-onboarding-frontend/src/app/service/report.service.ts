@@ -24,21 +24,21 @@ export class ReportService {
   getGeneralReport(query: ReportQuery): Observable<PagedReportResponse<GeneralReportRow>> {
     return this.httpClient.get<PagedReportResponse<GeneralReportRow>>(
       `${this.baseUrl}/general`,
-      { params: this.buildParams('general', query) }
+      { params: this.buildParams(query) }
     );
   }
 
   getElearningReport(query: ReportQuery): Observable<PagedReportResponse<ElearningReportRow>> {
     return this.httpClient.get<PagedReportResponse<ElearningReportRow>>(
       `${this.baseUrl}/elearning`,
-      { params: this.buildParams('elearning', query) }
+      { params: this.buildParams(query) }
     );
   }
 
   getMatrixReport(query: ReportQuery): Observable<PagedReportResponse<MatrixReportRow>> {
     return this.httpClient.get<PagedReportResponse<MatrixReportRow>>(
       `${this.baseUrl}/matrix`,
-      { params: this.buildParams('matrix', query) }
+      { params: this.buildParams(query) }
     );
   }
 
@@ -51,15 +51,14 @@ export class ReportService {
   }
 
   downloadReport(type: ReportType, query: ReportQuery): Observable<Blob> {
-    return this.httpClient.get(`${this.baseUrl}/download`, {
-      params: this.buildParams(type, query),
+    return this.httpClient.get(`${this.baseUrl}/${type}/download`, {
+      params: this.buildParams(query),
       responseType: 'blob',
     });
   }
 
-  private buildParams(type: ReportType, query: ReportQuery): HttpParams {
+  private buildParams(query: ReportQuery): HttpParams {
     let params = new HttpParams()
-      .set('type', type)
       .set('state', query.state)
       .set('page', query.pageIndex)
       .set('pageSize', query.pageSize);
