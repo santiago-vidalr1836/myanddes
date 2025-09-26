@@ -31,6 +31,8 @@ public class ProcessActivityContent {
 
   private Integer result;
   private Integer progress;
+  private Integer minimumScore;
+  private Integer attempts;
 
   @OneToMany(mappedBy = "processActivityContent", cascade = CascadeType.ALL)
   @OrderBy("id")

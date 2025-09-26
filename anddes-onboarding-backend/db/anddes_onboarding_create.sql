@@ -377,6 +377,8 @@ CREATE TABLE public.process_activity_content (
     content_id bigint,
     result integer,
     progress integer,
+    minimum_score integer DEFAULT 0,
+    attempts integer DEFAULT 0,
     process_activity_id bigint
 );
 

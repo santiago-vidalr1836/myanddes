@@ -149,4 +149,18 @@ public abstract class Mapper {
   public abstract List<ProcessActivity> processActivityDTOToEntities(List<ProcessActivityDTO> entity);
 
   public abstract ProcessActivityContentDTO processActivityContentEntityToDTO(ProcessActivityContent processActivityContent);
+
+  @Mapping(target = "activityId", source = "id")
+  @Mapping(target = "activityName", source = "activity.name")
+  @Mapping(target = "state", ignore = true)
+  public abstract ReportActivityDetailDTO processActivityToReportActivityDetail(ProcessActivity processActivity);
+
+  public abstract List<ReportActivityDetailDTO> processActivitiesToReportActivityDetails(List<ProcessActivity> processActivities);
+
+  @Mapping(target = "contentId", source = "content.id")
+  @Mapping(target = "courseName", source = "content.name")
+  @Mapping(target = "state", ignore = true)
+  public abstract ReportElearningDetailDTO processActivityContentToReportElearningDetail(ProcessActivityContent processActivityContent);
+
+  public abstract List<ReportElearningDetailDTO> processActivityContentsToReportElearningDetails(List<ProcessActivityContent> contents);
 }
