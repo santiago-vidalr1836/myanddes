@@ -12,6 +12,9 @@
     <mat-form-field appearance="outline">
       <mat-label>Periodo</mat-label>
       <mat-select [formControl]="periodControl">
+        <mat-select-trigger>
+          {{ formatPeriodLabel() }}
+        </mat-select-trigger>
         <mat-option *ngFor="let option of periodOptions" [value]="option.value">
           {{ option.label }}
         </mat-option>
