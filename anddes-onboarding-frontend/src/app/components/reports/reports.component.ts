@@ -308,28 +308,35 @@ export class ReportsComponent implements AfterViewInit {
 
   private resolveDates(): { startDate?: string; endDate?: string } {
     const now = new Date();
-    const end = now.toISOString();
+    const end = this.formatDate(now);
 
     if (this.periodControl.value === '1m') {
-      const start = new Date();
+      const start = new Date(now);
       start.setMonth(start.getMonth() - 1);
-      return { startDate: start.toISOString(), endDate: end };
+      return { startDate: this.formatDate(start), endDate: end };
     }
 
     if (this.periodControl.value === '3m') {
-      const start = new Date();
+      const start = new Date(now);
       start.setMonth(start.getMonth() - 3);
-      return { startDate: start.toISOString(), endDate: end };
+      return { startDate: this.formatDate(start), endDate: end };
     }
 
     if (this.customRange?.start && this.customRange?.end) {
       return {
-        startDate: this.customRange.start.toISOString(),
-        endDate: this.customRange.end.toISOString(),
+        startDate: this.formatDate(this.customRange.start),
+        endDate: this.formatDate(this.customRange.end),
       };
     }
 
     return {};
+  }
+
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private resetPaginator(): void {
