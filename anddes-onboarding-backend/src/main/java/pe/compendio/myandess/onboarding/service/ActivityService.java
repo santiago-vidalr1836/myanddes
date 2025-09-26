@@ -183,4 +183,8 @@ public class ActivityService {
       eLearningContentCardOptionRepository.save(optionToUpdate);
     }
   }
+  public ELearningContent add(ELearningContent eLearningContent) {
+    return eLearningContentRepository.save(eLearningContent);
+  }
+
 }

@@ -1,0 +1,45 @@
+.contents{
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 25px;
+}
+.content-card {
+    border: 1px solid #707070;
+    border-radius: 12px;
+}
+.title{
+    margin: 5px;
+    text-align: left;
+    font: normal normal normal 22px/28px Rubik;
+    letter-spacing: 0px;
+    color: #000000;
+    opacity: 1;
+    font-weight: 500;   
+}
+
+.lbl-notifications{
+ margin-left: 0px !important; 
+}
+
+.responsive-card {
+  width: 48%;
+  margin: 0 auto;
+}
+.cover-image {
+  width: 200px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 10px 0 10px 0;
+}
+.sub-list{
+  margin-left: 20px;
+}
+
+@media (max-width: 900px) {
+  .responsive-card {
+    width: 100%;
+  }
+}

@@ -28,6 +28,9 @@ export class FirstWeekComponent implements OnInit{
       this.contents=r
       this.isLoadingResults=false
     });
+  }
+  add() {
+    this.router.navigate(['elearning-content/add']);
   }  
   edit(content: ELearningContent) {
     this.router.navigate(['elearning-content/edit'],{state:content});

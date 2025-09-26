@@ -1,0 +1,51 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                {{emailTemplate.name}}
+            </span>
+        </div>
+        <br>
+        <mat-card class="content-card responsive-card" appearance="outlined">
+            <mat-card-content>
+                <form #contentForm="ngForm">
+                    <br>
+                    <span class="label lbl-template">Asunto del correo</span>
+                    <mat-form-field>
+                        <input matInput placeholder="Asunto del correo" name="subject"
+                            [(ngModel)]="emailTemplate.subject" required>
+                    </mat-form-field>
+                    <br>
+                    <span class="label lbl-template">Mensaje estandar</span>
+                    <div contenteditable="false" class="div-html" [innerHtml]="emailTemplate.bodyTemplate">
+                    </div>
+                    <div class="div-html-hint">
+                        <mat-hint align="end">
+                            {{emailTemplate.bodyTemplate?emailTemplate.bodyTemplate.length:0}}/500
+                        </mat-hint>
+                    </div>
+                    <br>
+                    <span class="label lbl-template">Mensaje personalizado</span>
+                    <mat-form-field>
+                        <textarea rows="3" maxlength="500" matInput placeholder="Mensaje personalizado"
+                            name="additionalMessage" [(ngModel)]="emailTemplate.additionalMessage" required>
+                    </textarea>
+                        <mat-hint align="end">
+                            {{emailTemplate.additionalMessage?emailTemplate.additionalMessage.length:0}} /500
+                        </mat-hint>
+                    </mat-form-field>
+                    <br>
+                    <br>
+                    <button mat-button color="primary" class="button-save"
+                        [disabled]="!contentForm.valid" (click)="save()">GUARDAR</button>
+                    <br>
+                    <br>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

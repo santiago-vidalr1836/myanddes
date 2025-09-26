@@ -32,4 +32,5 @@ public class ELearningContent {
   private List<ELearningContentCard> cards;
 
   private Integer position;
+  private Integer passingScore;
 }

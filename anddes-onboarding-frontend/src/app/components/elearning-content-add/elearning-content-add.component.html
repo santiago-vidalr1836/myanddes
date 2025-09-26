@@ -1,0 +1,55 @@
+<div>
+    <div>
+        <br>
+        <div class="header">
+            <button mat-icon-button (click)="back()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <span class="user-title">
+                Nuevo Curso
+            </span>
+        </div>
+        <br>
+        <form #contentForm="ngForm" class="form-entity">
+            <br>
+            <span class="label">T&iacute;tulo</span>
+            <span class="label">Nombre del curso</span>
+            <mat-form-field class="form-field">
+                <input matInput placeholder="Nombre del curso" name="name" [(ngModel)]="content.name" required>
+            </mat-form-field>
+            <br>
+            <span class="label">Cover</span>
+            <div class="upload">
+                <button mat-stroked-button color="primary" class="btnUpload" (click)="file.click()"><mat-icon>upload</mat-icon>Cargar Imagen</button>
+                <input type="file" hidden #file [accept]="acceptedFiles" (change)="onFileSelected($event)">
+                @if (content.image) {
+                    <span class="filename">{{getFileNameFromUrl(content.image)}}</span>
+                    <button mat-icon-button (click)="content.image=null">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                }
+            </div>
+            @if (content.image) {
+                <img [src]="content.image" class="cover-image"/>
+            }
+            <br>
+            <br>
+            <br>
+            <span class="label">Criterio de aprobaci&oacute;n</span>
+            <span class="label">Nota minima aprobatoria (%)</span>
+            <mat-form-field class="form-field">
+                <input matInput type="number" placeholder="Nota minima aprobatoria (%)" name="passingScore" [(ngModel)]="content.passingScore" required min="0" max="100">
+            </mat-form-field>
+            <br>
+            <br>
+            <br>
+            <button mat-button color="primary" class="button-save" [disabled]="!contentForm.valid" (click)="next()">SIGUIENTE</button>
+            <br>
+            <br>
+        </form>
+        <br>
+        <br>
+    </div>
+</div>
+
+

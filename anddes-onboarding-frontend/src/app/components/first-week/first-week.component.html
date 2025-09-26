@@ -5,7 +5,10 @@
 <br>
 <div class="entity-list">
     <div style="margin: 30px;">
-        <br>
+    <div align="end">
+      <button mat-flat-button class="btn-form" color="primary" (click)="add()"><mat-icon>add</mat-icon>Nuevo Curso</button>
+    </div>
+    <br>
         <div>
             @if (isLoadingResults) {
                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>

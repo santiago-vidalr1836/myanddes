@@ -1,0 +1,36 @@
+.content-card {
+    border: 1px solid #707070;
+    border-radius: 12px;
+}
+
+.lbl-template{
+ margin-left: 0px !important; 
+}
+
+.div-html {
+    background-color: var(--mdc-filled-text-field-container-color);
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--mat-form-field-container-text-font);
+    line-height: var(--mat-form-field-container-text-line-height);
+    font-size: 14px;
+    letter-spacing: var(--mat-form-field-container-text-tracking);
+    font-weight: var(--mat-form-field-container-text-weight);
+    border-bottom: 1px solid #6b6b6b;
+    min-height: 100px;
+    padding: 14px;
+    user-select: none;
+}
+.div-html-hint {
+    width: 100%;
+    text-align: right;
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--mat-form-field-subscript-text-font);
+    line-height: var(--mat-form-field-subscript-text-line-height);
+    font-size: var(--mat-form-field-subscript-text-size);
+    letter-spacing: var(--mat-form-field-subscript-text-tracking);
+    font-weight: var(--mat-form-field-subscript-text-weight);
+
+    mat-hint{
+        margin-right: 20px;
+    }
+}

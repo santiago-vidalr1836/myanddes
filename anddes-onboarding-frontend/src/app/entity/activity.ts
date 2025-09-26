@@ -38,6 +38,7 @@ export class ELearningContent{
     id : number;
     name : string;
     image : string;
+    passingScore: number;
     cards : ELearningContentCard[]
 }
 

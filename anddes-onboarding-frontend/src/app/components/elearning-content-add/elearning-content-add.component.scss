@@ -1,0 +1,26 @@
+.btnUpload{
+    border-radius: 4px;
+    opacity: 1;
+    width: 174px; 
+    font-weight: 700;
+    margin-left: 29px;
+}
+.filename{
+    margin-left: 19px;
+    text-align: left;
+    font: normal normal medium 14px/16px Rubik;
+    letter-spacing: 1.25px;
+    color: #000000;
+    opacity: 1;
+}
+.upload{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+.cover-image{
+    width: 200px;
+    margin-left: 29px;
+    margin-top: 25px;
+}

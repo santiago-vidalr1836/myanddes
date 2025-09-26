@@ -24,12 +24,6 @@
             </button>
         </div>
         <br>
-        <div>
-            <button mat-button class="menu-button"  [routerLink]="['/reports']" routerLinkActive="active">
-                <span>REPORTES</span>
-            </button>
-        </div>
-        <br>
         <mat-tree [dataSource]="dataSource" [treeControl]="treeControl"  class="example-tree">
             <!-- This is the tree node template for leaf nodes -->
             <!-- There is inline padding applied to this node using styles.
@@ -66,6 +60,17 @@
             </button>
         </div>
         <br>
+        <div>
+            <button mat-button class="menu-button" [routerLink]="['/notifications']" routerLinkActive="active">
+                <span>NOTIFICACIONES</span>
+            </button>
+        </div>
+        <br>
+        <div>
+            <button mat-button class="menu-button"  [routerLink]="['/reports']" routerLinkActive="active">
+                <span>REPORTES</span>
+            </button>
+        </div>
     </mat-sidenav>
     <mat-sidenav-content class="sidenav-content">
         <mat-toolbar>

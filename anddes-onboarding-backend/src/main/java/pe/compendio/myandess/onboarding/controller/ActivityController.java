@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.compendio.myandess.onboarding.controller.dto.*;
 import pe.compendio.myandess.onboarding.entity.Constants;
+import pe.compendio.myandess.onboarding.controller.dto.RemoteInductionDTO;
+import pe.compendio.myandess.onboarding.entity.ELearningContent;
 import pe.compendio.myandess.onboarding.service.ActivityService;
 import pe.compendio.myandess.onboarding.service.UserService;
 import pe.compendio.myandess.onboarding.util.Mapper;
@@ -98,6 +100,13 @@ public class ActivityController {
   @GetMapping("/code/"+Constants.ACTIVITY_INDUCTION_ELEARNING)
   public List<ELearningContentDTO> listELearningContent(){
     return mapper.eLearningContentEntitiesToDtos(activityService.listELearningContent());
+  }
+  @PostMapping("/code/"+Constants.ACTIVITY_INDUCTION_ELEARNING)
+  public ResponseEntity<?> saveELearningContent(@RequestBody ELearningContentDTO dto){
+    ELearningContent entity = activityService.add(mapper.eLearningContentDTOToEntity(dto));
+    dto.setId(entity.getId());
+    activityService.updateELearningContent(mapper.eLearningContentDTOToEntity(dto));
+    return ResponseEntity.ok().build();
   }
 
   @Operation(summary = "Actualizar curso de Induccion Elearning")

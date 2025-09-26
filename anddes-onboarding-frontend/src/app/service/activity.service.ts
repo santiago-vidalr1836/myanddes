@@ -59,6 +59,10 @@ export class ActivityService {
     var endpoint=environment.baseUrl+'activities/code/'+codeElearningInduction
     return this.httpClient.get<ELearningContent[]>(endpoint);
   }
+  saveELearningContent(codeElearningInduction:string, content: ELearningContent){
+    var endpoint=environment.baseUrl+'activities/code/'+codeElearningInduction
+    return this.httpClient.post<ELearningContent[]>(endpoint,content);
+  }
   updateELearningContent(codeElearningInduction : string , content: ELearningContent){
     var endpoint=environment.baseUrl+'activities/code/'+codeElearningInduction+"/"+content.id
     return this.httpClient.put(endpoint,content);

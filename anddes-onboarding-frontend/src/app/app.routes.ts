@@ -139,6 +139,16 @@ export const routes: Routes = [
       canActivate : [MsalGuard]
     },
     {
+      path: 'elearning-content/add',
+      loadComponent:() => import('./components/elearning-content-add/elearning-content-add.component').then(mod => mod.ElearningContentAddComponent),
+      canActivate : [MsalGuard]
+    },
+    {
+      path: 'elearning-content/add/content',
+      loadComponent:() => import('./components/elearning-content-edit/elearning-content-edit.component').then(mod => mod.ElearningContentEditComponent),
+      canActivate : [MsalGuard]
+    },
+    {
       path: 'elearning-content/edit',
       loadComponent:() => import('./components/elearning-content-edit/elearning-content-edit.component').then(mod => mod.ElearningContentEditComponent),
       canActivate : [MsalGuard]
@@ -146,6 +156,16 @@ export const routes: Routes = [
     {
       path: 'indicators',
       loadComponent:() => import('./components/indicators/indicators.component').then(mod => mod.IndicatorsComponent),
+      canActivate : [MsalGuard]
+    },
+    {
+      path: 'notifications',
+      loadComponent:() => import('./components/notifications/notifications.component').then(mod => mod.NotificationsComponent),
+      canActivate : [MsalGuard]
+    },
+    {
+      path: 'notifications/templates/edit',
+      loadComponent:() => import('./components/notifications-email-template-form/notifications-email-template-form.component').then(mod => mod.NotificationsEmailTemplateFormComponent),
       canActivate : [MsalGuard]
     },
     {

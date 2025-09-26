@@ -150,6 +150,16 @@ public abstract class Mapper {
 
   public abstract ProcessActivityContentDTO processActivityContentEntityToDTO(ProcessActivityContent processActivityContent);
 
+  public abstract NotificationSenderProfileDTO notificationSenderProfileEntityToDTO(NotificationSenderProfile entity);
+  public abstract List<NotificationSenderProfileDTO> notificationSenderProfileEntityToDTOs(List<NotificationSenderProfile> entity);
+  public abstract NotificationSenderProfile notificationSenderProfileDTOToEntity(NotificationSenderProfileDTO dto);
+  public abstract List<NotificationSenderProfile> notificationSenderProfileDTOToEntities(List<NotificationSenderProfileDTO> dto);
+
+  public abstract NotificationEmailTemplateDTO notificationEmailTemplateEntityToDTO(NotificationEmailTemplate entity);
+  public abstract List<NotificationEmailTemplateDTO> notificationEmailTemplateEntityToDTOs(List<NotificationEmailTemplate> entity);
+  public abstract NotificationEmailTemplate notificationEmailTemplateDTOToEntity(NotificationEmailTemplateDTO dto);
+  public abstract List<NotificationEmailTemplate> notificationEmailTemplateDTOToEntities(List<NotificationEmailTemplateDTO> dto);
+
   @Mapping(target = "activityId", source = "id")
   @Mapping(target = "activityName", source = "activity.name")
   @Mapping(target = "state", ignore = true)

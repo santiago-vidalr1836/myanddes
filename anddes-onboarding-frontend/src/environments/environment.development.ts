@@ -1,12 +1,12 @@
 export const environment = {
     production: true,
-    baseUrlLocal:'http://localhost:8080/',
-    baseUrl:'https://myanddes.anddes.com:8443/',
+    baseUrl:'http://localhost:8080/',
+    baseUrl_:'https://myanddes.anddes.com:8443/',
     msalConfig: {
         auth: {
-            clientId: '2f93afcf-7018-48cf-9ac3-f22dd3f21a5f',
-            authority: 'https://login.microsoftonline.com/2e7c2c87-0ed1-48f9-a17a-76261219bf54',
-            redirectUrl:'https://myanddes.anddes.com/home'
+            clientId: '47d51745-c58d-496a-9c9e-7bd84b8f3850',
+            authority: 'https://login.microsoftonline.com/8200d982-c551-4dd5-8dc7-2d649035f4f3',
+            redirectUrl:'http://localhost:4200/home'
         }
     },
     apiConfig: {
