@@ -149,6 +149,11 @@ export const routes: Routes = [
       canActivate : [MsalGuard]
     },
     {
+      path: 'reports',
+      loadComponent: () => import('./components/reports/reports.component').then(mod => mod.ReportsComponent),
+      canActivate: [MsalGuard]
+    },
+    {
       path: 'login-failed',
       loadComponent: ()=> import('./components/login-failed/login-failed.component').then(mod => mod.LoginFailedComponent)
     }
