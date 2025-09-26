@@ -61,7 +61,7 @@ export class ReportService {
     let params = new HttpParams()
       .set('type', type)
       .set('state', query.state)
-      .set('page', query.pageIndex + 1)
+      .set('page', query.pageIndex)
       .set('pageSize', query.pageSize);
 
     if (query.search) {
