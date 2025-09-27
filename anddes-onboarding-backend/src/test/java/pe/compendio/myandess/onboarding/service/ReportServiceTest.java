@@ -75,6 +75,7 @@ class ReportServiceTest {
     User user = new User();
     user.setId(1L);
     user.setFullname("Ana Diaz");
+    user.setDni("12345678");
 
     process = new Process();
     process.setId(1L);
@@ -118,6 +119,7 @@ class ReportServiceTest {
     contentWithResult.setResult(60);
     contentWithResult.setMinimumScore(80);
     contentWithResult.setAttempts(2);
+    contentWithResult.setProgress(100);
 
     contentPending = new ProcessActivityContent();
     contentPending.setId(1001L);
@@ -190,9 +192,24 @@ class ReportServiceTest {
 
     assertThat(report.getTotal()).isEqualTo(1);
     ReportElearningRowDTO row = report.getData().get(0);
-    assertThat(row.getTotalCourses()).isEqualTo(2);
-    assertThat(row.getCompletedCourses()).isEqualTo(1);
+    assertThat(row.getDni()).isEqualTo("12345678");
+    assertThat(row.getFullName()).isEqualTo("Ana Diaz");
+    assertThat(row.getStartDate()).isEqualTo(LocalDate.of(2024, 1, 10));
+    assertThat(row.getFinishDate()).isEqualTo(LocalDateTime.of(2024, 1, 15, 18, 0));
+    assertThat(row.getProgress()).isEqualTo(50.0);
     assertThat(row.getState()).isEqualTo("Pendiente");
+  }
+
+  @Test
+  void shouldMarkElearningAsCompletedWhenAllContentsFinished() {
+    contentPending.setProgress(100);
+
+    ReportPagedDTO<ReportElearningRowDTO> report = reportService.getElearningReport(LocalDate.of(2024, 1, 1),
+      LocalDate.of(2024, 12, 31), "", "", 0, 20, "user.fullname", "asc");
+
+    ReportElearningRowDTO row = report.getData().get(0);
+    assertThat(row.getProgress()).isEqualTo(100.0);
+    assertThat(row.getState()).isEqualTo("Completado");
   }
 
   @Test
@@ -242,6 +259,23 @@ class ReportServiceTest {
       assertThat(header.getCell(7).getStringCellValue()).isEqualTo("Actividades Completadas");
       assertThat(header.getCell(8).getStringCellValue()).isEqualTo("Avance (%)");
       assertThat(header.getCell(9).getStringCellValue()).isEqualTo("Estado");
+    }
+  }
+
+  @Test
+  void shouldGenerateElearningWorkbookWithHeaders() throws Exception {
+    try (Workbook workbook = reportService.buildWorkbook("elearning",
+      LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "", "", "user.fullname", "asc")) {
+      Sheet sheet = workbook.getSheetAt(0);
+      Row header = sheet.getRow(0);
+
+      assertThat(header.getCell(0).getStringCellValue()).isEqualTo("ID Proceso");
+      assertThat(header.getCell(1).getStringCellValue()).isEqualTo("DNI");
+      assertThat(header.getCell(2).getStringCellValue()).isEqualTo("Colaborador");
+      assertThat(header.getCell(3).getStringCellValue()).isEqualTo("Fecha Inicio");
+      assertThat(header.getCell(4).getStringCellValue()).isEqualTo("Fecha Fin");
+      assertThat(header.getCell(5).getStringCellValue()).isEqualTo("Avance (%)");
+      assertThat(header.getCell(6).getStringCellValue()).isEqualTo("Estado");
     }
   }
 }
