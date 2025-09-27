@@ -69,8 +69,8 @@ export class ReportsComponent implements AfterViewInit {
 
   readonly stateOptions = [
     { value: 'all' as ReportStateFilter, label: 'Todos' },
-    { value: 'pending' as ReportStateFilter, label: 'Pendientes' },
-    { value: 'completed' as ReportStateFilter, label: 'Completados' },
+    { value: 'Pendiente' as ReportStateFilter, label: 'Pendientes' },
+    { value: 'Completado' as ReportStateFilter, label: 'Completados' },
   ];
 
   readonly dataSource = new MatTableDataSource<any>([]);
@@ -226,8 +226,13 @@ export class ReportsComponent implements AfterViewInit {
 
   openElearningDetail(row: any): void {
     const elearningRow = row as ElearningReportRow;
+    const query = this.buildDetailQuery();
     this.dialog.open(ElearningDetailDialogComponent, {
-      data: { userId: elearningRow.id, fullName: elearningRow.fullName },
+      data: {
+        processId: elearningRow.processId,
+        fullName: elearningRow.fullName,
+        filters: query,
+      },
     });
   }
 
@@ -250,25 +255,18 @@ export class ReportsComponent implements AfterViewInit {
   }
 
   stateLabel(state: ReportRowState): string {
-    switch (state) {
-      case 'completed':
-        return 'Completado';
-      case 'pending':
-        return 'Pendiente';
-      case 'in_progress':
-        return 'En progreso';
-      default:
-        return state;
-    }
+    return state ?? '';
   }
 
   stateClass(state: ReportRowState): string {
     switch (state) {
-      case 'completed':
+      case 'Completado':
+      case 'Aprobado':
         return 'status-pill status-completed';
-      case 'pending':
+      case 'Pendiente':
         return 'status-pill status-pending';
-      case 'in_progress':
+      case 'Desaprobado':
+        return 'status-pill status-rejected';
       default:
         return 'status-pill status-progress';
     }
@@ -276,7 +274,7 @@ export class ReportsComponent implements AfterViewInit {
 
   resolveState(row: any): ReportRowState {
     const value = (row as ElearningReportRow).state;
-    return (value ?? 'pending') as ReportRowState;
+    return (value ?? 'Pendiente') as ReportRowState;
   }
 
   private loadReportData() {
@@ -392,7 +390,7 @@ export class ReportsComponent implements AfterViewInit {
     if (type === 'general') {
       this.displayedColumns = ['dni', 'fullName', 'startDate', 'finishDate', 'progress', 'actions'];
     } else if (type === 'elearning') {
-      this.displayedColumns = ['fullName', 'totalCourses', 'approvedCourses', 'averageScore', 'state', 'updatedAt', 'actions'];
+      this.displayedColumns = ['dni', 'fullName', 'startDate', 'finishDate', 'progress', 'state', 'actions'];
     } else {
       this.displayedColumns = ['fullName', 'area', 'position', 'matrixStatus', 'updatedAt'];
     }

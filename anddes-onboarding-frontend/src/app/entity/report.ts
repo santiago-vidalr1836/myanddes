@@ -1,6 +1,6 @@
 export type ReportType = 'general' | 'elearning' | 'matrix';
 
-export type ReportStateFilter = 'all' | 'pending' | 'completed';
+export type ReportStateFilter = 'all' | 'Pendiente' | 'Completado';
 
 export interface ReportQuery {
   state: ReportStateFilter;
@@ -18,7 +18,7 @@ export interface PagedReportResponse<T> {
   data: T[];
 }
 
-export type ReportRowState = 'pending' | 'in_progress' | 'completed';
+export type ReportRowState = 'Pendiente' | 'Completado' | 'Aprobado' | 'Desaprobado';
 
 export interface GeneralReportRow {
   processId: string;
@@ -33,13 +33,13 @@ export interface GeneralReportRow {
 }
 
 export interface ElearningReportRow {
-  id: string;
+  processId: string;
+  dni: string;
   fullName: string;
-  totalCourses: number;
-  approvedCourses: number;
-  averageScore: number;
+  startDate?: string;
+  finishDate?: string;
+  progress: number;
   state: ReportRowState;
-  updatedAt: string;
 }
 
 export interface MatrixReportRow {
@@ -65,10 +65,13 @@ export interface ActivityDetail {
 }
 
 export interface ElearningDetail {
-  id: string;
+  contentId: string;
   courseName: string;
+  result?: number;
   minimumScore: number;
-  score: number;
   attempts: number;
-  status: string;
+  progress: number;
+  readCards: number;
+  correctAnswers: number;
+  state: ReportRowState;
 }

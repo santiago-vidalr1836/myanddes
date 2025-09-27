@@ -6,11 +6,12 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { ReportService } from '../../../service/report.service';
-import { ElearningDetail } from '../../../entity/report';
+import { ElearningDetail, ReportQuery, ReportRowState } from '../../../entity/report';
 
 export interface ElearningDetailDialogData {
-  userId: string;
+  processId: string;
   fullName: string;
+  filters?: Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>>;
 }
 
 @Component({
@@ -22,7 +23,16 @@ export interface ElearningDetailDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ElearningDetailDialogComponent implements OnInit {
-  readonly displayedColumns = ['courseName', 'minimumScore', 'score', 'attempts', 'status'];
+  readonly displayedColumns = [
+    'courseName',
+    'minimumScore',
+    'result',
+    'attempts',
+    'progress',
+    'readCards',
+    'correctAnswers',
+    'state',
+  ];
   readonly dataSource = new MatTableDataSource<ElearningDetail>([]);
   isLoading = true;
   hasError = false;
@@ -40,18 +50,22 @@ export class ElearningDetailDialogComponent implements OnInit {
   }
 
   statusClass(detail: ElearningDetail): string {
-    const status = detail.status?.toLowerCase() ?? '';
-    if (status.includes('complet')) {
-      return 'status-chip completed';
+    const status = detail.state as ReportRowState;
+    switch (status) {
+      case 'Completado':
+      case 'Aprobado':
+        return 'status-chip completed';
+      case 'Pendiente':
+        return 'status-chip pending';
+      case 'Desaprobado':
+        return 'status-chip rejected';
+      default:
+        return 'status-chip in-progress';
     }
-    if (status.includes('pend')) {
-      return 'status-chip pending';
-    }
-    return 'status-chip in-progress';
   }
 
   private loadDetails(): void {
-    this.reportService.getElearningDetail(this.data.userId).subscribe({
+    this.reportService.getElearningDetail(this.data.processId, this.data.filters).subscribe({
       next: (details) => {
         this.dataSource.data = details;
         this.isLoading = false;

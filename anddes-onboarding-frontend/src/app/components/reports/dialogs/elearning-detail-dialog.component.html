@@ -19,9 +19,9 @@
         <td mat-cell *matCellDef="let row">{{ row.minimumScore }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="score">
-        <th mat-header-cell *matHeaderCellDef>Calificación</th>
-        <td mat-cell *matCellDef="let row">{{ row.score }}</td>
+      <ng-container matColumnDef="result">
+        <th mat-header-cell *matHeaderCellDef>Resultado</th>
+        <td mat-cell *matCellDef="let row">{{ row.result ?? '—' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="attempts">
@@ -29,10 +29,25 @@
         <td mat-cell *matCellDef="let row">{{ row.attempts }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="status">
+      <ng-container matColumnDef="progress">
+        <th mat-header-cell *matHeaderCellDef>Avance</th>
+        <td mat-cell *matCellDef="let row">{{ row.progress | number: '1.0-0' }}%</td>
+      </ng-container>
+
+      <ng-container matColumnDef="readCards">
+        <th mat-header-cell *matHeaderCellDef>Tarjetas leídas</th>
+        <td mat-cell *matCellDef="let row">{{ row.readCards }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="correctAnswers">
+        <th mat-header-cell *matHeaderCellDef>Respuestas correctas</th>
+        <td mat-cell *matCellDef="let row">{{ row.correctAnswers }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="state">
         <th mat-header-cell *matHeaderCellDef>Estado</th>
         <td mat-cell *matCellDef="let row">
-          <span [class]="statusClass(row)">{{ row.status }}</span>
+          <span [class]="statusClass(row)">{{ row.state }}</span>
         </td>
       </ng-container>
 

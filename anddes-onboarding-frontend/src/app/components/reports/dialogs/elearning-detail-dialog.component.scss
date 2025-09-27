@@ -27,6 +27,11 @@ table {
   background: #fef3c7;
 }
 
+.status-chip.rejected {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
 .status-chip.in-progress {
   color: #1d4ed8;
   background: #dbeafe;
