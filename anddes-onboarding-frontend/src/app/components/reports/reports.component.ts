@@ -197,7 +197,11 @@ export class ReportsComponent implements AfterViewInit {
   openGeneralDetail(row: any): void {
     const generalRow = row as GeneralReportRow;
     this.dialog.open(GeneralDetailDialogComponent, {
-      data: { processId: generalRow.processId, fullName: generalRow.fullName },
+      data: {
+        processId: generalRow.processId,
+        fullName: generalRow.fullName,
+        query: this.buildDetailQuery(),
+      },
     });
   }
 
@@ -304,6 +308,26 @@ export class ReportsComponent implements AfterViewInit {
       pageIndex: this.paginator?.pageIndex ?? 0,
       pageSize: this.paginator?.pageSize ?? 10,
     };
+  }
+
+  private buildDetailQuery(): Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>> {
+    const { startDate, endDate } = this.resolveDates();
+    const direction = this.sort?.direction ? (this.sort.direction as 'asc' | 'desc') : undefined;
+
+    const query: Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>> = {
+      state: this.stateControl.value,
+      search: this.searchControl.value?.trim() || undefined,
+      startDate,
+      endDate,
+      orderBy: this.sort?.active,
+      direction,
+    };
+
+    if (query.state === 'all') {
+      delete query.state;
+    }
+
+    return query;
   }
 
   private resolveDates(): { startDate?: string; endDate?: string } {

@@ -5,11 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ReportService } from '../../../service/report.service';
-import { ActivityDetail } from '../../../entity/report';
+import { ActivityDetail, ReportQuery } from '../../../entity/report';
 
 export interface GeneralDetailDialogData {
   processId: string;
   fullName: string;
+  query?: Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>>;
 }
 
 @Component({
@@ -38,7 +39,7 @@ export class GeneralDetailDialogComponent implements OnInit {
   }
 
   private loadDetails(): void {
-    this.reportService.getGeneralDetail(this.data.processId).subscribe({
+    this.reportService.getGeneralDetail(this.data.processId, this.data.query).subscribe({
       next: (details) => {
         this.details = details;
         this.isLoading = false;
