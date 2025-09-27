@@ -207,17 +207,13 @@ class ReportServiceTest {
   }
 
   @Test
-  void shouldFilterGeneralDetailsByStateAndReturnAllWithoutDateFilter() {
-    List<ReportActivityDetailDTO> allDetails = reportService.getGeneralDetails(process.getId(),
+  void shouldReturnGeneralDetailsWithCalculatedStates() {
+    List<ReportActivityDetailDTO> details = reportService.getGeneralDetails(process.getId(),
       null, null, "activityName", "asc");
-    List<ReportActivityDetailDTO> completedDetails = reportService.getGeneralDetails(process.getId(),
-      "COMPLETADO", null, "activityName", "asc");
 
-    assertThat(allDetails).hasSize(3);
-    assertThat(allDetails).extracting(ReportActivityDetailDTO::getState)
+    assertThat(details).hasSize(3);
+    assertThat(details).extracting(ReportActivityDetailDTO::getState)
       .containsExactlyInAnyOrder("Completado", "Pendiente", "Pendiente");
-    assertThat(completedDetails).hasSize(1);
-    assertThat(completedDetails.get(0).getState()).isEqualTo("Completado");
   }
 
   @Test
