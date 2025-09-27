@@ -161,13 +161,7 @@ public class ReportService {
     return details;
   }
 
-  public List<ReportElearningDetailDTO> getElearningDetails(Long processId,
-                                                            LocalDate startDate,
-                                                            LocalDate endDate,
-                                                            String state,
-                                                            String search,
-                                                            String orderBy,
-                                                            String direction) {
+  public List<ReportElearningDetailDTO> getElearningDetails(Long processId) {
     Optional<ProcessActivity> elearningActivityOptional =
       processActivityRepository.findFirstByProcess_IdAndActivity_Code(processId, Constants.ACTIVITY_INDUCTION_ELEARNING);
 
@@ -178,11 +172,6 @@ public class ReportService {
     ProcessActivity elearningActivity = elearningActivityOptional.get();
     Process process = elearningActivity.getProcess();
     if (process == null) {
-      return Collections.emptyList();
-    }
-    LocalDateTime completionDate = elearningActivity.getCompletionDate();
-    if ((startDate != null && (completionDate == null || completionDate.toLocalDate().isBefore(startDate)))
-      || (endDate != null && (completionDate == null || completionDate.toLocalDate().isAfter(endDate)))) {
       return Collections.emptyList();
     }
 
@@ -203,22 +192,6 @@ public class ReportService {
         return dto;
       })
       .collect(Collectors.toList());
-
-    String normalizedState = normalizeState(state);
-    if (StringUtils.hasText(normalizedState) && !"ALL".equals(normalizedState)) {
-      details = details.stream()
-        .filter(detail -> filterByState(detail.getState(), normalizedState))
-        .collect(Collectors.toList());
-    }
-
-    if (StringUtils.hasText(search)) {
-      String lower = search.toLowerCase(Locale.getDefault());
-      details = details.stream()
-        .filter(detail -> detail.getCourseName() != null && detail.getCourseName().toLowerCase(Locale.getDefault()).contains(lower))
-        .collect(Collectors.toList());
-    }
-
-    details.sort(buildElearningDetailComparator(orderBy, direction));
     return details;
   }
 
@@ -653,21 +626,6 @@ public class ReportService {
       comparator = Comparator.comparing(ReportActivityDetailDTO::getState, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
     } else {
       comparator = Comparator.comparing(ReportActivityDetailDTO::getActivityName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
-    }
-    if (Sort.Direction.DESC.name().equalsIgnoreCase(direction)) {
-      comparator = comparator.reversed();
-    }
-    return comparator;
-  }
-
-  private Comparator<ReportElearningDetailDTO> buildElearningDetailComparator(String orderBy, String direction) {
-    Comparator<ReportElearningDetailDTO> comparator;
-    if ("result".equalsIgnoreCase(orderBy)) {
-      comparator = Comparator.comparing(detail -> Optional.ofNullable(detail.getResult()).orElse(0));
-    } else if ("state".equalsIgnoreCase(orderBy)) {
-      comparator = Comparator.comparing(ReportElearningDetailDTO::getState, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
-    } else {
-      comparator = Comparator.comparing(ReportElearningDetailDTO::getCourseName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
     }
     if (Sort.Direction.DESC.name().equalsIgnoreCase(direction)) {
       comparator = comparator.reversed();

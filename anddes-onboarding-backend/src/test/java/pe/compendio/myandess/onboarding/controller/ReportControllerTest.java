@@ -107,7 +107,7 @@ class ReportControllerTest {
       .courseName("Seguridad")
       .state("Pendiente")
       .build();
-    when(reportService.getElearningDetails(anyLong(), any(LocalDate.class), any(LocalDate.class), nullable(String.class), nullable(String.class), anyString(), anyString()))
+    when(reportService.getElearningDetails(anyLong()))
       .thenReturn(List.of(detail));
 
     mockMvc.perform(get("/reports/elearning/1/courses"))
