@@ -27,17 +27,17 @@ type ActivitySection = {
 
 const SECTION_METADATA: Record<string, { title: string; description: string; icon: string }> = {
   BEFORE: {
-    title: 'Antes del ingreso',
+    title: 'Antes',
     description: 'Actividades previas al inicio del colaborador',
     icon: 'schedule',
   },
   FIRST_DAY: {
-    title: 'Primer día',
+    title: 'Mi primer día',
     description: 'Tareas esenciales para el primer día de trabajo',
     icon: 'calendar_month',
   },
   FIRST_WEEK: {
-    title: 'Primera semana',
+    title: 'Mi primera semana',
     description: 'Seguimiento y acompañamiento durante la primera semana',
     icon: 'view_week',
   },
@@ -190,7 +190,7 @@ export class GeneralDetailComponent implements OnInit, OnDestroy {
     const groups = new Map<string, ActivityDetail[]>();
 
     for (const detail of details) {
-      const key = (detail.state ?? detail.period ?? 'OTHER').toString().toUpperCase();
+      const key = (detail.parentCode ?? 'OTHER').toString().toUpperCase();
       if (!groups.has(key)) {
         groups.set(key, []);
       }

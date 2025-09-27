@@ -17,4 +17,5 @@ public class ReportActivityDetailDTO {
   private boolean completed;
   private LocalDateTime completionDate;
   private String state;
+  private String parentCode;
 }

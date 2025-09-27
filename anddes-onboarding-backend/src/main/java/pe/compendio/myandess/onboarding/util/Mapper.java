@@ -162,6 +162,7 @@ public abstract class Mapper {
 
   @Mapping(target = "activityId", source = "id")
   @Mapping(target = "activityName", source = "activity.name")
+  @Mapping(target = "parentCode", source = "activity.parentCode")
   @Mapping(target = "state", ignore = true)
   public abstract ReportActivityDetailDTO processActivityToReportActivityDetail(ProcessActivity processActivity);
 
