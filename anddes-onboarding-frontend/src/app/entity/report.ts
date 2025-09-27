@@ -43,12 +43,17 @@ export interface ElearningReportRow {
 }
 
 export interface MatrixReportRow {
-  id: string;
+  processId: string;
+  dni: string;
   fullName: string;
-  area: string;
-  position: string;
-  matrixStatus: string;
-  updatedAt: string;
+  startDate?: string;
+  elearningFinishDate?: string;
+  generalCompleted: number;
+  generalTotal: number;
+  elearningCompleted: number;
+  elearningTotal: number;
+  processState: string;
+  results: Record<string, string>;
 }
 
 export interface ActivityDetail {

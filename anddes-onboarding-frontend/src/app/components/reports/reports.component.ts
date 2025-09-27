@@ -74,6 +74,7 @@ export class ReportsComponent implements AfterViewInit {
 
   readonly dataSource = new MatTableDataSource<any>([]);
   displayedColumns: string[] = [];
+  matrixResultColumns: string[] = [];
   resultsLength = 0;
   isLoading = false;
 
@@ -81,6 +82,15 @@ export class ReportsComponent implements AfterViewInit {
   private customRange?: DateRangeSelection;
   private lastPeriod: ReportPeriod = '3m';
   private currentType: ReportType = this.typeControl.value;
+  private readonly matrixBaseColumns: string[] = [
+    'dni',
+    'fullName',
+    'startDate',
+    'elearningFinishDate',
+    'generalProgressFraction',
+    'processState',
+    'elearningProgressFraction',
+  ];
   private readonly dateFormatter = new Intl.DateTimeFormat('es-PE', {
     day: '2-digit',
     month: 'short',
@@ -109,6 +119,9 @@ export class ReportsComponent implements AfterViewInit {
 
     this.typeControl.valueChanges.subscribe((type) => {
       this.currentType = type;
+      if (type === 'matrix') {
+        this.matrixResultColumns = [];
+      }
       this.updateDisplayedColumns(type);
       this.resetPaginator();
       this.load$.next();
@@ -320,6 +333,20 @@ export class ReportsComponent implements AfterViewInit {
           tap((response) => {
             this.resultsLength = response.total;
             this.dataSource.data = response.data;
+            const resultColumns = Array.from(
+              new Set(
+                response.data.flatMap((row: MatrixReportRow) =>
+                  Object.keys(row.results ?? {})
+                )
+              )
+            ).sort();
+            const hasColumnChanges =
+              resultColumns.length !== this.matrixResultColumns.length ||
+              resultColumns.some((column, index) => column !== this.matrixResultColumns[index]);
+            if (hasColumnChanges) {
+              this.matrixResultColumns = resultColumns;
+              this.updateDisplayedColumns('matrix');
+            }
             this.cdr.markForCheck();
           }),
           map(() => void 0)
@@ -408,7 +435,7 @@ export class ReportsComponent implements AfterViewInit {
     } else if (type === 'elearning') {
       this.displayedColumns = ['dni', 'fullName', 'startDate', 'finishDate', 'progress', 'state', 'actions'];
     } else {
-      this.displayedColumns = ['fullName', 'area', 'position', 'matrixStatus', 'updatedAt'];
+      this.displayedColumns = [...this.matrixBaseColumns, ...this.matrixResultColumns];
     }
   }
 
