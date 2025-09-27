@@ -286,25 +286,29 @@ public class ReportService {
     Sheet sheet = workbook.createSheet("General");
     Row header = sheet.createRow(0);
     header.createCell(0).setCellValue("ID Proceso");
-    header.createCell(1).setCellValue("Colaborador");
-    header.createCell(2).setCellValue("Fecha Inicio");
-    header.createCell(3).setCellValue("Fecha Fin");
-    header.createCell(4).setCellValue("Total Actividades");
-    header.createCell(5).setCellValue("Actividades Completadas");
-    header.createCell(6).setCellValue("Avance (%)");
-    header.createCell(7).setCellValue("Estado");
+    header.createCell(1).setCellValue("DNI");
+    header.createCell(2).setCellValue("Colaborador");
+    header.createCell(3).setCellValue("Retrasado");
+    header.createCell(4).setCellValue("Fecha Inicio");
+    header.createCell(5).setCellValue("Fecha Fin");
+    header.createCell(6).setCellValue("Total Actividades");
+    header.createCell(7).setCellValue("Actividades Completadas");
+    header.createCell(8).setCellValue("Avance (%)");
+    header.createCell(9).setCellValue("Estado");
 
     int rowIndex = 1;
     for (ReportGeneralRowDTO row : report.getItems()) {
       Row excelRow = sheet.createRow(rowIndex++);
       excelRow.createCell(0).setCellValue(row.getProcessId());
-      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getCollaborator()).orElse(""));
-      excelRow.createCell(2).setCellValue(row.getStartDate() != null ? row.getStartDate().toString() : "");
-      excelRow.createCell(3).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
-      excelRow.createCell(4).setCellValue(row.getTotalActivities());
-      excelRow.createCell(5).setCellValue(row.getCompletedActivities());
-      excelRow.createCell(6).setCellValue(row.getProgress());
-      excelRow.createCell(7).setCellValue(Optional.ofNullable(row.getState()).orElse(""));
+      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getDni()).orElse(""));
+      excelRow.createCell(2).setCellValue(Optional.ofNullable(row.getFullName()).orElse(""));
+      excelRow.createCell(3).setCellValue(row.isDelayed());
+      excelRow.createCell(4).setCellValue(row.getStartDate() != null ? row.getStartDate().toString() : "");
+      excelRow.createCell(5).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
+      excelRow.createCell(6).setCellValue(row.getTotalActivities());
+      excelRow.createCell(7).setCellValue(row.getCompletedActivities());
+      excelRow.createCell(8).setCellValue(row.getProgress());
+      excelRow.createCell(9).setCellValue(Optional.ofNullable(row.getState()).orElse(""));
     }
 
     return workbook;
@@ -540,12 +544,16 @@ public class ReportService {
       .orElse(null);
     double progress = totalActivities == 0 ? 0.0 : (completedActivities * 100.0) / totalActivities;
 
-    String collaborator = process.getUser() != null ? process.getUser().getFullname() : null;
+    String fullName = process.getUser() != null ? process.getUser().getFullname() : null;
+    String dni = process.getUser() != null ? process.getUser().getDni() : null;
+    boolean delayed = process.isDelayed();
     String state = process.isFinished() ? STATE_COMPLETED : STATE_PENDING;
 
     return ReportGeneralRowDTO.builder()
       .processId(process.getId())
-      .collaborator(collaborator)
+      .fullName(fullName)
+      .dni(dni)
+      .delayed(delayed)
       .startDate(process.getStartDate())
       .finishDate(finishDate)
       .totalActivities(totalActivities)
@@ -593,7 +601,7 @@ public class ReportService {
 
     return ReportMatrixRowDTO.builder()
       .processId(generalRow.getProcessId())
-      .collaborator(generalRow.getCollaborator())
+      .collaborator(generalRow.getFullName())
       .startDate(generalRow.getStartDate())
       .finishDate(generalRow.getFinishDate())
       .generalProgress(generalRow.getProgress())

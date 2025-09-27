@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReportGeneralRowDTO {
   private Long processId;
-  private String collaborator;
+  private String fullName;
+  private String dni;
+  private boolean delayed;
   private LocalDate startDate;
   private LocalDateTime finishDate;
   private int totalActivities;
