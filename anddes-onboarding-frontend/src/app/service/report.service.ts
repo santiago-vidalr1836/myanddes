@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
   ActivityDetail,
@@ -10,6 +11,7 @@ import {
   MatrixReportRow,
   PagedReportResponse,
   ReportQuery,
+  ReportRowState,
   ReportType,
 } from '../entity/report';
 
@@ -29,10 +31,24 @@ export class ReportService {
   }
 
   getElearningReport(query: ReportQuery): Observable<PagedReportResponse<ElearningReportRow>> {
-    return this.httpClient.get<PagedReportResponse<ElearningReportRow>>(
-      `${this.baseUrl}/elearning`,
-      { params: this.buildParams(query) }
-    );
+    return this.httpClient
+      .get<PagedReportResponse<ElearningReportRow>>(`${this.baseUrl}/elearning`, {
+        params: this.buildParams(query),
+      })
+      .pipe(
+        map((response) => ({
+          total: response.total,
+          data: response.data.map((row) => ({
+            processId: row.processId != null ? String(row.processId) : '',
+            dni: row.dni ?? '',
+            fullName: row.fullName ?? '',
+            startDate: row.startDate,
+            finishDate: row.finishDate,
+            progress: row.progress ?? 0,
+            state: (row.state ?? 'Pendiente') as ReportRowState,
+          })),
+        }))
+      );
   }
 
   getMatrixReport(query: ReportQuery): Observable<PagedReportResponse<MatrixReportRow>> {
@@ -53,8 +69,30 @@ export class ReportService {
     });
   }
 
-  getElearningDetail(userId: string): Observable<ElearningDetail[]> {
-    return this.httpClient.get<ElearningDetail[]>(`${this.baseUrl}/elearning/${userId}`);
+  getElearningDetail(
+    processId: string,
+    query?: Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>>
+  ): Observable<ElearningDetail[]> {
+    const params = query ? this.buildDetailParams(query) : undefined;
+    return this.httpClient
+      .get<ElearningDetail[]>(`${this.baseUrl}/elearning/${processId}/courses`, {
+        params,
+      })
+      .pipe(
+        map((details) =>
+          details.map((detail) => ({
+            contentId: detail.contentId != null ? String(detail.contentId) : '',
+            courseName: detail.courseName ?? '',
+            result: detail.result ?? undefined,
+            minimumScore: detail.minimumScore ?? 0,
+            attempts: detail.attempts ?? 0,
+            progress: detail.progress ?? 0,
+            readCards: detail.readCards ?? 0,
+            correctAnswers: detail.correctAnswers ?? 0,
+            state: (detail.state ?? 'Pendiente') as ReportRowState,
+          }))
+        )
+      );
   }
 
   downloadReport(type: ReportType, query: ReportQuery): Observable<Blob> {
