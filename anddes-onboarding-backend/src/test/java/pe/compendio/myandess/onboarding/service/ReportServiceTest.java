@@ -7,11 +7,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import pe.compendio.myandess.onboarding.controller.dto.ReportActivityDetailDTO;
 import pe.compendio.myandess.onboarding.controller.dto.ReportElearningDetailDTO;
 import pe.compendio.myandess.onboarding.controller.dto.ReportElearningRowDTO;
@@ -38,6 +41,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -162,6 +166,21 @@ class ReportServiceTest {
     assertThat(row.getCompletedActivities()).isEqualTo(1);
     assertThat(row.getTotalActivities()).isEqualTo(3);
     assertThat(row.getState()).isEqualTo("Pendiente");
+  }
+
+  @Test
+  void shouldTranslateCollaboratorSortKey() {
+    reportService.getGeneralReport(LocalDate.of(2024, 1, 1),
+      LocalDate.of(2024, 12, 31), "", "", 0, 20, "fullName", "asc");
+
+    ArgumentCaptor<PageRequest> pageRequestCaptor = ArgumentCaptor.forClass(PageRequest.class);
+    verify(processRepository).findAllByStartDateBetweenAndUser_FullnameContainingIgnoreCase(any(), any(), any(),
+      pageRequestCaptor.capture());
+
+    PageRequest captured = pageRequestCaptor.getValue();
+    Sort.Order order = captured.getSort().getOrderFor("user.fullname");
+    assertThat(order).isNotNull();
+    assertThat(order.getDirection()).isEqualTo(Sort.Direction.ASC);
   }
 
   @Test
