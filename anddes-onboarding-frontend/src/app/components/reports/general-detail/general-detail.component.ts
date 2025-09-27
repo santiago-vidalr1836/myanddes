@@ -20,25 +20,21 @@ type DetailQuery = Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>>;
 type ActivitySection = {
   key: string;
   title: string;
-  description: string;
   icon: string;
   activities: ActivityDetail[];
 };
 
-const SECTION_METADATA: Record<string, { title: string; description: string; icon: string }> = {
+const SECTION_METADATA: Record<string, { title: string; icon: string }> = {
   BEFORE: {
     title: 'Antes',
-    description: 'Actividades previas al inicio del colaborador',
     icon: 'schedule',
   },
   FIRST_DAY: {
     title: 'Mi primer día',
-    description: 'Tareas esenciales para el primer día de trabajo',
     icon: 'calendar_month',
   },
   FIRST_WEEK: {
     title: 'Mi primera semana',
-    description: 'Seguimiento y acompañamiento durante la primera semana',
     icon: 'view_week',
   },
 };
@@ -56,8 +52,6 @@ const SECTION_ORDER = ['BEFORE', 'FIRST_DAY', 'FIRST_WEEK'];
 export class GeneralDetailComponent implements OnInit, OnDestroy {
   sections: ActivitySection[] = [];
   details: ActivityDetail[] = [];
-  pendingDetails: ActivityDetail[] = [];
-  completedDetails: ActivityDetail[] = [];
 
   isLoading = true;
   hasError = false;
@@ -98,8 +92,6 @@ export class GeneralDetailComponent implements OnInit, OnDestroy {
             this.hasError = true;
             this.details = [];
             this.sections = [];
-            this.pendingDetails = [];
-            this.completedDetails = [];
             this.cdr.markForCheck();
             return EMPTY;
           }
@@ -110,8 +102,6 @@ export class GeneralDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (details) => {
           this.details = details;
-          this.pendingDetails = details.filter((detail) => !detail.completed);
-          this.completedDetails = details.filter((detail) => detail.completed);
           this.sections = this.buildSections(details);
           this.isLoading = false;
           this.hasError = false;
@@ -119,8 +109,6 @@ export class GeneralDetailComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.details = [];
-          this.pendingDetails = [];
-          this.completedDetails = [];
           this.sections = [];
           this.isLoading = false;
           this.hasError = true;
@@ -200,7 +188,6 @@ export class GeneralDetailComponent implements OnInit, OnDestroy {
     const sections = Array.from(groups.entries()).map(([key, activities]) => {
       const metadata = SECTION_METADATA[key] ?? {
         title: 'Otras actividades',
-        description: 'Actividades adicionales del proceso de onboarding',
         icon: 'task_alt',
       };
 
@@ -218,7 +205,6 @@ export class GeneralDetailComponent implements OnInit, OnDestroy {
       return {
         key,
         title: metadata.title,
-        description: metadata.description,
         icon: metadata.icon,
         activities: sortedActivities,
       } satisfies ActivitySection;
