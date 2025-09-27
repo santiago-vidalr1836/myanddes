@@ -3,8 +3,6 @@ package pe.compendio.myandess.onboarding.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pe.compendio.myandess.onboarding.entity.Process;
 
@@ -27,46 +25,23 @@ public interface ProcessRepository extends JpaRepository<Process,Long> {
   List<Process> findByOrderByIdDesc();
   Optional<Process> findByUser_Id(Long idUser);
 
-  @Query("""
-      SELECT p FROM Process p
-      WHERE p.startDate BETWEEN :startDate AND :endDate
-        AND LOWER(p.user.fullname) LIKE CONCAT('%', LOWER(:fullname), '%')
-      """)
-  Page<Process> findAllByStartDateBetweenAndUser_FullnameContainingIgnoreCase(@Param("startDate") LocalDate startDate,
-                                                                              @Param("endDate") LocalDate endDate,
-                                                                              @Param("fullname") String fullname,
-                                                                              Pageable pageable);
+  Page<Process> findAllByStartDateBetweenAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
+                                                                             LocalDate endDate,
+                                                                             String fullname,
+                                                                             Pageable pageable);
 
-  @Query("""
-      SELECT p FROM Process p
-      WHERE p.startDate BETWEEN :startDate AND :endDate
-        AND p.finished = TRUE
-        AND LOWER(p.user.fullname) LIKE CONCAT('%', LOWER(:fullname), '%')
-      """)
-  Page<Process> findAllByStartDateBetweenAndFinishedIsTrueAndUser_FullnameContainingIgnoreCase(@Param("startDate") LocalDate startDate,
-                                                                                                @Param("endDate") LocalDate endDate,
-                                                                                                @Param("fullname") String fullname,
-                                                                                                Pageable pageable);
-
-  @Query("""
-      SELECT p FROM Process p
-      WHERE p.startDate BETWEEN :startDate AND :endDate
-        AND p.finished = FALSE
-        AND LOWER(p.user.fullname) LIKE CONCAT('%', LOWER(:fullname), '%')
-      """)
-  Page<Process> findAllByStartDateBetweenAndFinishedIsFalseAndUser_FullnameContainingIgnoreCase(@Param("startDate") LocalDate startDate,
-                                                                                                @Param("endDate") LocalDate endDate,
-                                                                                                @Param("fullname") String fullname,
-                                                                                                Pageable pageable);
-
-  @Query("""
-      SELECT p FROM Process p
-      WHERE p.startDate BETWEEN :startDate AND :endDate
-        AND p.delayed = TRUE
-        AND LOWER(p.user.fullname) LIKE CONCAT('%', LOWER(:fullname), '%')
-      """)
-  Page<Process> findAllByStartDateBetweenAndDelayedIsTrueAndUser_FullnameContainingIgnoreCase(@Param("startDate") LocalDate startDate,
-                                                                                               @Param("endDate") LocalDate endDate,
-                                                                                               @Param("fullname") String fullname,
+  Page<Process> findAllByStartDateBetweenAndFinishedIsTrueAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
+                                                                                               LocalDate endDate,
+                                                                                               String fullname,
                                                                                                Pageable pageable);
+
+  Page<Process> findAllByStartDateBetweenAndFinishedIsFalseAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
+                                                                                                LocalDate endDate,
+                                                                                                String fullname,
+                                                                                                Pageable pageable);
+
+  Page<Process> findAllByStartDateBetweenAndDelayedIsTrueAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
+                                                                                              LocalDate endDate,
+                                                                                              String fullname,
+                                                                                              Pageable pageable);
 }
