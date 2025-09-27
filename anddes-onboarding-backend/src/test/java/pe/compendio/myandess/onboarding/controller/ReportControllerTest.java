@@ -46,7 +46,9 @@ class ReportControllerTest {
   void generalReportEndpointShouldReturnData() throws Exception {
     ReportGeneralRowDTO row = ReportGeneralRowDTO.builder()
       .processId(1L)
-      .collaborator("Ana Diaz")
+      .fullName("Ana Diaz")
+      .dni("12345678")
+      .delayed(true)
       .totalActivities(5)
       .completedActivities(3)
       .progress(60.0)
@@ -62,7 +64,9 @@ class ReportControllerTest {
         .param("endDate", "2024-12-31"))
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.total").value(1))
-      .andExpect(jsonPath("$.items[0].collaborator").value("Ana Diaz"));
+      .andExpect(jsonPath("$.items[0].fullName").value("Ana Diaz"))
+      .andExpect(jsonPath("$.items[0].dni").value("12345678"))
+      .andExpect(jsonPath("$.items[0].delayed").value(true));
   }
 
   @Test
