@@ -162,22 +162,6 @@ public class ReportService {
     List<ProcessActivity> activities = processActivityRepository.findByProcess_Id(processId);
     List<ReportActivityDetailDTO> details = mapper.processActivitiesToReportActivityDetails(activities);
     details.forEach(detail -> detail.setState(detail.isCompleted() ? STATE_COMPLETED : STATE_PENDING));
-
-    String normalizedState = normalizeState(state);
-    if (StringUtils.hasText(normalizedState) && !"ALL".equals(normalizedState)) {
-      details = details.stream()
-        .filter(detail -> filterByState(detail.getState(), normalizedState))
-        .collect(Collectors.toList());
-    }
-
-    if (StringUtils.hasText(search)) {
-      String lower = search.toLowerCase(Locale.getDefault());
-      details = details.stream()
-        .filter(detail -> detail.getActivityName() != null && detail.getActivityName().toLowerCase(Locale.getDefault()).contains(lower))
-        .collect(Collectors.toList());
-    }
-
-    details.sort(buildActivityDetailComparator(orderBy, direction));
     return details;
   }
 
