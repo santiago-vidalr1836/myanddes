@@ -169,6 +169,14 @@ export const routes: Routes = [
       canActivate : [MsalGuard]
     },
     {
+      path: 'reports/general/:processId',
+      loadComponent: () =>
+        import('./components/reports/general-detail/general-detail.component').then(
+          (mod) => mod.GeneralDetailComponent
+        ),
+      canActivate: [MsalGuard],
+    },
+    {
       path: 'reports',
       loadComponent: () => import('./components/reports/reports.component').then(mod => mod.ReportsComponent),
       canActivate: [MsalGuard]

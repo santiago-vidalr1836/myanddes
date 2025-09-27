@@ -11,6 +11,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { Subject, startWith, switchMap, tap, throwError } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import {
@@ -24,7 +25,6 @@ import {
 } from '../../entity/report';
 import { ReportService } from '../../service/report.service';
 import { DateRangeDialogComponent, DateRangeSelection } from './dialogs/date-range-dialog.component';
-import { GeneralDetailDialogComponent } from './dialogs/general-detail-dialog.component';
 import { ElearningDetailDialogComponent } from './dialogs/elearning-detail-dialog.component';
 
 type ReportPeriod = '3m' | '1m' | 'custom';
@@ -94,6 +94,7 @@ export class ReportsComponent implements AfterViewInit {
   constructor(
     private readonly reportService: ReportService,
     private readonly dialog: MatDialog,
+    private readonly router: Router,
     private readonly cdr: ChangeDetectorRef
   ) {
     this.updateDisplayedColumns(this.currentType);
@@ -194,14 +195,32 @@ export class ReportsComponent implements AfterViewInit {
     });
   }
 
-  openGeneralDetail(row: any): void {
+  viewGeneralDetail(row: any): void {
     const generalRow = row as GeneralReportRow;
-    this.dialog.open(GeneralDetailDialogComponent, {
-      data: {
-        processId: generalRow.processId,
-        fullName: generalRow.fullName,
-        query: this.buildDetailQuery(),
-      },
+    const query = this.buildDetailQuery();
+    const queryParams: Record<string, string> = { fullName: generalRow.fullName };
+
+    if (query.state) {
+      queryParams['state'] = query.state;
+    }
+    if (query.search) {
+      queryParams['search'] = query.search;
+    }
+    if (query.startDate) {
+      queryParams['startDate'] = query.startDate;
+    }
+    if (query.endDate) {
+      queryParams['endDate'] = query.endDate;
+    }
+    if (query.orderBy) {
+      queryParams['orderBy'] = query.orderBy;
+    }
+    if (query.direction) {
+      queryParams['direction'] = query.direction;
+    }
+
+    this.router.navigate(['/reports/general', generalRow.processId], {
+      queryParams,
     });
   }
 

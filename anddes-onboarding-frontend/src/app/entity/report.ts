@@ -52,11 +52,15 @@ export interface MatrixReportRow {
 }
 
 export interface ActivityDetail {
-  id: string;
-  title: string;
-  responsible: string;
+  id?: string;
+  title?: string;
+  responsible?: string;
   completed: boolean;
   completedAt?: string;
+  state?: string;
+  period?: string;
+  activityName?: string;
+  completionDate?: string;
 }
 
 export interface ElearningDetail {
