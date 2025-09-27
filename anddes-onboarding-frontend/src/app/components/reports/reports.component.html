@@ -71,7 +71,7 @@
       matSortDirection="asc"
       class="mat-elevation-z1"
     >
-      <ng-container matColumnDef="dni" *ngIf="isGeneral || isElearning">
+      <ng-container matColumnDef="dni">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>DNI</th>
         <td mat-cell *matCellDef="let row">{{ row.dni }}</td>
       </ng-container>
@@ -80,12 +80,6 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
         <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
       </ng-container>
-
-      <ng-container matColumnDef="position" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cargo</th>
-        <td mat-cell *matCellDef="let row">{{ row.position }}</td>
-      </ng-container>
-
       <ng-container matColumnDef="progress" *ngIf="isGeneral || isElearning">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Avance</th>
         <td mat-cell *matCellDef="let row">
@@ -104,9 +98,11 @@
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="startDate" *ngIf="isGeneral || isElearning">
+      <ng-container matColumnDef="startDate">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de inicio</th>
-        <td mat-cell *matCellDef="let row">{{ row.startDate | date: 'shortDate' }}</td>
+        <td mat-cell *matCellDef="let row">
+          {{ row.startDate ? (row.startDate | date: 'shortDate') : '-' }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="finishDate" *ngIf="isGeneral || isElearning">
@@ -114,19 +110,35 @@
         <td mat-cell *matCellDef="let row">{{ row.finishDate | date: 'short' }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="updatedAt" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actualizado</th>
-        <td mat-cell *matCellDef="let row">{{ row.updatedAt | date: 'short' }}</td>
+      <ng-container matColumnDef="elearningFinishDate" *ngIf="isMatrix">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fin e-learning</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.elearningFinishDate ? (row.elearningFinishDate | date: 'short') : '-' }}
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="area" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>\u00c1rea</th>
-        <td mat-cell *matCellDef="let row">{{ row.area }}</td>
+      <ng-container matColumnDef="generalProgressFraction" *ngIf="isMatrix">
+        <th mat-header-cell *matHeaderCellDef>Avance general</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.generalCompleted }}/{{ row.generalTotal }}
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="matrixStatus" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado matriz</th>
-        <td mat-cell *matCellDef="let row">{{ row.matrixStatus }}</td>
+      <ng-container matColumnDef="processState" *ngIf="isMatrix">
+        <th mat-header-cell *matHeaderCellDef>Estado proceso</th>
+        <td mat-cell *matCellDef="let row">{{ row.processState || '-' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="elearningProgressFraction" *ngIf="isMatrix">
+        <th mat-header-cell *matHeaderCellDef>Avance e-learning</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.elearningCompleted }}/{{ row.elearningTotal }}
+        </td>
+      </ng-container>
+
+      <ng-container *ngFor="let column of isMatrix ? matrixResultColumns : []" [matColumnDef]="column">
+        <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.results[column] ?? '-' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions" *ngIf="isGeneral || isElearning">

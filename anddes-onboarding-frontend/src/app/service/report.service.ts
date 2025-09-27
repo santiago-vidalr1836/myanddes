@@ -52,10 +52,40 @@ export class ReportService {
   }
 
   getMatrixReport(query: ReportQuery): Observable<PagedReportResponse<MatrixReportRow>> {
-    return this.httpClient.get<PagedReportResponse<MatrixReportRow>>(
-      `${this.baseUrl}/matrix`,
-      { params: this.buildParams(query) }
-    );
+    return this.httpClient
+      .get<PagedReportResponse<any>>(`${this.baseUrl}/matrix`, {
+        params: this.buildParams(query),
+      })
+      .pipe(
+        map((response) => ({
+          total: response.total ?? 0,
+          data: (response.data ?? []).map((row: any) => ({
+            processId: row.processId != null ? String(row.processId) : '',
+            dni: row.dni ?? '',
+            fullName: row.fullName ?? '',
+            startDate: row.startDate != null ? String(row.startDate) : undefined,
+            elearningFinishDate:
+              row.elearningFinishDate != null ? String(row.elearningFinishDate) : undefined,
+            generalCompleted: Number(row.generalCompletedActivities ?? 0),
+            generalTotal: Number(row.generalTotalActivities ?? 0),
+            elearningCompleted: Number(row.elearningCompletedContents ?? 0),
+            elearningTotal: Number(row.elearningTotalContents ?? 0),
+            processState: row.processState ?? '',
+            results: this.normalizeElearningResults(row.elearningResults),
+          })),
+        }))
+      );
+  }
+
+  private normalizeElearningResults(results: Record<string, unknown> | null | undefined): Record<string, string> {
+    if (!results) {
+      return {};
+    }
+
+    return Object.entries(results).reduce<Record<string, string>>((acc, [key, value]) => {
+      acc[key] = value != null && value !== '' ? String(value) : '-';
+      return acc;
+    }, {});
   }
 
   getGeneralDetail(
