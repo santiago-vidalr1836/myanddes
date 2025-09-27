@@ -1,0 +1,49 @@
+.elearning-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-table {
+  width: 100%;
+}
+
+.state-message {
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid transparent;
+
+  &.error {
+    border-color: #f44336;
+    color: #b71c1c;
+  }
+
+  &.empty {
+    border-color: rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.state-cell {
+  font-weight: 600;
+}

@@ -25,7 +25,6 @@ import {
 } from '../../entity/report';
 import { ReportService } from '../../service/report.service';
 import { DateRangeDialogComponent, DateRangeSelection } from './dialogs/date-range-dialog.component';
-import { ElearningDetailDialogComponent } from './dialogs/elearning-detail-dialog.component';
 
 type ReportPeriod = '3m' | '1m' | 'custom';
 
@@ -227,12 +226,29 @@ export class ReportsComponent implements AfterViewInit {
   openElearningDetail(row: any): void {
     const elearningRow = row as ElearningReportRow;
     const query = this.buildDetailQuery();
-    this.dialog.open(ElearningDetailDialogComponent, {
-      data: {
-        processId: elearningRow.processId,
-        fullName: elearningRow.fullName,
-        filters: query,
-      },
+    const queryParams: Record<string, string> = { fullName: elearningRow.fullName };
+
+    if (query?.state) {
+      queryParams['state'] = query.state;
+    }
+    if (query?.search) {
+      queryParams['search'] = query.search;
+    }
+    if (query?.startDate) {
+      queryParams['startDate'] = query.startDate;
+    }
+    if (query?.endDate) {
+      queryParams['endDate'] = query.endDate;
+    }
+    if (query?.orderBy) {
+      queryParams['orderBy'] = query.orderBy;
+    }
+    if (query?.direction) {
+      queryParams['direction'] = query.direction;
+    }
+
+    this.router.navigate(['/reports/elearning', elearningRow.processId], {
+      queryParams,
     });
   }
 

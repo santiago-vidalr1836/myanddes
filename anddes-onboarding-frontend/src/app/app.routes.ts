@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { MsalGuard} from '@azure/msal-angular';
+import { MsalGuard } from '@azure/msal-angular';
 
 export const routes: Routes = [
     /*{
@@ -173,6 +173,14 @@ export const routes: Routes = [
       loadComponent: () =>
         import('./components/reports/general-detail/general-detail.component').then(
           (mod) => mod.GeneralDetailComponent
+        ),
+      canActivate: [MsalGuard],
+    },
+    {
+      path: 'reports/elearning/:processId',
+      loadComponent: () =>
+        import('./components/reports/elearning-detail/elearning-detail.component').then(
+          (mod) => mod.ElearningDetailComponent
         ),
       canActivate: [MsalGuard],
     },
