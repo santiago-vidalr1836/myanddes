@@ -95,8 +95,7 @@ public class ReportController {
                                                          @RequestParam(required = false) String search,
                                                          @RequestParam(defaultValue = "activityName") String orderBy,
                                                          @RequestParam(defaultValue = "asc") String direction) {
-    DateRange range = resolveDateRange(startDate, endDate, period);
-    return reportService.getGeneralDetails(processId, range.start(), range.end(), state, search, orderBy, direction);
+    return reportService.getGeneralDetails(processId, state, search, orderBy, direction);
   }
 
   @Operation(summary = "Detalle de cursos e-learning del proceso")
