@@ -10,13 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { EMPTY, Subject, combineLatest } from 'rxjs';
 import { startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { ElearningDetail, ReportQuery } from '../../../entity/report';
+import { ElearningDetail } from '../../../entity/report';
 import { ReportService } from '../../../service/report.service';
-
-export type DetailQuery = Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>>;
 
 @Component({
   selector: 'app-elearning-detail',
@@ -35,7 +33,6 @@ export class ElearningDetailComponent implements OnInit, OnDestroy {
   fullName = '';
 
   private processId: string | null = null;
-  private currentQuery: DetailQuery | undefined;
   private readonly destroy$ = new Subject<void>();
   private readonly reload$ = new Subject<void>();
 
@@ -62,7 +59,6 @@ export class ElearningDetailComponent implements OnInit, OnDestroy {
         switchMap(([params, queryParams]) => {
           this.processId = params.get('processId');
           this.fullName = queryParams.get('fullName') ?? '';
-          this.currentQuery = this.buildQueryFromParams(queryParams);
 
           if (!this.processId) {
             this.isLoading = false;
@@ -72,7 +68,7 @@ export class ElearningDetailComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
 
-          return this.reportService.getElearningDetail(this.processId, this.currentQuery);
+          return this.reportService.getElearningDetail(this.processId);
         })
       )
       .subscribe({
@@ -118,41 +114,5 @@ export class ElearningDetailComponent implements OnInit, OnDestroy {
     }
 
     return 'Desaprobado';
-  }
-
-  private buildQueryFromParams(queryParams: ParamMap): DetailQuery | undefined {
-    const query: DetailQuery = {};
-
-    const state = queryParams.get('state');
-    if (state && state !== 'all') {
-      query.state = state as DetailQuery['state'];
-    }
-
-    const search = queryParams.get('search');
-    if (search) {
-      query.search = search;
-    }
-
-    const startDate = queryParams.get('startDate');
-    if (startDate) {
-      query.startDate = startDate;
-    }
-
-    const endDate = queryParams.get('endDate');
-    if (endDate) {
-      query.endDate = endDate;
-    }
-
-    const orderBy = queryParams.get('orderBy');
-    if (orderBy) {
-      query.orderBy = orderBy;
-    }
-
-    const direction = queryParams.get('direction');
-    if (direction === 'asc' || direction === 'desc') {
-      query.direction = direction;
-    }
-
-    return Object.keys(query).length > 0 ? query : undefined;
   }
 }

@@ -100,16 +100,8 @@ public class ReportController {
 
   @Operation(summary = "Detalle de cursos e-learning del proceso")
   @GetMapping("/elearning/{processId}/courses")
-  public List<ReportElearningDetailDTO> getElearningDetails(@PathVariable Long processId,
-                                                            @RequestParam(required = false) String startDate,
-                                                            @RequestParam(required = false) String endDate,
-                                                            @RequestParam(required = false) String period,
-                                                            @RequestParam(required = false) String state,
-                                                            @RequestParam(required = false) String search,
-                                                            @RequestParam(defaultValue = "courseName") String orderBy,
-                                                            @RequestParam(defaultValue = "asc") String direction) {
-    DateRange range = resolveDateRange(startDate, endDate, period);
-    return reportService.getElearningDetails(processId, range.start(), range.end(), state, search, orderBy, direction);
+  public List<ReportElearningDetailDTO> getElearningDetails(@PathVariable Long processId) {
+    return reportService.getElearningDetails(processId);
   }
 
   @Operation(summary = "Descargar reporte en Excel")

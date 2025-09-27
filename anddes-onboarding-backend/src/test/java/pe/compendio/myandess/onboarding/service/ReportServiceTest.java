@@ -235,11 +235,12 @@ class ReportServiceTest {
 
   @Test
   void shouldReturnElearningDetails() {
-    List<ReportElearningDetailDTO> details = reportService.getElearningDetails(process.getId(),
-      LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31), "", null, "courseName", "asc");
+    List<ReportElearningDetailDTO> details = reportService.getElearningDetails(process.getId());
 
     assertThat(details).hasSize(2);
-    assertThat(details.get(0).getState()).isIn("Desaprobado", "Pendiente");
+    assertThat(details)
+      .extracting(ReportElearningDetailDTO::getState)
+      .containsExactlyInAnyOrder("Desaprobado", "Pendiente");
   }
 
   @Test
