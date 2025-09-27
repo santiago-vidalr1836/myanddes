@@ -42,8 +42,15 @@ export class ReportService {
     );
   }
 
-  getGeneralDetail(processId: string): Observable<ActivityDetail[]> {
-    return this.httpClient.get<ActivityDetail[]>(`${this.baseUrl}/general/${processId}`);
+  getGeneralDetail(
+    processId: string,
+    query?: Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>>
+  ): Observable<ActivityDetail[]> {
+    const params = query ? this.buildDetailParams(query) : undefined;
+
+    return this.httpClient.get<ActivityDetail[]>(`${this.baseUrl}/general/${processId}/activities`, {
+      params,
+    });
   }
 
   getElearningDetail(userId: string): Observable<ElearningDetail[]> {
@@ -75,6 +82,36 @@ export class ReportService {
     if (query.orderBy) {
       params = params.set('orderBy', query.orderBy);
     }
+    if (query.direction) {
+      params = params.set('direction', query.direction);
+    }
+
+    return params;
+  }
+
+  private buildDetailParams(query: Partial<Omit<ReportQuery, 'pageIndex' | 'pageSize'>>): HttpParams {
+    let params = new HttpParams();
+
+    if (query.state) {
+      params = params.set('state', query.state);
+    }
+
+    if (query.search) {
+      params = params.set('search', query.search);
+    }
+
+    if (query.startDate) {
+      params = params.set('startDate', query.startDate);
+    }
+
+    if (query.endDate) {
+      params = params.set('endDate', query.endDate);
+    }
+
+    if (query.orderBy) {
+      params = params.set('orderBy', query.orderBy);
+    }
+
     if (query.direction) {
       params = params.set('direction', query.direction);
     }
