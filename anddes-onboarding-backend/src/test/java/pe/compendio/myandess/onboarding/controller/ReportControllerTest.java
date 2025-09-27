@@ -10,11 +10,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import pe.compendio.myandess.onboarding.controller.dto.ReportElearningDetailDTO;
+import pe.compendio.myandess.onboarding.controller.dto.ReportElearningRowDTO;
 import pe.compendio.myandess.onboarding.controller.dto.ReportGeneralRowDTO;
 import pe.compendio.myandess.onboarding.controller.dto.ReportPagedDTO;
 import pe.compendio.myandess.onboarding.service.ReportService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,6 +69,35 @@ class ReportControllerTest {
       .andExpect(jsonPath("$.data[0].fullName").value("Ana Diaz"))
       .andExpect(jsonPath("$.data[0].dni").value("12345678"))
       .andExpect(jsonPath("$.data[0].delayed").value(true));
+  }
+
+  @Test
+  void elearningReportEndpointShouldReturnData() throws Exception {
+    ReportElearningRowDTO row = ReportElearningRowDTO.builder()
+      .processId(2L)
+      .dni("87654321")
+      .fullName("Juan Perez")
+      .startDate(LocalDate.of(2024, 2, 1))
+      .finishDate(LocalDateTime.of(2024, 2, 15, 10, 30))
+      .progress(80.0)
+      .state("Pendiente")
+      .build();
+    ReportPagedDTO<ReportElearningRowDTO> paged = new ReportPagedDTO<>(1, List.of(row));
+
+    when(reportService.getElearningReport(any(LocalDate.class), any(LocalDate.class), nullable(String.class), nullable(String.class), anyInt(), anyInt(), anyString(), anyString()))
+      .thenReturn(paged);
+
+    mockMvc.perform(get("/reports/elearning")
+        .param("startDate", "2024-01-01")
+        .param("endDate", "2024-12-31"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.total").value(1))
+      .andExpect(jsonPath("$.data[0].dni").value("87654321"))
+      .andExpect(jsonPath("$.data[0].fullName").value("Juan Perez"))
+      .andExpect(jsonPath("$.data[0].startDate").value("2024-02-01"))
+      .andExpect(jsonPath("$.data[0].finishDate").value("2024-02-15T10:30:00"))
+      .andExpect(jsonPath("$.data[0].progress").value(80.0))
+      .andExpect(jsonPath("$.data[0].state").value("Pendiente"));
   }
 
   @Test

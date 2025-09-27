@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,12 +14,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReportElearningRowDTO {
   private Long processId;
-  private String collaborator;
-  private int totalCourses;
-  private int completedCourses;
-  private double progress;
-  private long readCards;
-  private long correctAnswers;
-  private String state;
+  private String dni;
+  private String fullName;
+  private LocalDate startDate;
   private LocalDateTime finishDate;
+  private double progress;
+  private String state;
 }
