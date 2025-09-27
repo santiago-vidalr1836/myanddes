@@ -61,6 +61,7 @@ export interface ActivityDetail {
   period?: string;
   activityName?: string;
   completionDate?: string;
+  parentCode?: string;
 }
 
 export interface ElearningDetail {
