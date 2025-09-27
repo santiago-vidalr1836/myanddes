@@ -155,8 +155,6 @@ public class ReportService {
   }
 
   public List<ReportActivityDetailDTO> getGeneralDetails(Long processId,
-                                                         LocalDate startDate,
-                                                         LocalDate endDate,
                                                          String state,
                                                          String search,
                                                          String orderBy,
@@ -164,16 +162,6 @@ public class ReportService {
     List<ProcessActivity> activities = processActivityRepository.findByProcess_Id(processId);
     List<ReportActivityDetailDTO> details = mapper.processActivitiesToReportActivityDetails(activities);
     details.forEach(detail -> detail.setState(detail.isCompleted() ? STATE_COMPLETED : STATE_PENDING));
-
-    if (startDate != null || endDate != null) {
-      LocalDateTime startBound = startDate != null ? startDate.atStartOfDay() : LocalDateTime.MIN;
-      LocalDateTime endBound = endDate != null ? endDate.atTime(23, 59, 59) : LocalDateTime.MAX;
-      details = details.stream()
-        .filter(detail -> detail.getCompletionDate() != null
-          && !detail.getCompletionDate().isBefore(startBound)
-          && !detail.getCompletionDate().isAfter(endBound))
-        .collect(Collectors.toList());
-    }
 
     String normalizedState = normalizeState(state);
     if (StringUtils.hasText(normalizedState) && !"ALL".equals(normalizedState)) {
