@@ -27,8 +27,10 @@ import pe.compendio.myandess.onboarding.repository.ProcessActivityRepository;
 import pe.compendio.myandess.onboarding.repository.ProcessRepository;
 import pe.compendio.myandess.onboarding.util.Mapper;
 
+import java.text.Collator;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,6 +41,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -305,42 +308,73 @@ public class ReportService {
 
     Workbook workbook = new XSSFWorkbook();
     Sheet sheet = workbook.createSheet("Matriz");
+
+    Collator collator = Collator.getInstance(Locale.getDefault());
+    Comparator<String> localeComparator = collator::compare;
+    List<String> contentColumns = report.getData().stream()
+      .map(ReportMatrixRowDTO::getElearningResults)
+      .filter(Objects::nonNull)
+      .flatMap(results -> results.keySet().stream())
+      .collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(localeComparator)), ArrayList::new));
+
+    List<String> baseHeaders = List.of(
+      "DNI",
+      "Colaborador",
+      "Fecha inicio",
+      "Fecha fin e-learning",
+      "Avance general (completadas/totales)",
+      "Estado proceso",
+      "Avance e-learning (completadas/totales)"
+    );
+
     Row header = sheet.createRow(0);
-    header.createCell(0).setCellValue("ID Proceso");
-    header.createCell(1).setCellValue("DNI");
-    header.createCell(2).setCellValue("Colaborador");
-    header.createCell(3).setCellValue("Fecha Inicio");
-    header.createCell(4).setCellValue("Fecha Fin");
-    header.createCell(5).setCellValue("Avance General (%)");
-    header.createCell(6).setCellValue("Actividades Completadas");
-    header.createCell(7).setCellValue("Total Actividades");
-    header.createCell(8).setCellValue("Estado Proceso");
-    header.createCell(9).setCellValue("Avance Elearning (%)");
-    header.createCell(10).setCellValue("Contenidos Completados");
-    header.createCell(11).setCellValue("Total Contenidos");
-    header.createCell(12).setCellValue("Fecha Fin Elearning");
-    header.createCell(13).setCellValue("Estado Elearning");
+    int columnIndex = 0;
+    for (String baseHeader : baseHeaders) {
+      header.createCell(columnIndex++).setCellValue(baseHeader);
+    }
+    for (String contentHeader : contentColumns) {
+      header.createCell(columnIndex++).setCellValue(contentHeader);
+    }
+
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm", Locale.getDefault());
 
     int rowIndex = 1;
     for (ReportMatrixRowDTO row : report.getData()) {
       Row excelRow = sheet.createRow(rowIndex++);
-      excelRow.createCell(0).setCellValue(row.getProcessId());
-      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getDni()).orElse(""));
-      excelRow.createCell(2).setCellValue(Optional.ofNullable(row.getFullName()).orElse(""));
-      excelRow.createCell(3).setCellValue(row.getStartDate() != null ? row.getStartDate().toString() : "");
-      excelRow.createCell(4).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
-      excelRow.createCell(5).setCellValue(row.getGeneralProgress());
-      excelRow.createCell(6).setCellValue(row.getGeneralCompletedActivities());
-      excelRow.createCell(7).setCellValue(row.getGeneralTotalActivities());
-      excelRow.createCell(8).setCellValue(Optional.ofNullable(row.getProcessState()).orElse(""));
-      excelRow.createCell(9).setCellValue(row.getElearningProgress());
-      excelRow.createCell(10).setCellValue(row.getElearningCompletedContents());
-      excelRow.createCell(11).setCellValue(row.getElearningTotalContents());
-      excelRow.createCell(12).setCellValue(row.getElearningFinishDate() != null ? row.getElearningFinishDate().toString() : "");
-      excelRow.createCell(13).setCellValue(Optional.ofNullable(row.getElearningState()).orElse(""));
+      int cellIndex = 0;
+      excelRow.createCell(cellIndex++).setCellValue(Optional.ofNullable(row.getDni()).orElse(""));
+      excelRow.createCell(cellIndex++).setCellValue(Optional.ofNullable(row.getFullName()).orElse(""));
+      excelRow.createCell(cellIndex++).setCellValue(formatLocalDate(row.getStartDate(), dateFormatter));
+      excelRow.createCell(cellIndex++).setCellValue(formatLocalDateTime(row.getElearningFinishDate(), dateTimeFormatter));
+      excelRow.createCell(cellIndex++).setCellValue(formatFraction(row.getGeneralCompletedActivities(), row.getGeneralTotalActivities()));
+      excelRow.createCell(cellIndex++).setCellValue(Optional.ofNullable(row.getProcessState()).orElse(""));
+      excelRow.createCell(cellIndex++).setCellValue(formatFraction(row.getElearningCompletedContents(), row.getElearningTotalContents()));
+
+      Map<String, String> elearningResults = Optional.ofNullable(row.getElearningResults()).orElse(Collections.emptyMap());
+      for (String contentHeader : contentColumns) {
+        String value = elearningResults.getOrDefault(contentHeader, "-");
+        excelRow.createCell(cellIndex++).setCellValue(value);
+      }
     }
 
     return workbook;
+  }
+
+  private String formatLocalDate(LocalDate date, DateTimeFormatter formatter) {
+    return Optional.ofNullable(date)
+      .map(value -> value.format(formatter))
+      .orElse("");
+  }
+
+  private String formatLocalDateTime(LocalDateTime date, DateTimeFormatter formatter) {
+    return Optional.ofNullable(date)
+      .map(value -> value.format(formatter))
+      .orElse("");
+  }
+
+  private String formatFraction(int completed, int total) {
+    return String.format(Locale.getDefault(), "%d/%d", completed, total);
   }
 
   private PageRequest createPageRequest(Integer page, Integer pageSize, String orderBy, String direction) {
