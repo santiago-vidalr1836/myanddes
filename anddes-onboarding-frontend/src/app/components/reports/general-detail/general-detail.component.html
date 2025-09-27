@@ -1,0 +1,86 @@
+<div class="general-detail-page">
+  <header class="page-header">
+    <button mat-button type="button" class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+    <div class="header-content">
+      <h1>Detalle de actividades</h1>
+      <p *ngIf="fullName" class="subtitle">{{ fullName }}</p>
+    </div>
+  </header>
+
+  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+  <section class="error-state" *ngIf="hasError && !isLoading">
+    <mat-icon>error</mat-icon>
+    <div>
+      <h2>No pudimos cargar la información</h2>
+      <p>Ocurrió un error inesperado. Intenta nuevamente más tarde.</p>
+      <button mat-stroked-button color="primary" type="button" (click)="reload()">Reintentar</button>
+    </div>
+  </section>
+
+  <section class="empty-state" *ngIf="!isLoading && !hasError && details.length === 0">
+    <mat-icon>playlist_remove</mat-icon>
+    <p>No se encontraron actividades para este proceso.</p>
+  </section>
+
+  <div class="detail-content" *ngIf="!isLoading && !hasError && details.length > 0">
+    <div class="summary-grid">
+      <div class="summary-card pending">
+        <mat-icon>pending_actions</mat-icon>
+        <div>
+          <h3>{{ pendingDetails.length }}</h3>
+          <p>Pendientes</p>
+        </div>
+      </div>
+      <div class="summary-card completed">
+        <mat-icon>check_circle</mat-icon>
+        <div>
+          <h3>{{ completedDetails.length }}</h3>
+          <p>Completadas</p>
+        </div>
+      </div>
+      <div class="summary-card total">
+        <mat-icon>assignment</mat-icon>
+        <div>
+          <h3>{{ details.length }}</h3>
+          <p>Total de actividades</p>
+        </div>
+      </div>
+    </div>
+
+    <section class="activity-section" *ngFor="let section of sections; trackBy: trackBySection">
+      <div class="section-header">
+        <div class="section-icon">
+          <mat-icon>{{ section.icon }}</mat-icon>
+        </div>
+        <div class="section-info">
+          <h2>{{ section.title }}</h2>
+          <p>{{ section.description }}</p>
+        </div>
+      </div>
+
+      <ul class="activity-list">
+        <li
+          class="activity-item"
+          *ngFor="let activity of section.activities; trackBy: trackByActivity"
+          [class.completed]="activity.completed"
+        >
+          <div class="status-icon" [class.completed]="activity.completed">
+            <mat-icon>{{ activity.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          </div>
+          <div class="activity-info">
+            <h3 class="activity-title">{{ activity.title || activity.activityName }}</h3>
+            <p class="activity-meta" *ngIf="activity.responsible">Responsable: {{ activity.responsible }}</p>
+            <p class="activity-meta" *ngIf="!activity.completed">Estado: Pendiente</p>
+            <p class="activity-meta" *ngIf="activity.completed">
+              Completada el {{ (activity.completedAt || activity.completionDate) | date: 'shortDate' }}
+            </p>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </div>
+</div>

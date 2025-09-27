@@ -142,7 +142,7 @@
         <th mat-header-cell *matHeaderCellDef class="actions-header">Acciones</th>
         <td mat-cell *matCellDef="let row" class="actions-cell">
           @if (isGeneral) {
-            <button mat-icon-button (click)="openGeneralDetail(row)"><mat-icon>checklist</mat-icon></button>
+            <button mat-icon-button (click)="viewGeneralDetail(row)"><mat-icon>checklist</mat-icon></button>
           }
           @if(isElearning){
             <button mat-icon-button (click)="openElearningDetail(row)"><mat-icon>school</mat-icon></button>
