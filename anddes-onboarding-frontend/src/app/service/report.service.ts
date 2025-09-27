@@ -80,17 +80,29 @@ export class ReportService {
       })
       .pipe(
         map((details) =>
-          details.map((detail) => ({
-            contentId: detail.contentId != null ? String(detail.contentId) : '',
-            courseName: detail.courseName ?? '',
-            result: detail.result ?? undefined,
-            minimumScore: detail.minimumScore ?? 0,
-            attempts: detail.attempts ?? 0,
-            progress: detail.progress ?? 0,
-            readCards: detail.readCards ?? 0,
-            correctAnswers: detail.correctAnswers ?? 0,
-            state: (detail.state ?? 'Pendiente') as ReportRowState,
-          }))
+          details.map((detail) => {
+            const minimumScore = detail.minimumScore ?? 0;
+            const rawResult = detail.result;
+            const result = rawResult != null ? rawResult : undefined;
+            const hasResult = rawResult != null;
+            const derivedState: ReportRowState = hasResult
+              ? rawResult >= minimumScore
+                ? 'Aprobado'
+                : 'Desaprobado'
+              : 'Desaprobado';
+
+            return {
+              contentId: detail.contentId != null ? String(detail.contentId) : '',
+              courseName: detail.courseName ?? '',
+              result,
+              minimumScore,
+              attempts: detail.attempts ?? 0,
+              progress: detail.progress ?? 0,
+              readCards: detail.readCards ?? 0,
+              correctAnswers: detail.correctAnswers ?? 0,
+              state: derivedState,
+            };
+          })
         )
       );
   }

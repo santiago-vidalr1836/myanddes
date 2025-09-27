@@ -1,0 +1,58 @@
+<div class="elearning-detail">
+  <header class="detail-header">
+    <button mat-button type="button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Atrás
+    </button>
+    <h1>{{ fullName || 'Detalle e-learning' }}</h1>
+  </header>
+
+  <section class="detail-content">
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+    <ng-container *ngIf="!isLoading">
+      <div *ngIf="hasError" class="state-message error">
+        <p>Ocurrió un error al cargar la información.</p>
+        <button mat-stroked-button color="primary" type="button" (click)="reload()">Reintentar</button>
+      </div>
+
+      <div *ngIf="!hasError">
+        <ng-container *ngIf="details.length; else emptyState">
+          <table mat-table [dataSource]="details" class="detail-table">
+            <ng-container matColumnDef="courseName">
+              <th mat-header-cell *matHeaderCellDef>Contenido</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.courseName || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="result">
+              <th mat-header-cell *matHeaderCellDef>Calificación</th>
+              <td mat-cell *matCellDef="let detail">{{ resultLabel(detail) }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="attempts">
+              <th mat-header-cell *matHeaderCellDef>Intentos</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.attempts ?? 0 }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="state">
+              <th mat-header-cell *matHeaderCellDef>Estado</th>
+              <td mat-cell *matCellDef="let detail" class="state-cell">{{ statusLabel(detail) }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns; trackBy: trackByContent"
+            ></tr>
+          </table>
+        </ng-container>
+
+        <ng-template #emptyState>
+          <div class="state-message empty">
+            <p>No se encontraron registros.</p>
+          </div>
+        </ng-template>
+      </div>
+    </ng-container>
+  </section>
+</div>
