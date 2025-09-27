@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -144,7 +145,10 @@ public class ReportService {
           contentsByProcess.getOrDefault(process.getId(), Collections.emptyList()))));
 
     List<ReportMatrixRowDTO> matrixRows = processPage.getContent().stream()
-      .map(process -> buildMatrixRow(generalRows.get(process.getId()), elearningRows.get(process.getId())))
+      .map(process -> buildMatrixRow(
+        generalRows.get(process.getId()),
+        elearningRows.get(process.getId()),
+        contentsByProcess.getOrDefault(process.getId(), Collections.emptyList())))
       .toList();
 
     return new ReportPagedDTO<>(processPage.getTotalElements(), matrixRows);
@@ -303,25 +307,37 @@ public class ReportService {
     Sheet sheet = workbook.createSheet("Matriz");
     Row header = sheet.createRow(0);
     header.createCell(0).setCellValue("ID Proceso");
-    header.createCell(1).setCellValue("Colaborador");
-    header.createCell(2).setCellValue("Fecha Inicio");
-    header.createCell(3).setCellValue("Fecha Fin");
-    header.createCell(4).setCellValue("Avance General (%)");
-    header.createCell(5).setCellValue("Estado General");
-    header.createCell(6).setCellValue("Avance Elearning (%)");
-    header.createCell(7).setCellValue("Estado Elearning");
+    header.createCell(1).setCellValue("DNI");
+    header.createCell(2).setCellValue("Colaborador");
+    header.createCell(3).setCellValue("Fecha Inicio");
+    header.createCell(4).setCellValue("Fecha Fin");
+    header.createCell(5).setCellValue("Avance General (%)");
+    header.createCell(6).setCellValue("Actividades Completadas");
+    header.createCell(7).setCellValue("Total Actividades");
+    header.createCell(8).setCellValue("Estado Proceso");
+    header.createCell(9).setCellValue("Avance Elearning (%)");
+    header.createCell(10).setCellValue("Contenidos Completados");
+    header.createCell(11).setCellValue("Total Contenidos");
+    header.createCell(12).setCellValue("Fecha Fin Elearning");
+    header.createCell(13).setCellValue("Estado Elearning");
 
     int rowIndex = 1;
     for (ReportMatrixRowDTO row : report.getData()) {
       Row excelRow = sheet.createRow(rowIndex++);
       excelRow.createCell(0).setCellValue(row.getProcessId());
-      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getCollaborator()).orElse(""));
-      excelRow.createCell(2).setCellValue(row.getStartDate() != null ? row.getStartDate().toString() : "");
-      excelRow.createCell(3).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
-      excelRow.createCell(4).setCellValue(row.getGeneralProgress());
-      excelRow.createCell(5).setCellValue(Optional.ofNullable(row.getGeneralState()).orElse(""));
-      excelRow.createCell(6).setCellValue(row.getElearningProgress());
-      excelRow.createCell(7).setCellValue(Optional.ofNullable(row.getElearningState()).orElse(""));
+      excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getDni()).orElse(""));
+      excelRow.createCell(2).setCellValue(Optional.ofNullable(row.getFullName()).orElse(""));
+      excelRow.createCell(3).setCellValue(row.getStartDate() != null ? row.getStartDate().toString() : "");
+      excelRow.createCell(4).setCellValue(row.getFinishDate() != null ? row.getFinishDate().toString() : "");
+      excelRow.createCell(5).setCellValue(row.getGeneralProgress());
+      excelRow.createCell(6).setCellValue(row.getGeneralCompletedActivities());
+      excelRow.createCell(7).setCellValue(row.getGeneralTotalActivities());
+      excelRow.createCell(8).setCellValue(Optional.ofNullable(row.getProcessState()).orElse(""));
+      excelRow.createCell(9).setCellValue(row.getElearningProgress());
+      excelRow.createCell(10).setCellValue(row.getElearningCompletedContents());
+      excelRow.createCell(11).setCellValue(row.getElearningTotalContents());
+      excelRow.createCell(12).setCellValue(row.getElearningFinishDate() != null ? row.getElearningFinishDate().toString() : "");
+      excelRow.createCell(13).setCellValue(Optional.ofNullable(row.getElearningState()).orElse(""));
     }
 
     return workbook;
@@ -535,22 +551,57 @@ public class ReportService {
       .build();
   }
 
-  private ReportMatrixRowDTO buildMatrixRow(ReportGeneralRowDTO generalRow, ReportElearningRowDTO elearningRow) {
+  private ReportMatrixRowDTO buildMatrixRow(ReportGeneralRowDTO generalRow,
+                                           ReportElearningRowDTO elearningRow,
+                                           List<ProcessActivityContent> contents) {
     if (generalRow == null) {
       return ReportMatrixRowDTO.builder().build();
     }
+    int generalCompleted = Optional.ofNullable(generalRow.getCompletedActivities()).orElse(0);
+    int generalTotal = Optional.ofNullable(generalRow.getTotalActivities()).orElse(0);
     double elearningProgress = elearningRow != null ? elearningRow.getProgress() : 0.0;
     String elearningState = elearningRow != null ? elearningRow.getState() : STATE_PENDING;
+    LocalDateTime elearningFinishDate = elearningRow != null ? elearningRow.getFinishDate() : null;
+
+    List<ProcessActivityContent> safeContents = contents != null ? contents : Collections.emptyList();
+    int elearningTotal = safeContents.size();
+    int elearningCompleted = (int) safeContents.stream()
+      .filter(content -> {
+        Integer progress = content.getProgress();
+        Integer result = content.getResult();
+        return (progress != null && progress >= 100) || result != null;
+      })
+      .count();
+
+    Map<String, String> elearningResults = new LinkedHashMap<>();
+    safeContents.forEach(content -> {
+      String key;
+      if (content.getContent() != null && StringUtils.hasText(content.getContent().getName())) {
+        key = content.getContent().getName();
+      } else {
+        key = "Contenido " + Optional.ofNullable(content.getId()).map(String::valueOf).orElse("-");
+      }
+      String value = content.getResult() != null ? String.valueOf(content.getResult()) : "-";
+      elearningResults.put(key, value);
+    });
 
     return ReportMatrixRowDTO.builder()
       .processId(generalRow.getProcessId())
-      .collaborator(generalRow.getFullName())
+      .dni(generalRow.getDni())
+      .fullName(generalRow.getFullName())
       .startDate(generalRow.getStartDate())
       .finishDate(generalRow.getFinishDate())
       .generalProgress(generalRow.getProgress())
+      .generalCompletedActivities(generalCompleted)
+      .generalTotalActivities(generalTotal)
       .generalState(generalRow.getState())
+      .processState(generalRow.getState())
       .elearningProgress(elearningProgress)
+      .elearningCompletedContents(elearningCompleted)
+      .elearningTotalContents(elearningTotal)
       .elearningState(elearningState)
+      .elearningFinishDate(elearningFinishDate)
+      .elearningResults(elearningResults)
       .build();
   }
 

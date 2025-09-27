@@ -23,6 +23,7 @@ import pe.compendio.myandess.onboarding.controller.dto.ReportMatrixRowDTO;
 import pe.compendio.myandess.onboarding.controller.dto.ReportPagedDTO;
 import pe.compendio.myandess.onboarding.entity.Activity;
 import pe.compendio.myandess.onboarding.entity.Constants;
+import pe.compendio.myandess.onboarding.entity.ELearningContent;
 import pe.compendio.myandess.onboarding.entity.Process;
 import pe.compendio.myandess.onboarding.entity.ProcessActivity;
 import pe.compendio.myandess.onboarding.entity.ProcessActivityContent;
@@ -113,6 +114,12 @@ class ReportServiceTest {
     elearningActivity.setCompleted(false);
     elearningActivity.setCompletionDate(LocalDateTime.of(2024, 1, 15, 18, 0));
 
+    ELearningContent approvedCourse = new ELearningContent();
+    approvedCourse.setName("Curso aprobado");
+
+    ELearningContent pendingCourse = new ELearningContent();
+    pendingCourse.setName("Curso pendiente");
+
     contentWithResult = new ProcessActivityContent();
     contentWithResult.setId(1000L);
     contentWithResult.setProcessActivity(elearningActivity);
@@ -120,6 +127,7 @@ class ReportServiceTest {
     contentWithResult.setMinimumScore(80);
     contentWithResult.setAttempts(2);
     contentWithResult.setProgress(100);
+    contentWithResult.setContent(approvedCourse);
 
     contentPending = new ProcessActivityContent();
     contentPending.setId(1001L);
@@ -127,6 +135,7 @@ class ReportServiceTest {
     contentPending.setProgress(null);
     contentPending.setMinimumScore(70);
     contentPending.setAttempts(0);
+    contentPending.setContent(pendingCourse);
 
     ProcessActivityContentCard card = new ProcessActivityContentCard();
     card.setId(500L);
@@ -219,8 +228,19 @@ class ReportServiceTest {
 
     assertThat(report.getTotal()).isEqualTo(1);
     ReportMatrixRowDTO row = report.getData().get(0);
+    assertThat(row.getDni()).isEqualTo("12345678");
+    assertThat(row.getFullName()).isEqualTo("Ana Diaz");
+    assertThat(row.getGeneralCompletedActivities()).isEqualTo(1);
+    assertThat(row.getGeneralTotalActivities()).isEqualTo(3);
     assertThat(row.getGeneralState()).isEqualTo("Pendiente");
+    assertThat(row.getProcessState()).isEqualTo("Pendiente");
+    assertThat(row.getElearningCompletedContents()).isEqualTo(1);
+    assertThat(row.getElearningTotalContents()).isEqualTo(2);
+    assertThat(row.getElearningFinishDate()).isEqualTo(LocalDateTime.of(2024, 1, 15, 18, 0));
     assertThat(row.getElearningState()).isEqualTo("Pendiente");
+    assertThat(row.getElearningResults())
+      .containsEntry("Curso aprobado", "60")
+      .containsEntry("Curso pendiente", "-");
   }
 
   @Test
