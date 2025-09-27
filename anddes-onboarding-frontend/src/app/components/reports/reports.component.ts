@@ -197,7 +197,7 @@ export class ReportsComponent implements AfterViewInit {
   openGeneralDetail(row: any): void {
     const generalRow = row as GeneralReportRow;
     this.dialog.open(GeneralDetailDialogComponent, {
-      data: { userId: generalRow.id, fullName: generalRow.fullName },
+      data: { processId: generalRow.processId, fullName: generalRow.fullName },
     });
   }
 
@@ -252,7 +252,7 @@ export class ReportsComponent implements AfterViewInit {
   }
 
   resolveState(row: any): ReportRowState {
-    const value = (row as GeneralReportRow).state ?? (row as ElearningReportRow).state;
+    const value = (row as ElearningReportRow).state;
     return (value ?? 'pending') as ReportRowState;
   }
 
@@ -347,7 +347,7 @@ export class ReportsComponent implements AfterViewInit {
 
   private updateDisplayedColumns(type: ReportType): void {
     if (type === 'general') {
-      this.displayedColumns = ['fullName', 'position', 'bossName', 'progress', 'state', 'startDate', 'actions'];
+      this.displayedColumns = ['dni', 'fullName', 'startDate', 'finishDate', 'progress', 'actions'];
     } else if (type === 'elearning') {
       this.displayedColumns = ['fullName', 'totalCourses', 'approvedCourses', 'averageScore', 'state', 'updatedAt', 'actions'];
     } else {

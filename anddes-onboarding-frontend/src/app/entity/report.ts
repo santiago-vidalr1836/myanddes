@@ -21,15 +21,15 @@ export interface PagedReportResponse<T> {
 export type ReportRowState = 'pending' | 'in_progress' | 'completed';
 
 export interface GeneralReportRow {
-  id: string;
+  processId: string;
+  dni: string;
   fullName: string;
-  position: string;
-  bossName: string;
   startDate: string;
-  progress: number;
-  state: ReportRowState;
+  finishDate: string;
   completedActivities: number;
   totalActivities: number;
+  progress: number;
+  delayed: boolean;
 }
 
 export interface ElearningReportRow {

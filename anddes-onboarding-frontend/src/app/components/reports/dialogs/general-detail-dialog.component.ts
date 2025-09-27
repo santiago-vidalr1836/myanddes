@@ -8,7 +8,7 @@ import { ReportService } from '../../../service/report.service';
 import { ActivityDetail } from '../../../entity/report';
 
 export interface GeneralDetailDialogData {
-  userId: string;
+  processId: string;
   fullName: string;
 }
 
@@ -38,7 +38,7 @@ export class GeneralDetailDialogComponent implements OnInit {
   }
 
   private loadDetails(): void {
-    this.reportService.getGeneralDetail(this.data.userId).subscribe({
+    this.reportService.getGeneralDetail(this.data.processId).subscribe({
       next: (details) => {
         this.details = details;
         this.isLoading = false;

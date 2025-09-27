@@ -42,8 +42,8 @@ export class ReportService {
     );
   }
 
-  getGeneralDetail(userId: string): Observable<ActivityDetail[]> {
-    return this.httpClient.get<ActivityDetail[]>(`${this.baseUrl}/general/${userId}`);
+  getGeneralDetail(processId: string): Observable<ActivityDetail[]> {
+    return this.httpClient.get<ActivityDetail[]>(`${this.baseUrl}/general/${processId}`);
   }
 
   getElearningDetail(userId: string): Observable<ElearningDetail[]> {
