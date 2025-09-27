@@ -162,7 +162,7 @@ class ReportServiceTest {
       LocalDate.of(2024, 12, 31), "", "", 0, 20, "user.fullname", "asc");
 
     assertThat(report.getTotal()).isEqualTo(1);
-    ReportGeneralRowDTO row = report.getItems().get(0);
+    ReportGeneralRowDTO row = report.getData().get(0);
     assertThat(row.getCompletedActivities()).isEqualTo(1);
     assertThat(row.getTotalActivities()).isEqualTo(3);
     assertThat(row.getState()).isEqualTo("Pendiente");
@@ -189,7 +189,7 @@ class ReportServiceTest {
       LocalDate.of(2024, 12, 31), "", "", 0, 20, "user.fullname", "asc");
 
     assertThat(report.getTotal()).isEqualTo(1);
-    ReportElearningRowDTO row = report.getItems().get(0);
+    ReportElearningRowDTO row = report.getData().get(0);
     assertThat(row.getTotalCourses()).isEqualTo(2);
     assertThat(row.getCompletedCourses()).isEqualTo(1);
     assertThat(row.getState()).isEqualTo("Pendiente");
@@ -201,7 +201,7 @@ class ReportServiceTest {
       LocalDate.of(2024, 12, 31), "", "", 0, 20, "user.fullname", "asc");
 
     assertThat(report.getTotal()).isEqualTo(1);
-    ReportMatrixRowDTO row = report.getItems().get(0);
+    ReportMatrixRowDTO row = report.getData().get(0);
     assertThat(row.getGeneralState()).isEqualTo("Pendiente");
     assertThat(row.getElearningState()).isEqualTo("Pendiente");
   }
@@ -232,13 +232,15 @@ class ReportServiceTest {
       Row header = sheet.getRow(0);
 
       assertThat(header.getCell(0).getStringCellValue()).isEqualTo("ID Proceso");
-      assertThat(header.getCell(1).getStringCellValue()).isEqualTo("Colaborador");
-      assertThat(header.getCell(2).getStringCellValue()).isEqualTo("Fecha Inicio");
-      assertThat(header.getCell(3).getStringCellValue()).isEqualTo("Fecha Fin");
-      assertThat(header.getCell(4).getStringCellValue()).isEqualTo("Total Actividades");
-      assertThat(header.getCell(5).getStringCellValue()).isEqualTo("Actividades Completadas");
-      assertThat(header.getCell(6).getStringCellValue()).isEqualTo("Avance (%)");
-      assertThat(header.getCell(7).getStringCellValue()).isEqualTo("Estado");
+      assertThat(header.getCell(1).getStringCellValue()).isEqualTo("DNI");
+      assertThat(header.getCell(2).getStringCellValue()).isEqualTo("Colaborador");
+      assertThat(header.getCell(3).getStringCellValue()).isEqualTo("Retrasado");
+      assertThat(header.getCell(4).getStringCellValue()).isEqualTo("Fecha Inicio");
+      assertThat(header.getCell(5).getStringCellValue()).isEqualTo("Fecha Fin");
+      assertThat(header.getCell(6).getStringCellValue()).isEqualTo("Total Actividades");
+      assertThat(header.getCell(7).getStringCellValue()).isEqualTo("Actividades Completadas");
+      assertThat(header.getCell(8).getStringCellValue()).isEqualTo("Avance (%)");
+      assertThat(header.getCell(9).getStringCellValue()).isEqualTo("Estado");
     }
   }
 }

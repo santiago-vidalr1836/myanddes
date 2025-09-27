@@ -297,7 +297,7 @@ public class ReportService {
     header.createCell(9).setCellValue("Estado");
 
     int rowIndex = 1;
-    for (ReportGeneralRowDTO row : report.getItems()) {
+    for (ReportGeneralRowDTO row : report.getData()) {
       Row excelRow = sheet.createRow(rowIndex++);
       excelRow.createCell(0).setCellValue(row.getProcessId());
       excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getDni()).orElse(""));
@@ -337,7 +337,7 @@ public class ReportService {
     header.createCell(8).setCellValue("Fecha Fin");
 
     int rowIndex = 1;
-    for (ReportElearningRowDTO row : report.getItems()) {
+    for (ReportElearningRowDTO row : report.getData()) {
       Row excelRow = sheet.createRow(rowIndex++);
       excelRow.createCell(0).setCellValue(row.getProcessId());
       excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getCollaborator()).orElse(""));
@@ -375,7 +375,7 @@ public class ReportService {
     header.createCell(7).setCellValue("Estado Elearning");
 
     int rowIndex = 1;
-    for (ReportMatrixRowDTO row : report.getItems()) {
+    for (ReportMatrixRowDTO row : report.getData()) {
       Row excelRow = sheet.createRow(rowIndex++);
       excelRow.createCell(0).setCellValue(row.getProcessId());
       excelRow.createCell(1).setCellValue(Optional.ofNullable(row.getCollaborator()).orElse(""));
