@@ -48,6 +48,17 @@ public class ReportService {
   private static final String STATE_PENDING = "Pendiente";
   private static final String STATE_APPROVED = "Aprobado";
   private static final String STATE_REJECTED = "Desaprobado";
+  private static final String DEFAULT_SORT_PROPERTY = "user.fullname";
+  private static final Map<String, String> SORT_PROPERTY_MAPPING = Map.ofEntries(
+    Map.entry("collaborator", "user.fullname"),
+    Map.entry("fullname", "user.fullname"),
+    Map.entry("user.fullname", "user.fullname"),
+    Map.entry("position", "user.job"),
+    Map.entry("user.job", "user.job"),
+    Map.entry("bossname", "user.boss.fullname"),
+    Map.entry("user.boss.fullname", "user.boss.fullname"),
+    Map.entry("startdate", "startDate")
+  );
 
   private final ProcessRepository processRepository;
   private final ProcessActivityRepository processActivityRepository;
@@ -379,8 +390,23 @@ public class ReportService {
     int pageNumber = page != null && page >= 0 ? page : 0;
     int size = pageSize != null && pageSize > 0 ? pageSize : Integer.MAX_VALUE;
     Sort.Direction sortDirection = Sort.Direction.fromOptionalString(direction).orElse(Sort.Direction.ASC);
-    String sortProperty = StringUtils.hasText(orderBy) ? orderBy : "user.fullname";
+    String sortProperty = resolveSortProperty(orderBy);
     return PageRequest.of(pageNumber, size, Sort.by(sortDirection, sortProperty));
+  }
+
+  private String resolveSortProperty(String orderBy) {
+    if (!StringUtils.hasText(orderBy)) {
+      return DEFAULT_SORT_PROPERTY;
+    }
+    String normalizedKey = orderBy.trim();
+    String mappedProperty = SORT_PROPERTY_MAPPING.get(normalizedKey.toLowerCase(Locale.ROOT));
+    if (mappedProperty != null) {
+      return mappedProperty;
+    }
+    if (normalizedKey.contains(".")) {
+      return normalizedKey;
+    }
+    return DEFAULT_SORT_PROPERTY;
   }
 
   private Page<Process> fetchProcesses(LocalDate startDate,
