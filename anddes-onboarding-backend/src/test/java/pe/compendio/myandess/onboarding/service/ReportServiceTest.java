@@ -66,6 +66,7 @@ class ReportServiceTest {
   private ProcessActivity generalActivityPending;
   private ProcessActivityContent contentWithResult;
   private ProcessActivityContent contentPending;
+  private ProcessActivityContent contentWithResultRetry;
 
   @BeforeEach
   void setUp() {
@@ -115,9 +116,11 @@ class ReportServiceTest {
     elearningActivity.setCompletionDate(LocalDateTime.of(2024, 1, 15, 18, 0));
 
     ELearningContent approvedCourse = new ELearningContent();
+    approvedCourse.setId(300L);
     approvedCourse.setName("Curso aprobado");
 
     ELearningContent pendingCourse = new ELearningContent();
+    pendingCourse.setId(301L);
     pendingCourse.setName("Curso pendiente");
 
     contentWithResult = new ProcessActivityContent();
@@ -125,9 +128,20 @@ class ReportServiceTest {
     contentWithResult.setProcessActivity(elearningActivity);
     contentWithResult.setResult(60);
     contentWithResult.setMinimumScore(80);
-    contentWithResult.setAttempts(2);
+    contentWithResult.setAttempts(1);
     contentWithResult.setProgress(100);
     contentWithResult.setContent(approvedCourse);
+    contentWithResult.setStatus("FAILED");
+
+    contentWithResultRetry = new ProcessActivityContent();
+    contentWithResultRetry.setId(1002L);
+    contentWithResultRetry.setProcessActivity(elearningActivity);
+    contentWithResultRetry.setResult(90);
+    contentWithResultRetry.setMinimumScore(80);
+    contentWithResultRetry.setAttempts(1);
+    contentWithResultRetry.setProgress(100);
+    contentWithResultRetry.setContent(approvedCourse);
+    contentWithResultRetry.setStatus("SUCCESSFULL");
 
     contentPending = new ProcessActivityContent();
     contentPending.setId(1001L);
@@ -136,6 +150,7 @@ class ReportServiceTest {
     contentPending.setMinimumScore(70);
     contentPending.setAttempts(0);
     contentPending.setContent(pendingCourse);
+    contentPending.setStatus("PENDING");
 
     ProcessActivityContentCard card = new ProcessActivityContentCard();
     card.setId(500L);
@@ -159,9 +174,9 @@ class ReportServiceTest {
       .thenReturn(Optional.of(elearningActivity));
 
     when(processActivityContentRepository.findByProcessActivity_Process_IdIn(any()))
-      .thenReturn(List.of(contentWithResult, contentPending));
+      .thenReturn(List.of(contentWithResult, contentWithResultRetry, contentPending));
     when(processActivityContentRepository.findByProcessActivity_Process_Id(process.getId()))
-      .thenReturn(List.of(contentWithResult, contentPending));
+      .thenReturn(List.of(contentWithResult, contentWithResultRetry, contentPending));
 
     when(processActivityContentCardRepository.findByProcessActivityContent_ProcessActivity_Process_IdIn(any()))
       .thenReturn(List.of(card));
@@ -258,9 +273,20 @@ class ReportServiceTest {
     List<ReportElearningDetailDTO> details = reportService.getElearningDetails(process.getId());
 
     assertThat(details).hasSize(2);
-    assertThat(details)
-      .extracting(ReportElearningDetailDTO::getState)
-      .containsExactlyInAnyOrder("Desaprobado", "Pendiente");
+    ReportElearningDetailDTO approvedDetail = details.stream()
+      .filter(detail -> "Curso aprobado".equals(detail.getCourseName()))
+      .findFirst()
+      .orElseThrow();
+    assertThat(approvedDetail.getState()).isEqualTo("Exitoso");
+    assertThat(approvedDetail.getAttempts()).isEqualTo(2);
+    assertThat(approvedDetail.getResult()).isEqualTo(90);
+
+    ReportElearningDetailDTO pendingDetail = details.stream()
+      .filter(detail -> "Curso pendiente".equals(detail.getCourseName()))
+      .findFirst()
+      .orElseThrow();
+    assertThat(pendingDetail.getState()).isEqualTo("Pendiente");
+    assertThat(pendingDetail.getAttempts()).isEqualTo(1);
   }
 
   @Test
