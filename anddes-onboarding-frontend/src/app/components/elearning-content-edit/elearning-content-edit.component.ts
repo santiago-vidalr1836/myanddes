@@ -57,9 +57,7 @@ export class ElearningContentEditComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private fileService: FileService,
     public utilService: UtilService
-  ) { }
-
-  ngOnInit(): void {
+  ) { 
     if (typeof window !== 'undefined') {
       this.content = window.history.state
 
@@ -67,6 +65,10 @@ export class ElearningContentEditComponent implements OnInit {
         this.content.cards = [];
       }
     }
+  }
+
+  ngOnInit(): void {
+    
   }
   back() {
     if (this.content.id == undefined) {
@@ -177,19 +179,18 @@ export class ElearningContentEditComponent implements OnInit {
   getErrorValidation(): string {
     var messageErroValidation = ''
 
-    const hasTextCard = this.content.cards.some(
-      c => c.type === Constants.ELEARNING_CONTENT_CARD_TYPE_TEXT && !c.deleted
+    const hasTextCardOrVideoCard = this.content.cards.some(
+      c => (c.type === Constants.ELEARNING_CONTENT_CARD_TYPE_TEXT  ||
+            c.type === Constants.ELEARNING_CONTENT_CARD_TYPE_VIDEO) && 
+            !c.deleted
     );
     // Validación de al menos una tarjeta de tipo QUESTION o VIDEO
-    const hasQuestionOrVideoCard = this.content.cards.some(
-      c =>
-        (c.type === Constants.ELEARNING_CONTENT_CARD_TYPE_QUESTION ||
-          c.type === Constants.ELEARNING_CONTENT_CARD_TYPE_VIDEO) &&
-        !c.deleted
+    const hasQuestion = this.content.cards.some(
+      c => c.type === Constants.ELEARNING_CONTENT_CARD_TYPE_QUESTION && !c.deleted
     );
 
-    if (!hasTextCard || !hasQuestionOrVideoCard) {
-       messageErroValidation = 'Debe agregar al menos una tarjeta de tipo contenido y una de tipo pregunta o video';
+    if (!hasTextCardOrVideoCard || !hasQuestion) {
+       messageErroValidation = 'Debe agregar al menos una tarjeta de tipo contenido o video y una de tipo pregunta';
     }
 
     if (this.content.cards.filter(c => !c.title && !c.deleted && !c.content && c.type == Constants.ELEARNING_CONTENT_CARD_TYPE_TEXT).length > 0) {

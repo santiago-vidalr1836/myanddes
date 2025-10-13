@@ -38,11 +38,14 @@ export class NotificationsComponent implements OnInit {
     private notificationService: NotificationService,
     private snackBarService: SnackbarService,
     private router: Router
-  ) { }
+  ) { 
+  }
 
   ngOnInit(): void {
     this.notificationService.listNotificationSenderProfile().subscribe(r => {
-      this.notificationSenderProfile = r[0];
+      if(r[0]){
+        this.notificationSenderProfile = r[0];
+      }
     })
   }
 
@@ -65,7 +68,7 @@ export class NotificationsComponent implements OnInit {
   onInputChange(event: Event) {
     this.disableButton = false;
   }
-  editTemplate(templateId: number) {
+  editTemplate(templateId: string) {
     var template = { id: templateId };
     this.router.navigate(['notifications/templates/edit'], { state: template });
   }

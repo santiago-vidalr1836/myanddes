@@ -4,10 +4,11 @@ export class NotificationSenderProfile {
     position: string;
     address: string;
     urlPhoto: string;
+    remindersNumber: number;
 }
 
 export class NotificationEmailTemplate {
-    id: number;
+    id: string;
     name: string;
     subject: string;
     bodyTemplate: string;

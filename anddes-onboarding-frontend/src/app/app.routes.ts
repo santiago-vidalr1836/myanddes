@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { MsalGuard } from '@azure/msal-angular';
+import { MsalGuard} from '@azure/msal-angular';
 
 export const routes: Routes = [
     /*{

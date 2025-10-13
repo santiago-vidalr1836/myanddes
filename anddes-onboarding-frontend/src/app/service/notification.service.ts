@@ -18,9 +18,7 @@ export class NotificationService {
     return this.httpClient.put(endpoint, notificationSenderProfile);
   }
 
-  getEmailTemplate(templateId: number) {
-    console.log(templateId);
-    console.log(typeof templateId);
+  getEmailTemplate(templateId: string) {
     var endpoint = environment.baseUrl + 'notification/templates/' + templateId
     return this.httpClient.get(endpoint);
   }

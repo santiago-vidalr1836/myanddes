@@ -33,7 +33,15 @@ export class ElearningContentAddComponent implements OnInit {
     private location : Location,
     private router: Router,
     private fileService: FileService
-  ){}
+  ){
+    if (typeof window !== 'undefined') {
+      this.content = window.history.state
+
+      if (this.content.id == undefined) {
+        this.content.cards = [];
+      }
+    }
+  }
 
   ngOnInit(): void {
     if(typeof window !== 'undefined'){

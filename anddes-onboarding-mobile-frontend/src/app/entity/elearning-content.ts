@@ -3,6 +3,7 @@ export interface ElearningContent {
     name : string;
     image : string;
     cards : ELearningContentCard[];
+    passingScore: number;
     position : number;
 }
 export interface ELearningContentCard{

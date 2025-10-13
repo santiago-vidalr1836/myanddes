@@ -1,170 +1,155 @@
-<div class="reports-page">
-  <div class="filters-header">
-    <button
-      mat-icon-button
-      color="primary"
-      class="download-button"
-      type="button"
-      aria-label="Descargar Excel"
-      (click)="downloadExcel()"
-    >
-      <mat-icon>file_download</mat-icon>
-    </button>
-
-    <mat-form-field class="borderless-field" appearance="fill">
-      <mat-label>Tipo de reporte</mat-label>
-      <mat-select [formControl]="typeControl">
-        <mat-option *ngFor="let option of reportTypes" [value]="option.value">
-          {{ option.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="borderless-field" appearance="fill">
-      <mat-label>Periodo</mat-label>
-      <mat-select [formControl]="periodControl">
-        <mat-select-trigger>
-          {{ formatPeriodLabel() }}
-        </mat-select-trigger>
-        <mat-option *ngFor="let option of periodOptions" [value]="option.value">
-          {{ option.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field class="borderless-field" appearance="fill">
-      <mat-label>Estado</mat-label>
-      <mat-select [formControl]="stateControl">
-        <mat-option *ngFor="let option of stateOptions" [value]="option.value">
-          {{ option.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <div class="filters">
-    <mat-form-field class="search-field" appearance="outline">
-      <mat-label>Buscar por usuario</mat-label>
-      <input matInput [formControl]="searchControl" placeholder="Nombre o correo" />
-      <button
-        mat-icon-button
-        matSuffix
-        type="button"
-        aria-label="Limpiar búsqueda"
-        *ngIf="searchControl.value"
-        (click)="clearSearch()"
-      >
-        <mat-icon>close</mat-icon>
+<div>
+  <span class="title"> Reportes</span>
+</div>
+<br>
+<div class="entity-list">
+  <div style="margin: 30px;">
+    <br>
+    <div align="end">
+      <button mat-icon-button class="download-button" type="button" aria-label="Descargar Excel"
+        (click)="downloadExcel()">
+        <mat-icon class="material-symbols-outlined">file_download</mat-icon>
       </button>
-    </mat-form-field>
-  </div>
+    </div>
+    <div class="filters-header">
+      <mat-form-field appearance="fill">
+        <mat-label>Tipo de reporte</mat-label>
+        <mat-select [formControl]="typeControl">
+          <mat-option *ngFor="let option of reportTypes" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+      <mat-form-field appearance="fill">
+        <mat-label>Periodo</mat-label>
+        <mat-select [formControl]="periodControl">
+          <mat-select-trigger>
+            {{ formatPeriodLabel() }}
+          </mat-select-trigger>
+          <mat-option *ngFor="let option of periodOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-  <div class="table-wrapper">
-    <table
-      mat-table
-      [dataSource]="dataSource"
-      matSort
-      matSortActive="fullName"
-      matSortDisableClear
-      matSortDirection="asc"
-      class="mat-elevation-z1"
-    >
-      <ng-container matColumnDef="dni">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>DNI</th>
-        <td mat-cell *matCellDef="let row">{{ row.dni }}</td>
-      </ng-container>
+      <mat-form-field appearance="fill">
+        <mat-label>Estado</mat-label>
+        <mat-select [formControl]="stateControl">
+          <mat-option *ngFor="let option of stateOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
-      <ng-container matColumnDef="fullName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
-        <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
-      </ng-container>
-      <ng-container matColumnDef="progress" *ngIf="isGeneral || isElearning">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Avance</th>
-        <td mat-cell *matCellDef="let row">
-          @if (isGeneral) {
+    <div class="filters">
+      <mat-form-field appearance="fill">
+        <mat-label>Buscar por usuario</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Nombre o correo" />
+        <button mat-icon-button matSuffix type="button" aria-label="Limpiar búsqueda" *ngIf="searchControl.value"
+          (click)="clearSearch()">
+          <mat-icon  class="material-symbols-outlined">close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+
+    <div>
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="fullName" matSortDisableClear
+        matSortDirection="asc" class="mat-elevation-z1">
+        <ng-container matColumnDef="dni">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>DNI</th>
+          <td mat-cell *matCellDef="let row">{{ row.dni }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+          <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="progress" *ngIf="isGeneral || isElearning">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Avance</th>
+          <td mat-cell *matCellDef="let row">
+            @if (isGeneral) {
             {{ getProgressLabel(row) }}
-          } @else {
+            } @else {
             {{ (row.progress ?? 0) | number: '1.0-0' }}%
-          }
-        </td>
-      </ng-container>
+            }
+          </td>
+        </ng-container>
 
-      <ng-container matColumnDef="state" *ngIf="isElearning">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-        <td mat-cell *matCellDef="let row">
-          <span [class]="stateClass(resolveState(row))">{{ stateLabel(resolveState(row)) }}</span>
-        </td>
-      </ng-container>
+        <ng-container matColumnDef="state" *ngIf="isElearning">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+          <td mat-cell *matCellDef="let row">
+            <span [class]="stateClass(resolveState(row))">{{ stateLabel(resolveState(row)) }}</span>
+          </td>
+        </ng-container>
 
-      <ng-container matColumnDef="startDate">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de inicio</th>
-        <td mat-cell *matCellDef="let row">
-          {{ row.startDate ? (row.startDate | date: 'shortDate') : '-' }}
-        </td>
-      </ng-container>
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de inicio</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.startDate ? (row.startDate | date: 'shortDate') : '-' }}
+          </td>
+        </ng-container>
 
-      <ng-container matColumnDef="finishDate" *ngIf="isGeneral || isElearning">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de fin</th>
-        <td mat-cell *matCellDef="let row">{{ row.finishDate | date: 'short' }}</td>
-      </ng-container>
+        <ng-container matColumnDef="finishDate" *ngIf="isGeneral || isElearning">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de fin</th>
+          <td mat-cell *matCellDef="let row">{{ row.finishDate | date: 'short' }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="elearningFinishDate" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fin e-learning</th>
-        <td mat-cell *matCellDef="let row">
-          {{ row.elearningFinishDate ? (row.elearningFinishDate | date: 'short') : '-' }}
-        </td>
-      </ng-container>
+        <ng-container matColumnDef="elearningFinishDate" *ngIf="isMatrix">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Fin e-learning</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.elearningFinishDate ? (row.elearningFinishDate | date: 'short') : '-' }}
+          </td>
+        </ng-container>
 
-      <ng-container matColumnDef="generalProgressFraction" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef>Avance general</th>
-        <td mat-cell *matCellDef="let row">
-          {{ row.generalCompleted }}/{{ row.generalTotal }}
-        </td>
-      </ng-container>
+        <ng-container matColumnDef="generalProgressFraction" *ngIf="isMatrix">
+          <th mat-header-cell *matHeaderCellDef>Avance general</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.generalCompleted }}/{{ row.generalTotal }}
+          </td>
+        </ng-container>
 
-      <ng-container matColumnDef="processState" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef>Estado proceso</th>
-        <td mat-cell *matCellDef="let row">{{ row.processState || '-' }}</td>
-      </ng-container>
+        <ng-container matColumnDef="processState" *ngIf="isMatrix">
+          <th mat-header-cell *matHeaderCellDef>Estado proceso</th>
+          <td mat-cell *matCellDef="let row">{{ row.processState || '-' }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="elearningProgressFraction" *ngIf="isMatrix">
-        <th mat-header-cell *matHeaderCellDef>Avance e-learning</th>
-        <td mat-cell *matCellDef="let row">
-          {{ row.elearningCompleted }}/{{ row.elearningTotal }}
-        </td>
-      </ng-container>
+        <ng-container matColumnDef="elearningProgressFraction" *ngIf="isMatrix">
+          <th mat-header-cell *matHeaderCellDef>Avance e-learning</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.elearningCompleted }}/{{ row.elearningTotal }}
+          </td>
+        </ng-container>
 
-      <ng-container *ngFor="let column of isMatrix ? matrixResultColumns : []" [matColumnDef]="column">
-        <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
-        <td mat-cell *matCellDef="let row">{{ row.results[column] ?? '-' }}</td>
-      </ng-container>
+        <ng-container *ngFor="let column of isMatrix ? matrixResultColumns : []" [matColumnDef]="column">
+          <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+          <td mat-cell *matCellDef="let row">{{ row.results[column] ?? '-' }}</td>
+        </ng-container>
 
-      <ng-container matColumnDef="actions" *ngIf="isGeneral || isElearning">
-        <th mat-header-cell *matHeaderCellDef class="actions-header">Acciones</th>
-        <td mat-cell *matCellDef="let row" class="actions-cell">
-          @if (isGeneral) {
+        <ng-container matColumnDef="actions" *ngIf="isGeneral || isElearning">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Acciones</th>
+          <td mat-cell *matCellDef="let row" class="actions-cell">
+            @if (isGeneral) {
             <button mat-icon-button (click)="viewGeneralDetail(row)"><mat-icon>checklist</mat-icon></button>
-          }
-          @if(isElearning){
+            }
+            @if(isElearning){
             <button mat-icon-button (click)="openElearningDetail(row)"><mat-icon>school</mat-icon></button>
-          }
-        </td>
-      </ng-container>
+            }
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns"
-        class="data-row"
-        [ngClass]="{ 'delayed-row': row.delayed }"
-      ></tr>
-      <tr class="mat-row" *matNoDataRow>
-        <td class="no-data" [attr.colspan]="displayedColumns.length">No se encontraron resultados</td>
-      </tr>
-    </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="data-row"
+          [ngClass]="{ 'delayed-row': row.delayed }"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="no-data" [attr.colspan]="displayedColumns.length">No se encontraron resultados</td>
+        </tr>
+      </table>
 
-    <mat-paginator [length]="resultsLength" [pageSize]="10" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+      <mat-paginator [length]="resultsLength" [pageSize]="10" [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+    </div>
   </div>
 </div>

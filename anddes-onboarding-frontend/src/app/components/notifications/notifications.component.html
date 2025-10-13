@@ -9,6 +9,7 @@
             <mat-card-title>Configuraci&oacute;n general</mat-card-title>
         </mat-card-header>
         <mat-card-content>
+
             <form #contentForm="ngForm">
                 <br />
                 <span class="label lbl-notifications">Foto</span>
@@ -17,14 +18,14 @@
                         (click)="file.click()"><mat-icon>upload</mat-icon>Cargar Imagen</button>
                     <input type="file" hidden #file [accept]="acceptedFiles" (change)="onFileSelected($event)"
                         (input)="onInputChange($event)">
-                    @if (notificationSenderProfile.urlPhoto) {
+                    @if (notificationSenderProfile && notificationSenderProfile.urlPhoto) {
                     <span class="filename">{{getFileNameFromUrl(notificationSenderProfile.urlPhoto)}}</span>
                     <button mat-icon-button (click)="notificationSenderProfile.urlPhoto=null">
                         <mat-icon>delete</mat-icon>
                     </button>
                     }
                 </div>
-                @if (notificationSenderProfile.urlPhoto) {
+                @if (notificationSenderProfile && notificationSenderProfile.urlPhoto) {
                 <div style="text-align: center;">
                     <img [src]="notificationSenderProfile.urlPhoto" class="cover-image" />
                 </div>
@@ -51,10 +52,18 @@
                     <input matInput placeholder="Direcci&oacute;n" name="address"
                         [(ngModel)]="notificationSenderProfile.address" required (input)="onInputChange($event)">
                 </mat-form-field>
+                <br>
+                <span class="label lbl-notifications">N&uacute;mero de recordatorios</span>
+                <mat-form-field>
+                    <input matInput placeholder="N&uacute;mero de recordatorios" name="remindersNunmber" type="number"
+                         min="0" max="5"
+                        [(ngModel)]="notificationSenderProfile.remindersNumber" required (input)="onInputChange($event)">
+                </mat-form-field>
             </form>
+            
         </mat-card-content>
         <mat-card-actions align="end">
-            <button mat-button color="primary" (click)="save()" [disabled]="disableButton">Guardar</button>
+            <button mat-button color="primary" (click)="save()" [disabled]="!contentForm.valid || disableButton">Guardar</button>
         </mat-card-actions>
     </mat-card>
 
@@ -65,13 +74,13 @@
         <mat-card-content>
             <mat-list>
                 <mat-list-item>
-                    <button mat-button (click)="editTemplate(1)">De lanzamiento</button>
+                    <button mat-button (click)="editTemplate('ONBOARDING')">De lanzamiento</button>
                 </mat-list-item>
             </mat-list>
             <mat-divider></mat-divider>
             <mat-list>
                 <mat-list-item>
-                    <button mat-button  (click)="editTemplate(2)">De primer d&iacute;a</button>
+                    <button mat-button  (click)="editTemplate('FIRST_DAY')">De primer d&iacute;a</button>
                 </mat-list-item>
             </mat-list>
             <mat-divider></mat-divider>
@@ -80,16 +89,16 @@
                     <button mat-button disabled>De elearning</button>
                 </mat-list-item>
                 <mat-list-item class="sub-list">
-                    <button mat-button  (click)="editTemplate(3)">De inicio</button>
+                    <button mat-button  (click)="editTemplate('ELEARNING_START')">De inicio</button>
                 </mat-list-item>
                 <mat-list-item class="sub-list">
-                    <button mat-button  (click)="editTemplate(4)">De en curso</button>
+                    <button mat-button  (click)="editTemplate('ELEARNING_INPROGRESS')">De en curso</button>
                 </mat-list-item>
                 <mat-list-item class="sub-list">
-                    <button mat-button  (click)="editTemplate(5)">De &uacute;ltimo d&iacute;a</button>
+                    <button mat-button  (click)="editTemplate('ELEARNING_FINISH')">De &uacute;ltimo d&iacute;a</button>
                 </mat-list-item>
                 <mat-list-item class="sub-list">
-                    <button mat-button  (click)="editTemplate(6)">De recordaci&oacute;n</button>
+                    <button mat-button  (click)="editTemplate('ELEARNING_REMIND')">De recordaci&oacute;n</button>
                 </mat-list-item>
             </mat-list>
         </mat-card-content>

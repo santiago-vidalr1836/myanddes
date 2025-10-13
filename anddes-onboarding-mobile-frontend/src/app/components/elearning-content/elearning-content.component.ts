@@ -118,7 +118,7 @@ export class ElearningContentComponent {
     dto.userId=this.auth.id;
     dto.processId = this.process.id;
     dto.processActivityId = this.inductionActivity.id;
-    dto.processActivityContent = processActivityContent; 
+    dto.processActivityContent = processActivityContent;
     this._bottomSheet.open(ElearningContentCardComponent,{data :dto,hasBackdrop : true,panelClass: 'full-width'}).afterDismissed().subscribe(()=>this.loadContent());
   }
 }

@@ -54,7 +54,6 @@ export class ActivityService {
     return this.httpClient.put(endpoint,remoteInduction);
   }
 
-
   listELearningContent(codeElearningInduction:string){
     var endpoint=environment.baseUrl+'activities/code/'+codeElearningInduction
     return this.httpClient.get<ELearningContent[]>(endpoint);

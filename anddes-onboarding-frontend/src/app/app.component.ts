@@ -59,6 +59,25 @@ const TREE_DATA: TreeNode[] = [
     ],
   }
 ];
+const TREE_DATA_REPORTES: TreeNode[] = [
+  {
+    id : 0,
+    name: 'RESULTADOS',
+    url : '',
+    children: [
+      { 
+        id : 0,
+        name: 'INDICADORES',
+        url : 'indicators'
+      },
+      { 
+        id : 0,
+        name: 'REPORTES',
+        url : 'reports'
+      }
+    ],
+  }
+];
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -82,8 +101,12 @@ export class AppComponent implements OnInit, OnDestroy {
   isIframe = false;
   loginDisplay = false;
   private readonly _destroying$ = new Subject<void>();
+
   treeControl = new NestedTreeControl<TreeNode>(node => node.children);
   dataSource = new MatTreeNestedDataSource<TreeNode>();
+
+  treeControlReporte = new NestedTreeControl<TreeNode>(node => node.children);
+  dataSourceReporte = new MatTreeNestedDataSource<TreeNode>();
   
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -100,6 +123,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.dataSource.data = TREE_DATA;
     this.treeControl.dataNodes=TREE_DATA;
     this.treeControl.expandAll()
+
+    this.dataSourceReporte.data = TREE_DATA_REPORTES;
+    this.treeControlReporte.dataNodes=TREE_DATA_REPORTES;
+    this.treeControlReporte.expandAll()
   }
   userLogged: any
   ngOnInit(): void {

@@ -46,18 +46,26 @@
             <br>
         }@else{
             @if(showResult){
-                <div class="anddes-column result-content">
+            <div class="anddes-column result-content">
+                @if(dto.processActivityContent.result < this.dto.processActivityContent.content.passingScore){ <mat-icon
+                    class="material-symbols-outlined content-not-completed">cancel</mat-icon>
+                    <span class="completed-label">Vuelve a intentar</span>
+                    }@else {
                     <mat-icon class="material-symbols-outlined content-completed">check_circle</mat-icon>
                     <span class="completed-label">Completaste el modulo</span>
-                    <span class="completed-name">{{dto.processActivityContent.content.name}}</span>
+                    }
                     <div class="anddes-row">
-                        <mat-icon class="material-symbols-outlined">checklist_rtl</mat-icon>
-                        <span class="completed-result"> {{dto.processActivityContent.result}}%</span>
+                        <div class="completed-result" style="text-align: right;margin: 5px;"> <span>{{dto.processActivityContent.result}}%</span><br><span style="font-size: 14px;">Calificación</span></div>
+                        <div class="linea-vertical" style="height: 60px; width: 2px; background-color: black; "></div>
+                        <div class="completed-result" style="text-align: left;margin: 5px;"> <span>{{dto.processActivityContent.content.passingScore}}%</span><br><span style="font-size: 14px;">Nota mínima</span></div>
                     </div>
-                </div>
+            </div>
             }@else{
-                <mat-spinner></mat-spinner>
+            <mat-spinner></mat-spinner>
             }
         }
     </div>
 </div>
+
+
+
