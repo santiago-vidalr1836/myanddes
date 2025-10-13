@@ -131,7 +131,6 @@ public abstract class Mapper {
 
   public abstract ELearningContentCardOptionDTO eLearningContentCardOptionEntityToDto(ELearningContentCardOption eLearningContent);
 
-
   public abstract ELearningContent eLearningContentDTOToEntity(ELearningContentDTO dto);
 
   public abstract List<ELearningContentCard> eLearningContentCardDTOstoEntities(List<ELearningContentCardDTO> dtos);
@@ -160,18 +159,18 @@ public abstract class Mapper {
   public abstract NotificationEmailTemplate notificationEmailTemplateDTOToEntity(NotificationEmailTemplateDTO dto);
   public abstract List<NotificationEmailTemplate> notificationEmailTemplateDTOToEntities(List<NotificationEmailTemplateDTO> dto);
 
-  @Mapping(target = "activityId", source = "id")
-  @Mapping(target = "activityName", source = "activity.name")
-  @Mapping(target = "parentCode", source = "activity.parentCode")
-  @Mapping(target = "state", ignore = true)
-  public abstract ReportActivityDetailDTO processActivityToReportActivityDetail(ProcessActivity processActivity);
+    @Mapping(target = "activityId", source = "id")
+    @Mapping(target = "activityName", source = "activity.name")
+    @Mapping(target = "parentCode", source = "activity.parentCode")
+    @Mapping(target = "state", ignore = true)
+    public abstract ReportActivityDetailDTO processActivityToReportActivityDetail(ProcessActivity processActivity);
 
-  public abstract List<ReportActivityDetailDTO> processActivitiesToReportActivityDetails(List<ProcessActivity> processActivities);
+    public abstract List<ReportActivityDetailDTO> processActivitiesToReportActivityDetails(List<ProcessActivity> processActivities);
 
-  @Mapping(target = "contentId", source = "content.id")
-  @Mapping(target = "courseName", source = "content.name")
-  @Mapping(target = "state", ignore = true)
-  public abstract ReportElearningDetailDTO processActivityContentToReportElearningDetail(ProcessActivityContent processActivityContent);
+    @Mapping(target = "contentId", source = "content.id")
+    @Mapping(target = "courseName", source = "content.name")
+    @Mapping(target = "state", ignore = true)
+    public abstract ReportElearningDetailDTO processActivityContentToReportElearningDetail(ProcessActivityContent processActivityContent);
 
-  public abstract List<ReportElearningDetailDTO> processActivityContentsToReportElearningDetails(List<ProcessActivityContent> contents);
+    public abstract List<ReportElearningDetailDTO> processActivityContentsToReportElearningDetails(List<ProcessActivityContent> contents);
 }

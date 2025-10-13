@@ -12,9 +12,9 @@ import lombok.Setter;
 @Table(name = "notification_sender_profile")
 public class NotificationSenderProfile {
     @Id
-    @SequenceGenerator(name="notification_sender_profile_id_seq",
-            sequenceName="notification_sender_profile_id_seq",
-            allocationSize=1)
+    @SequenceGenerator(name = "notification_sender_profile_id_seq",
+            sequenceName = "notification_sender_profile_id_seq",
+            allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
             generator = "notification_sender_profile_id_seq")
     private Long id;
@@ -22,4 +22,5 @@ public class NotificationSenderProfile {
     private String position;
     private String address;
     private String urlPhoto;
+    private Integer remindersNumber;
 }

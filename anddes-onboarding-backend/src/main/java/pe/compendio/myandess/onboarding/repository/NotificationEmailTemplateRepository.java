@@ -6,5 +6,5 @@ import pe.compendio.myandess.onboarding.entity.NotificationEmailTemplate;
 import pe.compendio.myandess.onboarding.entity.NotificationSenderProfile;
 
 @Repository
-public interface NotificationEmailTemplateRepository extends CrudRepository<NotificationEmailTemplate, Long> {
+public interface NotificationEmailTemplateRepository extends CrudRepository<NotificationEmailTemplate, String> {
 }

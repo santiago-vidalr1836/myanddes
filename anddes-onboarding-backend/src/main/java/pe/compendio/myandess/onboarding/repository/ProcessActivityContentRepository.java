@@ -11,23 +11,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProcessActivityContentRepository extends JpaRepository<ProcessActivityContent,Long> {
+public interface ProcessActivityContentRepository extends JpaRepository<ProcessActivityContent, Long> {
     int countByProcessActivity_Id(Long id);
 
-  Optional<ProcessActivityContent> findByProcessActivity_IdAndContent_Id(Long id, Long contentId);
+    Optional<ProcessActivityContent> findByProcessActivity_IdAndContent_Id(Long id, Long contentId);
 
-  List<ProcessActivityContent> findByResultIsNotNullAndProcessActivity_Process_StartDateBetween(LocalDate startDate, LocalDate endDate);
+    List<ProcessActivityContent> findByResultIsNotNullAndProcessActivity_Process_StartDateBetween(LocalDate startDate, LocalDate endDate);
 
-  List<ProcessActivityContent> findByProcessActivity_Process_Id(Long processId);
+    List<ProcessActivityContent> findByProcessActivity_Process_Id(Long processId);
 
-  List<ProcessActivityContent> findByProcessActivity_Process_IdIn(List<Long> processIds);
+    List<ProcessActivityContent> findByProcessActivity_Process_IdIn(List<Long> processIds);
 
-  List<ProcessActivityContent> findByProcessActivity_IdIn(List<Long> processActivityIds);
+    List<ProcessActivityContent> findByProcessActivity_IdIn(List<Long> processActivityIds);
 
-  long countByProcessActivity_Process_Id(Long processId);
+    long countByProcessActivity_Process_Id(Long processId);
 
-  @Query("select count(pac) from ProcessActivityContent pac " +
-         "where pac.processActivity.process.id = :processId " +
-         "and (pac.progress is not null or pac.result is not null)")
-  long countCompletedByProcessId(@Param("processId") Long processId);
+    @Query("select count(pac) from ProcessActivityContent pac " +
+            "where pac.processActivity.process.id = :processId " +
+            "and (pac.progress is not null or pac.result is not null)")
+    long countCompletedByProcessId(@Param("processId") Long processId);
+
+    long countByProcessActivity_IdAndStatus(Long id, String successful);
+
+    Optional<ProcessActivityContent> findByStatusNotAndProcessActivity_IdAndContent_Id(String failed, Long processActivityId, Long eLearningContentId);
 }

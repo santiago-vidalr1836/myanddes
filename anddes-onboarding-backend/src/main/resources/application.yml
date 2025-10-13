@@ -34,6 +34,20 @@ spring:
     hikari:
       maximum-pool-size: 5
   jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: notificaciones.anddes@anddes.com
+    password: notifica$$2025
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

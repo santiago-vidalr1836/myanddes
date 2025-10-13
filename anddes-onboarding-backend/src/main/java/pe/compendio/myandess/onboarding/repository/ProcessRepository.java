@@ -3,6 +3,7 @@ package pe.compendio.myandess.onboarding.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.stereotype.Repository;
 import pe.compendio.myandess.onboarding.entity.Process;
 
@@ -26,22 +27,19 @@ public interface ProcessRepository extends JpaRepository<Process,Long> {
   Optional<Process> findByUser_Id(Long idUser);
 
   Page<Process> findAllByStartDateBetweenAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
-                                                                             LocalDate endDate,
-                                                                             String fullname,
-                                                                             Pageable pageable);
-
+                                                                                LocalDate endDate,
+                                                                                String fullname,
+                                                                                Pageable pageable);
   Page<Process> findAllByStartDateBetweenAndFinishedIsTrueAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
-                                                                                               LocalDate endDate,
-                                                                                               String fullname,
-                                                                                               Pageable pageable);
-
+                                                                                                 LocalDate endDate,
+                                                                                                 String fullname,
+                                                                                                 Pageable pageable);
   Page<Process> findAllByStartDateBetweenAndFinishedIsFalseAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
+                                                                                                  LocalDate endDate,
+                                                                                                  String fullname,
+                                                                                                  Pageable pageable);
+  Page<Process> findAllByStartDateBetweenAndDelayedIsTrueAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
                                                                                                 LocalDate endDate,
                                                                                                 String fullname,
                                                                                                 Pageable pageable);
-
-  Page<Process> findAllByStartDateBetweenAndDelayedIsTrueAndUser_FullnameContainingIgnoreCase(LocalDate startDate,
-                                                                                              LocalDate endDate,
-                                                                                              String fullname,
-                                                                                              Pageable pageable);
 }

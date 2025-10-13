@@ -2,6 +2,7 @@ package pe.compendio.myandess.onboarding.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import pe.compendio.myandess.onboarding.entity.NotificationEmailTemplate;
 import pe.compendio.myandess.onboarding.entity.NotificationSenderProfile;
 import pe.compendio.myandess.onboarding.repository.NotificationEmailTemplateRepository;
@@ -9,7 +10,7 @@ import pe.compendio.myandess.onboarding.repository.NotificationSenderProfileRepo
 
 import java.util.List;
 
-@Component
+@Service
 public class NotificationService {
 
     @Autowired
@@ -29,6 +30,7 @@ public class NotificationService {
             toUpdate.setPosition(notificationSenderProfile.getPosition());
             toUpdate.setAddress(notificationSenderProfile.getAddress());
             toUpdate.setUrlPhoto(notificationSenderProfile.getUrlPhoto());
+            toUpdate.setRemindersNumber(notificationSenderProfile.getRemindersNumber());
             return notificationSenderProfileRepository.save(toUpdate);
         } else return null;
     }
@@ -37,7 +39,7 @@ public class NotificationService {
         return (List<NotificationEmailTemplate>) notificationEmailTemplateRepository.findAll();
     }
 
-    public NotificationEmailTemplate getEmailTemplate(Long templateId) {
+    public NotificationEmailTemplate getEmailTemplate(String templateId) {
         var optional = notificationEmailTemplateRepository.findById(templateId);
         return optional.orElse(null);
     }

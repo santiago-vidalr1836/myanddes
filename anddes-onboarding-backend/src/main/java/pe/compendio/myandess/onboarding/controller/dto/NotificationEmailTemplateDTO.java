@@ -4,10 +4,9 @@ import lombok.Data;
 
 @Data
 public class NotificationEmailTemplateDTO {
-    private Long id;
+    private String id;
     private String name;
     private String subject;
     private String bodyTemplate;
     private String additionalMessage;
-    private String purpose;
 }

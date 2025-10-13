@@ -10,5 +10,6 @@ public class ELearningContentDTO {
   private String name;
   private String image;
   private List<ELearningContentCardDTO> cards;
+  private Integer passingScore;
   private Integer position;
 }

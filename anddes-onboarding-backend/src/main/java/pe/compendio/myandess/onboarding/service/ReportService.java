@@ -53,6 +53,7 @@ public class ReportService {
   private static final String STATE_APPROVED = "Aprobado";
   private static final String STATE_REJECTED = "Desaprobado";
   private static final String DEFAULT_SORT_PROPERTY = "user.fullname";
+
   private static final Map<String, String> SORT_PROPERTY_MAPPING = Map.ofEntries(
     Map.entry("collaborator", "user.fullname"),
     Map.entry("fullname", "user.fullname"),
@@ -108,7 +109,7 @@ public class ReportService {
       .map(process -> buildElearningRow(process,
         elearningActivityByProcess.get(process.getId()),
         contentsByProcess.getOrDefault(process.getId(), Collections.emptyList())))
-      .collect(Collectors.toList());
+      .toList();
 
     String normalizedState = normalizeState(state);
     List<ReportElearningRowDTO> filteredRows = allRows.stream()

@@ -80,8 +80,9 @@ public class OnBoardingController {
   @Operation(summary = "Obtener el Contenido Elearning de un proceso")
   @GetMapping("/{userId}/process/{processId}/activities/{processActivityId}/content")
   public ProcessActivityContentDTO getProcessActivityContent(@PathVariable Long processId,@PathVariable Long processActivityId,@RequestParam(name = "eLearningContentId") Long eLearningContentId){
-    return mapper.processActivityContentEntityToDTO(processService.findProcessActivityContentByElearningId(processActivityId,eLearningContentId));
+    return mapper.processActivityContentEntityToDTO(processService.findProcessActivityContentByElearningIdNotFailed(processActivityId,eLearningContentId));
   }
+
   @Operation(summary = "Crear el Contenido Elearning de un proceso")
   @PostMapping("/{userId}/process/{processId}/activities/{processActivityId}/content")
   public ResponseEntity<?> createNewProcessActivityContent(@PathVariable Long processId,@PathVariable Long processActivityId,@RequestParam(name = "eLearningContentId") Long eLearningContentId){

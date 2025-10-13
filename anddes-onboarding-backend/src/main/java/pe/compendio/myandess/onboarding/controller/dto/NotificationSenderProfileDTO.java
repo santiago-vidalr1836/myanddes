@@ -9,4 +9,5 @@ public class NotificationSenderProfileDTO {
     private String position;
     private String address;
     private String urlPhoto;
+    private Integer remindersNumber;
 }
