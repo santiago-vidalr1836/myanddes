@@ -50,8 +50,8 @@ public class ReportService {
 
   private static final String STATE_COMPLETED = "Completado";
   private static final String STATE_PENDING = "Pendiente";
-  private static final String STATE_APPROVED = "Aprobado";
-  private static final String STATE_REJECTED = "Desaprobado";
+  private static final String STATE_SUCCESSFUL = "Exitoso";
+  private static final String STATE_FAILED = "Fallido";
   private static final String DEFAULT_SORT_PROPERTY = "user.fullname";
 
   private static final Map<String, String> SORT_PROPERTY_MAPPING = Map.ofEntries(
@@ -184,23 +184,61 @@ public class ReportService {
     }
 
     List<ProcessActivityContent> contents = processActivityContentRepository.findByProcessActivity_Process_Id(processId);
+    if (contents == null || contents.isEmpty()) {
+      return Collections.emptyList();
+    }
+
     CardAggregation cardAggregation = loadCardAggregation(Collections.singletonList(process));
     Map<Long, Long> readByContent = cardAggregation.getReadByContent();
     Map<Long, Long> correctByContent = cardAggregation.getCorrectByContent();
 
-    List<ReportElearningDetailDTO> details = contents.stream()
-      .map(content -> {
-        ReportElearningDetailDTO dto = mapper.processActivityContentToReportElearningDetail(content);
+    Comparator<ProcessActivityContent> byId = Comparator.comparing(content ->
+      Optional.ofNullable(content.getId()).orElse(0L));
+
+    Map<Long, List<ProcessActivityContent>> groupedContents = contents.stream()
+      .filter(Objects::nonNull)
+      .collect(Collectors.groupingBy(content -> {
+        if (content.getContent() != null && content.getContent().getId() != null) {
+          return content.getContent().getId();
+        }
+        return Optional.ofNullable(content.getId()).orElse(0L);
+      }, LinkedHashMap::new, Collectors.toList()));
+
+    return groupedContents.values().stream()
+      .map(group -> {
+        ProcessActivityContent latestAttempt = group.stream()
+          .filter(Objects::nonNull)
+          .max(byId)
+          .orElse(null);
+        if (latestAttempt == null) {
+          return null;
+        }
+        ReportElearningDetailDTO dto = mapper.processActivityContentToReportElearningDetail(latestAttempt);
         dto.setMinimumScore(Optional.ofNullable(dto.getMinimumScore()).orElse(0));
-        dto.setAttempts(Optional.ofNullable(dto.getAttempts()).orElse(0));
+        dto.setAttempts(group.size());
         dto.setProgress(Optional.ofNullable(dto.getProgress()).orElse(0));
-        dto.setReadCards(readByContent.getOrDefault(content.getId(), 0L).intValue());
-        dto.setCorrectAnswers(correctByContent.getOrDefault(content.getId(), 0L).intValue());
-        dto.setState(calculateCourseState(dto.getResult(), dto.getMinimumScore(), dto.getProgress()));
+        Long latestAttemptId = latestAttempt.getId();
+        int readCards = latestAttemptId != null ? readByContent.getOrDefault(latestAttemptId, 0L).intValue() : 0;
+        int correctAnswers = latestAttemptId != null ? correctByContent.getOrDefault(latestAttemptId, 0L).intValue() : 0;
+        dto.setReadCards(readCards);
+        dto.setCorrectAnswers(correctAnswers);
+        dto.setState(translateStatus(latestAttempt.getStatus()));
         return dto;
       })
-      .collect(Collectors.toList());
-    return details;
+      .filter(Objects::nonNull)
+      .toList();
+  }
+
+  private String translateStatus(String status) {
+    if (!StringUtils.hasText(status)) {
+      return STATE_PENDING;
+    }
+    return switch (status.trim().toUpperCase(Locale.getDefault())) {
+      case "SUCCESSFULL", "SUCCESSFUL" -> STATE_SUCCESSFUL;
+      case "FAILED" -> STATE_FAILED;
+      case "PENDING" -> STATE_PENDING;
+      default -> STATE_PENDING;
+    };
   }
 
   public Workbook buildWorkbook(String type,
@@ -638,14 +676,6 @@ public class ReportService {
       .elearningFinishDate(elearningFinishDate)
       .elearningResults(elearningResults)
       .build();
-  }
-
-  private String calculateCourseState(Integer result, Integer minimumScore, Integer progress) {
-    int minScore = Optional.ofNullable(minimumScore).orElse(0);
-    if (result != null) {
-      return result >= minScore ? STATE_APPROVED : STATE_REJECTED;
-    }
-    return progress != null && progress >= 100 ? STATE_COMPLETED : STATE_PENDING;
   }
 
   private boolean filterElearningRow(ReportElearningRowDTO row, String normalizedState) {
