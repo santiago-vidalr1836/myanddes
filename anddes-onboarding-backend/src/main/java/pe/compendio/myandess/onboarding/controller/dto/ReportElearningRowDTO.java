@@ -20,4 +20,5 @@ public class ReportElearningRowDTO {
   private LocalDateTime finishDate;
   private double progress;
   private String state;
+  private boolean delayed;
 }

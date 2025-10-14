@@ -600,6 +600,7 @@ public class ReportService {
                                                     ProcessActivity elearningActivity,
                                                     List<ProcessActivityContent> contents) {
         Long processId = process.getId();
+        boolean delayed = process.isDelayed();
         String dni = process.getUser() != null ? process.getUser().getDni() : null;
         String fullName = process.getUser() != null ? process.getUser().getFullname() : null;
         LocalDate startDate = process.getStartDate();
@@ -628,6 +629,7 @@ public class ReportService {
                 .finishDate(finishDate)
                 .progress(progress)
                 .state(state)
+                .delayed(delayed)
                 .build();
     }
 
