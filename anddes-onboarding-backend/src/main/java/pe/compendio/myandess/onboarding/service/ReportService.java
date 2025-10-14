@@ -17,10 +17,12 @@ import pe.compendio.myandess.onboarding.controller.dto.ReportGeneralRowDTO;
 import pe.compendio.myandess.onboarding.controller.dto.ReportMatrixRowDTO;
 import pe.compendio.myandess.onboarding.controller.dto.ReportPagedDTO;
 import pe.compendio.myandess.onboarding.entity.Constants;
+import pe.compendio.myandess.onboarding.entity.ELearningContent;
 import pe.compendio.myandess.onboarding.entity.Process;
 import pe.compendio.myandess.onboarding.entity.ProcessActivity;
 import pe.compendio.myandess.onboarding.entity.ProcessActivityContent;
 import pe.compendio.myandess.onboarding.entity.ProcessActivityContentCard;
+import pe.compendio.myandess.onboarding.repository.ELearningContentRepository;
 import pe.compendio.myandess.onboarding.repository.ProcessActivityContentCardRepository;
 import pe.compendio.myandess.onboarding.repository.ProcessActivityContentRepository;
 import pe.compendio.myandess.onboarding.repository.ProcessActivityRepository;
@@ -36,6 +38,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,6 +46,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +74,7 @@ public class ReportService {
     private final ProcessActivityRepository processActivityRepository;
     private final ProcessActivityContentRepository processActivityContentRepository;
     private final ProcessActivityContentCardRepository processActivityContentCardRepository;
+    private final ELearningContentRepository eLearningContentRepository;
     private final Mapper mapper;
 
     public ReportPagedDTO<ReportGeneralRowDTO> getGeneralReport(LocalDate startDate,
@@ -136,24 +141,20 @@ public class ReportService {
         Page<Process> processPage = fetchProcesses(startDate, endDate, state, search, pageRequest, true);
 
         Map<Long, List<ProcessActivity>> activitiesByProcess = loadActivities(processPage.getContent());
-        Map<Long, ProcessActivity> elearningActivityByProcess = extractElearningActivities(activitiesByProcess);
         Map<Long, List<ProcessActivityContent>> contentsByProcess = loadElearningContents(processPage.getContent());
 
         Map<Long, ReportGeneralRowDTO> generalRows = processPage.getContent().stream()
                 .collect(Collectors.toMap(Process::getId,
                         process -> buildGeneralRow(process, activitiesByProcess.getOrDefault(process.getId(), Collections.emptyList()))));
 
-        Map<Long, ReportElearningRowDTO> elearningRows = processPage.getContent().stream()
-                .collect(Collectors.toMap(Process::getId,
-                        process -> buildElearningRow(process,
-                                elearningActivityByProcess.get(process.getId()),
-                                contentsByProcess.getOrDefault(process.getId(), Collections.emptyList()))));
+        List<ELearningContent> allContents = Optional.ofNullable(eLearningContentRepository.findAllByOrderByPositionAsc())
+                .orElseGet(Collections::emptyList);
 
         List<ReportMatrixRowDTO> matrixRows = processPage.getContent().stream()
                 .map(process -> buildMatrixRow(
                         generalRows.get(process.getId()),
-                        elearningRows.get(process.getId()),
-                        contentsByProcess.getOrDefault(process.getId(), Collections.emptyList())))
+                        contentsByProcess.getOrDefault(process.getId(), Collections.emptyList()),
+                        allContents))
                 .toList();
 
         return new ReportPagedDTO<>(processPage.getTotalElements(), matrixRows);
@@ -359,10 +360,10 @@ public class ReportService {
                 "DNI",
                 "Colaborador",
                 "Fecha inicio",
-                "Fecha fin e-learning",
-                "Avance general (completadas/totales)",
+                "Fecha fin",
+                "Avance general (%)",
                 "Estado proceso",
-                "Avance e-learning (completadas/totales)"
+                "Avance e-learning (%)"
         );
 
         Row header = sheet.createRow(0);
@@ -384,15 +385,23 @@ public class ReportService {
             excelRow.createCell(cellIndex++).setCellValue(Optional.ofNullable(row.getDni()).orElse(""));
             excelRow.createCell(cellIndex++).setCellValue(Optional.ofNullable(row.getFullName()).orElse(""));
             excelRow.createCell(cellIndex++).setCellValue(formatLocalDate(row.getStartDate(), dateFormatter));
-            excelRow.createCell(cellIndex++).setCellValue(formatLocalDateTime(row.getElearningFinishDate(), dateTimeFormatter));
-            excelRow.createCell(cellIndex++).setCellValue(formatFraction(row.getGeneralCompletedActivities(), row.getGeneralTotalActivities()));
+            excelRow.createCell(cellIndex++).setCellValue(formatLocalDateTime(row.getFinishDate(), dateTimeFormatter));
+            excelRow.createCell(cellIndex++).setCellValue(row.getGeneralProgress());
             excelRow.createCell(cellIndex++).setCellValue(Optional.ofNullable(row.getProcessState()).orElse(""));
-            excelRow.createCell(cellIndex++).setCellValue(formatFraction(row.getElearningCompletedContents(), row.getElearningTotalContents()));
+            excelRow.createCell(cellIndex++).setCellValue(row.getElearningProgress());
 
-            Map<String, String> elearningResults = Optional.ofNullable(row.getElearningResults()).orElse(Collections.emptyMap());
+            Map<String, Double> elearningResults = Optional.ofNullable(row.getElearningResults()).orElse(Collections.emptyMap());
             for (String contentHeader : contentColumns) {
-                String value = elearningResults.getOrDefault(contentHeader, "-");
-                excelRow.createCell(cellIndex++).setCellValue(value);
+                if (elearningResults.containsKey(contentHeader)) {
+                    Double value = elearningResults.get(contentHeader);
+                    if (value != null) {
+                        excelRow.createCell(cellIndex++).setCellValue(value);
+                    } else {
+                        excelRow.createCell(cellIndex++).setCellValue("");
+                    }
+                } else {
+                    excelRow.createCell(cellIndex++).setCellValue("");
+                }
             }
         }
 
@@ -409,10 +418,6 @@ public class ReportService {
         return Optional.ofNullable(date)
                 .map(value -> value.format(formatter))
                 .orElse("");
-    }
-
-    private String formatFraction(int completed, int total) {
-        return String.format(Locale.getDefault(), "%d/%d", completed, total);
     }
 
     private PageRequest createPageRequest(Integer page, Integer pageSize, String orderBy, String direction) {
@@ -634,38 +639,59 @@ public class ReportService {
     }
 
     private ReportMatrixRowDTO buildMatrixRow(ReportGeneralRowDTO generalRow,
-                                              ReportElearningRowDTO elearningRow,
-                                              List<ProcessActivityContent> contents) {
+                                              List<ProcessActivityContent> contents,
+                                              List<ELearningContent> systemContents) {
         if (generalRow == null) {
             return ReportMatrixRowDTO.builder().build();
         }
-        int generalCompleted = Optional.ofNullable(generalRow.getCompletedActivities()).orElse(0);
-        int generalTotal = Optional.ofNullable(generalRow.getTotalActivities()).orElse(0);
-        double elearningProgress = elearningRow != null ? elearningRow.getProgress() : 0.0;
-        String elearningState = elearningRow != null ? elearningRow.getState() : STATE_PENDING;
-        LocalDateTime elearningFinishDate = elearningRow != null ? elearningRow.getFinishDate() : null;
 
         List<ProcessActivityContent> safeContents = contents != null ? contents : Collections.emptyList();
-        int elearningTotal = safeContents.size();
-        int elearningCompleted = (int) safeContents.stream()
-                .filter(content -> {
-                    Integer progress = content.getProgress();
-                    Integer result = content.getResult();
-                    return (progress != null && progress >= 100) || result != null;
-                })
-                .count();
+        Map<Long, ProcessActivityContent> latestByContentId = safeContents.stream()
+                .filter(content -> content.getContent() != null && content.getContent().getId() != null)
+                .collect(Collectors.toMap(content -> content.getContent().getId(), Function.identity(), this::selectLatest,
+                        LinkedHashMap::new));
 
-        Map<String, String> elearningResults = new LinkedHashMap<>();
-        safeContents.forEach(content -> {
-            String key;
-            if (content.getContent() != null && StringUtils.hasText(content.getContent().getName())) {
-                key = content.getContent().getName();
-            } else {
-                key = "Contenido " + Optional.ofNullable(content.getId()).map(String::valueOf).orElse("-");
+        Map<String, ProcessActivityContent> latestByLabel = safeContents.stream()
+                .filter(content -> content.getContent() == null || content.getContent().getId() == null)
+                .collect(Collectors.toMap(this::resolveFallbackLabel, Function.identity(), this::selectLatest,
+                        LinkedHashMap::new));
+
+        List<ContentColumn> columns = resolveContentColumns(systemContents, safeContents);
+        boolean processCompleted = STATE_COMPLETED.equalsIgnoreCase(Optional.ofNullable(generalRow.getState()).orElse(""));
+
+        int completedContents = 0;
+        Map<String, Double> elearningResults = new LinkedHashMap<>();
+        for (ContentColumn column : columns) {
+            ProcessActivityContent attempt = null;
+            if (column.contentId() != null) {
+                attempt = latestByContentId.get(column.contentId());
             }
-            String value = content.getResult() != null ? String.valueOf(content.getResult()) : "-";
-            elearningResults.put(key, value);
-        });
+            if (attempt == null) {
+                attempt = latestByLabel.get(column.label());
+            }
+
+            boolean contentCompleted = isContentCompleted(attempt);
+            if (!processCompleted && contentCompleted) {
+                completedContents++;
+            }
+
+            Double score = null;
+            if (contentCompleted && attempt != null && attempt.getResult() != null) {
+                score = attempt.getResult().doubleValue();
+            }
+
+            elearningResults.put(column.label(), score);
+        }
+
+        int totalContents = columns.size();
+        double elearningProgress;
+        if (processCompleted) {
+            elearningProgress = totalContents > 0 ? 100.0 : 0.0;
+        } else if (totalContents == 0) {
+            elearningProgress = 0.0;
+        } else {
+            elearningProgress = (completedContents * 100.0) / totalContents;
+        }
 
         return ReportMatrixRowDTO.builder()
                 .processId(generalRow.getProcessId())
@@ -674,18 +700,83 @@ public class ReportService {
                 .startDate(generalRow.getStartDate())
                 .finishDate(generalRow.getFinishDate())
                 .generalProgress(generalRow.getProgress())
-                .generalCompletedActivities(generalCompleted)
-                .generalTotalActivities(generalTotal)
-                .generalState(generalRow.getState())
                 .processState(generalRow.getState())
                 .elearningProgress(elearningProgress)
-                .elearningCompletedContents(elearningCompleted)
-                .elearningTotalContents(elearningTotal)
-                .elearningState(elearningState)
-                .elearningFinishDate(elearningFinishDate)
                 .elearningResults(elearningResults)
                 .build();
     }
+
+    private boolean isContentCompleted(ProcessActivityContent content) {
+        if (content == null) {
+            return false;
+        }
+        Integer progress = content.getProgress();
+        Integer result = content.getResult();
+        return (progress != null && progress >= 100) || result != null;
+    }
+
+    private ProcessActivityContent selectLatest(ProcessActivityContent current, ProcessActivityContent replacement) {
+        Long currentId = Optional.ofNullable(current).map(ProcessActivityContent::getId).orElse(0L);
+        Long replacementId = Optional.ofNullable(replacement).map(ProcessActivityContent::getId).orElse(0L);
+        return replacementId >= currentId ? replacement : current;
+    }
+
+    private List<ContentColumn> resolveContentColumns(List<ELearningContent> systemContents,
+                                                      List<ProcessActivityContent> processContents) {
+        List<ContentColumn> columns = new ArrayList<>();
+        LinkedHashSet<Long> addedIds = new LinkedHashSet<>();
+
+        if (systemContents != null) {
+            for (ELearningContent content : systemContents) {
+                if (content == null) {
+                    continue;
+                }
+                Long id = content.getId();
+                String label = resolveContentLabel(content, null);
+                columns.add(new ContentColumn(id, label));
+                if (id != null) {
+                    addedIds.add(id);
+                }
+            }
+        }
+
+        for (ProcessActivityContent content : processContents) {
+            if (content == null) {
+                continue;
+            }
+            ELearningContent eLearningContent = content.getContent();
+            Long id = eLearningContent != null ? eLearningContent.getId() : null;
+            if (id != null && addedIds.contains(id)) {
+                continue;
+            }
+            String label = resolveContentLabel(eLearningContent, content);
+            columns.add(new ContentColumn(id, label));
+            if (id != null) {
+                addedIds.add(id);
+            }
+        }
+
+        return columns;
+    }
+
+    private String resolveContentLabel(ELearningContent content, ProcessActivityContent fallback) {
+        if (content != null && StringUtils.hasText(content.getName())) {
+            return content.getName();
+        }
+        return resolveFallbackLabel(fallback);
+    }
+
+    private String resolveFallbackLabel(ProcessActivityContent fallback) {
+        if (fallback != null && fallback.getContent() != null && StringUtils.hasText(fallback.getContent().getName())) {
+            return fallback.getContent().getName();
+        }
+        return "Contenido " + Optional.ofNullable(fallback)
+                .map(ProcessActivityContent::getId)
+                .map(String::valueOf)
+                .orElse("-");
+    }
+
+    private record ContentColumn(Long contentId, String label) { }
     private boolean filterElearningRow(ReportElearningRowDTO row, String normalizedState) {
         if (!StringUtils.hasText(normalizedState) || "ALL".equals(normalizedState)) {
             return true;

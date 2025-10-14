@@ -29,6 +29,7 @@ import pe.compendio.myandess.onboarding.entity.ProcessActivity;
 import pe.compendio.myandess.onboarding.entity.ProcessActivityContent;
 import pe.compendio.myandess.onboarding.entity.ProcessActivityContentCard;
 import pe.compendio.myandess.onboarding.entity.User;
+import pe.compendio.myandess.onboarding.repository.ELearningContentRepository;
 import pe.compendio.myandess.onboarding.repository.ProcessActivityContentCardRepository;
 import pe.compendio.myandess.onboarding.repository.ProcessActivityContentRepository;
 import pe.compendio.myandess.onboarding.repository.ProcessActivityRepository;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,6 +59,8 @@ class ReportServiceTest {
   private ProcessActivityContentRepository processActivityContentRepository;
   @Mock
   private ProcessActivityContentCardRepository processActivityContentCardRepository;
+  @Mock
+  private ELearningContentRepository eLearningContentRepository;
 
   private ReportService reportService;
 
@@ -72,7 +76,7 @@ class ReportServiceTest {
   void setUp() {
     Mapper mapper = Mappers.getMapper(Mapper.class);
     reportService = new ReportService(processRepository, processActivityRepository, processActivityContentRepository,
-      processActivityContentCardRepository, mapper);
+      processActivityContentCardRepository, eLearningContentRepository, mapper);
 
     User user = new User();
     user.setId(1L);
@@ -180,6 +184,8 @@ class ReportServiceTest {
 
     when(processActivityContentCardRepository.findByProcessActivityContent_ProcessActivity_Process_IdIn(any()))
       .thenReturn(List.of(card));
+    when(eLearningContentRepository.findAllByOrderByPositionAsc())
+      .thenReturn(List.of(approvedCourse, pendingCourse));
   }
 
   @Test
@@ -245,17 +251,12 @@ class ReportServiceTest {
     ReportMatrixRowDTO row = report.getData().get(0);
     assertThat(row.getDni()).isEqualTo("12345678");
     assertThat(row.getFullName()).isEqualTo("Ana Diaz");
-    assertThat(row.getGeneralCompletedActivities()).isEqualTo(1);
-    assertThat(row.getGeneralTotalActivities()).isEqualTo(3);
-    assertThat(row.getGeneralState()).isEqualTo("Pendiente");
+    assertThat(row.getGeneralProgress()).isCloseTo(33.33, within(0.01));
     assertThat(row.getProcessState()).isEqualTo("Pendiente");
-    assertThat(row.getElearningCompletedContents()).isEqualTo(1);
-    assertThat(row.getElearningTotalContents()).isEqualTo(2);
-    assertThat(row.getElearningFinishDate()).isEqualTo(LocalDateTime.of(2024, 1, 15, 18, 0));
-    assertThat(row.getElearningState()).isEqualTo("Pendiente");
+    assertThat(row.getElearningProgress()).isEqualTo(50.0);
     assertThat(row.getElearningResults())
-      .containsEntry("Curso aprobado", "60")
-      .containsEntry("Curso pendiente", "-");
+      .containsEntry("Curso aprobado", 90.0)
+      .containsEntry("Curso pendiente", null);
   }
 
   @Test

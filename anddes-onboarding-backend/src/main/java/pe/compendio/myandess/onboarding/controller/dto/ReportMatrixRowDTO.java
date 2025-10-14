@@ -19,15 +19,8 @@ public class ReportMatrixRowDTO {
   private String fullName;
   private LocalDate startDate;
   private LocalDateTime finishDate;
-  private LocalDateTime elearningFinishDate;
   private double generalProgress;
-  private int generalCompletedActivities;
-  private int generalTotalActivities;
-  private String generalState;
   private String processState;
   private double elearningProgress;
-  private int elearningCompletedContents;
-  private int elearningTotalContents;
-  private String elearningState;
-  private Map<String, String> elearningResults;
+  private Map<String, Double> elearningResults;
 }

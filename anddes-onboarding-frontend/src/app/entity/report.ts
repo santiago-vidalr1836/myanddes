@@ -48,14 +48,11 @@ export interface MatrixReportRow {
   dni: string;
   fullName: string;
   startDate?: string;
-  elearningFinishDate?: string;
-  generalCompleted: number;
-  generalTotal: number;
-  elearningCompleted: number;
-  elearningTotal: number;
+  finishDate?: string;
+  generalProgress: number;
   processState: string;
-  results: Record<string, string>;
-  progress: number;
+  elearningProgress: number;
+  results: Record<string, number | null>;
 }
 
 export interface ActivityDetail {
