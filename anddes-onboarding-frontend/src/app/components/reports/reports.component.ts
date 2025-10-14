@@ -86,10 +86,10 @@ export class ReportsComponent implements AfterViewInit {
     'dni',
     'fullName',
     'startDate',
-    'elearningFinishDate',
-    'generalProgressFraction',
+    'finishDate',
+    'generalProgress',
     'processState',
-    'elearningProgressFraction',
+    'elearningProgress',
   ];
   private readonly dateFormatter = new Intl.DateTimeFormat('es-PE', {
     day: '2-digit',

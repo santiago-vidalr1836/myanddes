@@ -65,27 +65,32 @@ export class ReportService {
             dni: row.dni ?? '',
             fullName: row.fullName ?? '',
             startDate: row.startDate != null ? String(row.startDate) : undefined,
-            elearningFinishDate:
-              row.elearningFinishDate != null ? String(row.elearningFinishDate) : undefined,
-            generalCompleted: Number(row.generalCompletedActivities ?? 0),
-            generalTotal: Number(row.generalTotalActivities ?? 0),
-            elearningCompleted: Number(row.elearningCompletedContents ?? 0),
-            elearningTotal: Number(row.elearningTotalContents ?? 0),
+            finishDate: row.finishDate != null ? String(row.finishDate) : undefined,
+            generalProgress: Number(row.generalProgress ?? 0),
             processState: row.processState ?? '',
-            progress : row.progress,
+            elearningProgress: Number(row.elearningProgress ?? 0),
             results: this.normalizeElearningResults(row.elearningResults),
           })),
         }))
       );
   }
 
-  private normalizeElearningResults(results: Record<string, unknown> | null | undefined): Record<string, string> {
+  private normalizeElearningResults(
+    results: Record<string, unknown> | null | undefined
+  ): Record<string, number | null> {
     if (!results) {
       return {};
     }
 
-    return Object.entries(results).reduce<Record<string, string>>((acc, [key, value]) => {
-      acc[key] = value != null && value !== '' ? String(value) : '-';
+    return Object.entries(results).reduce<Record<string, number | null>>((acc, [key, value]) => {
+      if (value == null || value === '') {
+        acc[key] = null;
+      } else if (typeof value === 'number') {
+        acc[key] = value;
+      } else {
+        const parsed = Number(value);
+        acc[key] = Number.isNaN(parsed) ? null : parsed;
+      }
       return acc;
     }, {});
   }
