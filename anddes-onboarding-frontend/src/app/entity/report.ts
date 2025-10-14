@@ -40,6 +40,7 @@ export interface ElearningReportRow {
   finishDate?: string;
   progress: number;
   state: ReportRowState;
+  delayed: boolean;
 }
 
 export interface MatrixReportRow {
@@ -78,5 +79,5 @@ export interface ElearningDetail {
   progress: number;
   readCards: number;
   correctAnswers: number;
-  state: ReportRowState;
+  state: string;
 }

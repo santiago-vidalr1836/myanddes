@@ -25,7 +25,7 @@ import { ReportService } from '../../../service/report.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ElearningDetailComponent implements OnInit, OnDestroy {
-  readonly displayedColumns = ['courseName', 'result', 'attempts', 'state'];
+  readonly displayedColumns = ['courseName', 'result','minimumScore', 'attempts', 'state'];
 
   details: ElearningDetail[] = [];
   isLoading = true;

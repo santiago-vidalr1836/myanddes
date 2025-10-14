@@ -26,7 +26,7 @@ type ActivitySection = {
 
 const SECTION_METADATA: Record<string, { title: string; icon: string }> = {
   BEFORE: {
-    title: 'Antes',
+    title: 'Antes de la primera semana',
     icon: 'schedule',
   },
   FIRST_DAY: {

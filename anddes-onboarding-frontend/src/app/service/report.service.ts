@@ -46,6 +46,7 @@ export class ReportService {
             finishDate: row.finishDate,
             progress: row.progress ?? 0,
             state: (row.state ?? 'Pendiente') as ReportRowState,
+            delayed: row.delayed
           })),
         }))
       );
@@ -113,7 +114,7 @@ export class ReportService {
             progress: detail.progress ?? 0,
             readCards: detail.readCards ?? 0,
             correctAnswers: detail.correctAnswers ?? 0,
-            state: (detail.state ?? 'Pendiente') as ReportRowState,
+            state: detail.state,
           }))
         )
       );

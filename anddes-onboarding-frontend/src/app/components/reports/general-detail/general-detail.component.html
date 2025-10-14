@@ -1,16 +1,14 @@
-<div class="general-detail-page">
-  <header class="page-header">
-    <button mat-button type="button" class="back-button" (click)="goBack()">
+<div>
+  <button mat-icon-button type="button" class="back-button" (click)="goBack()">
       <mat-icon>arrow_back</mat-icon>
-      Volver
-    </button>
-    <div class="header-content">
-      <h1>Detalle de actividades</h1>
-      <p *ngIf="fullName" class="subtitle">{{ fullName }}</p>
-    </div>
-  </header>
-
-  <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+  </button>
+  <span class="title"> {{ fullName }}</span>
+</div>
+<br>
+<div class="entity-list">
+  <div style="margin: 30px;">
+    <br>
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 
   <section class="error-state" *ngIf="hasError && !isLoading">
     <mat-icon>error</mat-icon>
@@ -27,24 +25,25 @@
   </section>
 
   <div class="detail-content" *ngIf="!isLoading && !hasError && details.length > 0">
-    <section class="activity-section" *ngFor="let section of sections; trackBy: trackBySection">
+    <section *ngFor="let section of sections; trackBy: trackBySection">
       <div class="section-header">
-        <mat-icon class="section-icon">{{ section.icon }}</mat-icon>
+        <!--<mat-icon class="section-icon">{{ section.icon }}</mat-icon>-->
         <h2 class="section-title">{{ section.title }}</h2>
       </div>
-
+      <br>
       <ul class="activity-list">
         <li
           class="activity-item"
           *ngFor="let activity of section.activities; trackBy: trackByActivity"
-          [class.completed]="activity.completed"
-        >
-          <mat-icon class="status-icon" [class.completed]="activity.completed">
+          [class.completed]="activity.completed">
+          <span class="activity-title">{{ activity.title || activity.activityName }}</span>
+          <mat-icon class="status-icon material-symbols-outlined" >
             {{ activity.completed ? 'check_circle' : 'radio_button_unchecked' }}
           </mat-icon>
-          <h3 class="activity-title">{{ activity.title || activity.activityName }}</h3>
         </li>
       </ul>
     </section>
   </div>
+  </div>
 </div>
+<br>
