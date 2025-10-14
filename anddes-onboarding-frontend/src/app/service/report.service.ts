@@ -72,6 +72,7 @@ export class ReportService {
             elearningCompleted: Number(row.elearningCompletedContents ?? 0),
             elearningTotal: Number(row.elearningTotalContents ?? 0),
             processState: row.processState ?? '',
+            progress : row.progress,
             results: this.normalizeElearningResults(row.elearningResults),
           })),
         }))

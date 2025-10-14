@@ -55,6 +55,7 @@ export interface MatrixReportRow {
   elearningTotal: number;
   processState: string;
   results: Record<string, string>;
+  progress: number;
 }
 
 export interface ActivityDetail {
