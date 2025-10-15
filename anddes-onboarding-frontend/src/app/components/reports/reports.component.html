@@ -66,7 +66,7 @@
         </ng-container>
 
         <ng-container matColumnDef="fullName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
           <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
         </ng-container>
         <ng-container matColumnDef="progress" *ngIf="isGeneral || isElearning">
@@ -95,29 +95,27 @@
         </ng-container>
 
         <ng-container matColumnDef="generalProgress" *ngIf="isMatrix">
-          <th mat-header-cell *matHeaderCellDef>Avance general</th>
+          <th mat-header-cell *matHeaderCellDef>Avance (%)<br>general</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.generalProgress | number: '1.0-0' }}%
+            {{ row.generalProgress | number: '1.0-0' }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="processState" *ngIf="isMatrix">
-          <th mat-header-cell *matHeaderCellDef>Estado proceso</th>
+          <th mat-header-cell *matHeaderCellDef>Estado<br>proceso</th>
           <td mat-cell *matCellDef="let row">{{ row.processState || '-' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="elearningProgress" *ngIf="isMatrix">
-          <th mat-header-cell *matHeaderCellDef>Avance e-learning</th>
+          <th mat-header-cell *matHeaderCellDef>Avance<br>e-learning (%)</th>
           <td mat-cell *matCellDef="let row">
-            {{ row.elearningProgress | number: '1.0-0' }}%
+            {{ row.elearningProgress | number: '1.0-0' }}
           </td>
         </ng-container>
 
         <ng-container *ngFor="let column of isMatrix ? matrixResultColumns : []" [matColumnDef]="column">
-          <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.results[column] != null ? (row.results[column] | number: '1.0-0') + '%' : '-' }}
-          </td>
+          <th mat-header-cell *matHeaderCellDef  [innerHTML]="formatCourseHeader(column)+' (%)'"></th>
+          <td mat-cell *matCellDef="let row" class="center-text">{{ row.results[column] != null ? (row.results[column] | number: '1.0-0') : '-' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="actions" *ngIf="isGeneral || isElearning">

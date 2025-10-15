@@ -53,6 +53,7 @@ export interface MatrixReportRow {
   processState: string;
   elearningProgress: number;
   results: Record<string, number | null>;
+  delayed : boolean
 }
 
 export interface ActivityDetail {

@@ -70,14 +70,13 @@ export class ReportService {
             processState: row.processState ?? '',
             elearningProgress: Number(row.elearningProgress ?? 0),
             results: this.normalizeElearningResults(row.elearningResults),
+            delayed : row.delayed
           })),
         }))
       );
   }
 
-  private normalizeElearningResults(
-    results: Record<string, unknown> | null | undefined
-  ): Record<string, number | null> {
+  private normalizeElearningResults(results: Record<string, unknown> | null | undefined): Record<string,  number | null> {
     if (!results) {
       return {};
     }

@@ -465,4 +465,20 @@ export class ReportsComponent implements AfterViewInit {
       }
     });
   }
+  formatCourseHeader(label: string): string {
+    const words = label
+      .split(' ')
+      .map((word) => word.trim())
+      .filter((word) => word.length > 0);
+
+    if (words.length <= 2) {
+      return label;
+    }
+
+    const halfway = Math.ceil(words.length / 2);
+    const firstLine = words.slice(0, halfway).join(' ');
+    const secondLine = words.slice(halfway).join(' ');
+
+    return `${firstLine}<br>${secondLine}`;
+  }
 }
