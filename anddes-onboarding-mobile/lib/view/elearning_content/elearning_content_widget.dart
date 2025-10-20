@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:mi_anddes_mobile_app/model/elearning_content.dart';
 import 'package:mi_anddes_mobile_app/model/process.dart';
 import 'package:mi_anddes_mobile_app/model/process_activity_content.dart';
 import 'package:mi_anddes_mobile_app/service/onboarding_service.dart';
@@ -64,14 +65,12 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
           : FocusScope.of(context).unfocus(),
-      content: FutureBuilder<List<ProcessActivityContent?>>(
-        future: _onboardingService.findRemoteProccessActivityContents(
-            widget.processId, widget.processActivityId),
+      content: FutureBuilder<List<ProcessActivityContent>>(
+        future: _loadProcessActivityContents(),
         builder: (context, snapshot) {
           if ((snapshot.connectionState == ConnectionState.none ||
-              snapshot.connectionState == ConnectionState.waiting)
-              &&
-              snapshot.data == null) {
+                  snapshot.connectionState == ConnectionState.waiting) &&
+              !snapshot.hasData) {
             //print('project snapshot data is: ${projectSnap.data}');
             return const Center(
                 child: SizedBox(
@@ -80,8 +79,8 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
               child: CircularProgressIndicator(),
             ));
           }
-          if(snapshot.connectionState == ConnectionState.done){
-            if(snapshot.hasError){
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
               return Text(snapshot.error.toString());
             }
           }
@@ -93,10 +92,11 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
             itemCount: processActivityContents.length,
             itemBuilder: (context, index) {
               final item = processActivityContents[index];
-              if (item == null) {
-                return const SizedBox.shrink();
-              }
               ProcessActivityContent processActivityContent = item;
+              final progressValue =
+                  (processActivityContent.progress ?? 0).toDouble();
+              final progressPercent =
+                  (progressValue / 100).clamp(0.0, 1.0).toDouble();
               return Column(
                 children: <Widget>[
                   Padding(
@@ -120,22 +120,28 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ClipRRect(
-                                //width: double.infinity,
                                 borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(16),
                                     topRight: Radius.circular(16)),
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.fitHeight,
-                                  imageUrl: processActivityContent.content.image!,
-                                  placeholder: (context, url) =>
-                                      const CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.error),
-                                )),
+                                child: Builder(builder: (context) {
+                                  final imageUrl =
+                                      processActivityContent.content.image;
+                                  if (imageUrl == null || imageUrl.isEmpty) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return CachedNetworkImage(
+                                    fit: BoxFit.fitHeight,
+                                    imageUrl: imageUrl,
+                                    placeholder: (context, url) =>
+                                        const CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  );
+                                })),
                             Padding(
                                 padding: const EdgeInsets.only(left: 15.0),
                                 child: Text(
-                                  processActivityContent.content.name!,
+                                  processActivityContent.content.name ?? '',
                                   style: MiAnddesTheme.of(context)
                                       .titleLarge
                                       .override(
@@ -163,7 +169,7 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
                                 padding: const EdgeInsets.only(
                                     left: 15.0, right: 15.0),
                                 child: LinearPercentIndicator(
-                                  percent: processActivityContent.progress! / 100.0,
+                                  percent: progressPercent,
                                   lineHeight: 6.0,
                                   animation: true,
                                   animateFromLastPercent: true,
@@ -271,5 +277,41 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
         }
       ),
     );
+  }
+
+  Future<List<ProcessActivityContent>> _loadProcessActivityContents() async {
+    final List<ProcessActivityContent> contents = [];
+    try {
+      final List<ELearningContent> elearningContents =
+          await _onboardingService.listRemoteELearningContents();
+      for (final elearning in elearningContents) {
+        ProcessActivityContent? processActivityContent;
+        try {
+          processActivityContent = await _onboardingService
+              .findRemoteProcessActivityContent(widget.processId,
+                  widget.processActivityId, '${elearning.id}');
+        } catch (e) {
+          processActivityContent = null;
+        }
+        if (processActivityContent != null) {
+          contents.add(processActivityContent);
+        } else {
+          contents.add(ProcessActivityContent(
+              id: 0,
+              content: elearning,
+              progress: 0.0,
+              result: 0.0,
+              cards: []));
+        }
+      }
+    } catch (e) {
+      rethrow;
+    }
+    contents.sort((a, b) {
+      final aPosition = a.content.position ?? 0;
+      final bPosition = b.content.position ?? 0;
+      return aPosition.compareTo(bPosition);
+    });
+    return contents;
   }
 }
