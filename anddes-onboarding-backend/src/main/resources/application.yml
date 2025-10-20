@@ -1,13 +1,13 @@
 onboarding:
   files:
-    folder_: /home/server/onboarding/files
-    folder: C:\Users\santiago.vidal\Documents\personal\files
+    folder: /home/server/onboarding/files
     url:
-      file_: https://myanddes.anddes.com:8443/files/public/{fileId}/filename/{filename}
-      file: http://localhost:8080/files/public/{fileId}/filename/{filename}
-      video_: https://myanddes.anddes.com:8443/files/public/{fileId}/video/{name}
-      video: http://localhost:8080/files/public/{fileId}/video/{name}
+      file: https://myanddes.anddes.com:8443/files/public/{fileId}/filename/{filename}
+      video: https://myanddes.anddes.com:8443/files/public/{fileId}/video/{name}
 spring:
+  config:
+    import: optional:file:./config/application-external.yml
+    ##import: optional:file:/home/server/onboarding/backend//config/application-external.yml
   security:
     oauth2:
       resourceserver:
@@ -22,10 +22,9 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
-    url_: jdbc:postgresql://172.16.16.50:5432/myanddes_onboarding?autoReconnect=true
-    url: jdbc:postgresql://192.168.1.64:5432/myanddes_onboarding?autoReconnect=true
-    username: postgres
-    password: 123456
+    url: jdbc:postgresql://172.16.16.50:5432/myanddes_onboarding?autoReconnect=true
+    username: my_anddes_test
+    password: Anddes2024$$
 
     timeBetweenEvictionRunsMillis: 1000
     testWhileIdle: true
@@ -34,9 +33,6 @@ spring:
     hikari:
       maximum-pool-size: 5
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
 

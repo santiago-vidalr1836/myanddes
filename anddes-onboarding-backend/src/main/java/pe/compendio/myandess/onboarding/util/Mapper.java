@@ -170,6 +170,7 @@ public abstract class Mapper {
     @Mapping(target = "contentId", source = "content.id")
     @Mapping(target = "courseName", source = "content.name")
     @Mapping(target = "state", ignore = true)
+    @Mapping(target = "minimumScore",source = "passingScore")
     public abstract ReportElearningDetailDTO processActivityContentToReportElearningDetail(ProcessActivityContent processActivityContent);
 
     public abstract List<ReportElearningDetailDTO> processActivityContentsToReportElearningDetails(List<ProcessActivityContent> contents);

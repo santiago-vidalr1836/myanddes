@@ -24,11 +24,12 @@
     color: #FFFFFF;
     opacity: 1;
     margin-left: 16px;
-    margin-top: 8px;
+    margin-top: 13px;
 }
 .group-background{
     border-radius: 16px;
     margin: 16px;
+    align-items: start !important;
 }
 .group-card{
     background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -56,7 +57,7 @@
 @media (min-width: 1280px) {
     .group-background{
         width: calc(25vw);
-        display: inline-grid;
+        //display: inline-grid;
         align-items: start;
         margin-left: 26px !important;
     }
@@ -66,6 +67,10 @@
     .group{
         width: 150px;
     }
+    .activities{
+    display: flex;
+    justify-content: center;
+    }
 }
 @media (min-width: 1600px) {
     ::ng-deep #content-box{
@@ -73,9 +78,10 @@
     }
     .group-background{
         width: calc(20vw);
-        display: inline-grid;
+        //display: inline-grid;
         align-items: start;
         margin-left: 26px !important;
+        margin-right: 26px !important;
     }
 }
 .process-icon{

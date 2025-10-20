@@ -121,4 +121,10 @@ export class ElearningContentComponent {
     dto.processActivityContent = processActivityContent;
     this._bottomSheet.open(ElearningContentCardComponent,{data :dto,hasBackdrop : true,panelClass: 'full-width'}).afterDismissed().subscribe(()=>this.loadContent());
   }
+  addDays(date: Date | string | null, days: number): Date | null {
+    if (!date) return null;
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+  }
 }

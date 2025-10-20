@@ -6,6 +6,12 @@
 <div class="entity-list">
   <div style="margin: 30px;">
   <div [align]="'end'">
+    <button mat-icon-button matTooltip="Descargar Plantilla Excel" class="download-button" type="button"  aria-label="Descargar Plantilla Excel"
+        (click)="descargarPlantilla()">
+        <mat-icon class="material-symbols-outlined">file_download</mat-icon>
+    </button>
+  </div>  
+  <div [align]="'end'">
     <button mat-flat-button class="btn-form" color="primary" (click)="file.click()"><mat-icon>add</mat-icon> Actualizar Usuarios</button>
     <input type="file" hidden #file [accept]="acceptedFiles" (change)="onFileSelected($event)">
   </div>

@@ -36,7 +36,7 @@ const today = new Date();
   styleUrl: './indicators.component.scss'
 })
 export class IndicatorsComponent implements AfterViewInit{
-  isLoadingResults : true
+  isLoadingResults : boolean = true
   indicator = new Indicator()
   dateFilter = new FormGroup({
     start: new FormControl(this.utilService.addDays(new Date(),-7)),
@@ -46,31 +46,39 @@ export class IndicatorsComponent implements AfterViewInit{
   constructor(private utilService : UtilService,
               private processService : ProcessService){}
   ngAfterViewInit(): void {
-    this.processService.getIndicators(this.dateFilter.value.start.toISOString(),this.dateFilter.value.end.toISOString()).subscribe(r=>{
-      console.log(r)
-      this.indicator = r;
+    const initialStart = this.normalizeDate(this.dateFilter.value.start);
+    const initialEnd = this.normalizeDate(this.dateFilter.value.end);
+    if (initialStart && initialEnd) {
+      this.loadIndicators(initialStart, initialEnd);
+    }
+    this.dateFilter.valueChanges.subscribe(range => {
+      const startDate = this.normalizeDate(range?.start);
+      const endDate = this.normalizeDate(range?.end);
 
-      this.barChartData.datasets=[{ data: [this.indicator.completedELearning,this.indicator.averageELearningCompleted], label: 'Procesos', 
-        backgroundColor : ['#9DC9D2 ']
-      }]
-      var percentage = Math.round(this.indicator.completedProcesses*100/this.indicator.totalProcesses)
-      this.doughnutChartData.datasets = [
-      { data: [percentage,100-percentage], 
-          backgroundColor:[
-            '#7d82cc',
-            '#ced0ed'
-          ]
-        },
-      ]
-      //console.log(this.doughnutChartData)
-      var percentage = this.indicator.totalProcesses>0?Math.round(this.indicator.completedProcesses/this.indicator.totalProcesses*100):0;
-      Chart.getChart('indicator-doughnut-chart').options.plugins.annotation.annotations["label1"].content= 
-      [percentage+'%','completados']
-      Chart.getChart('indicator-doughnut-chart').update()
-      Chart.getChart('indicator-bar-chart').update()
+      if (startDate && endDate) {
+        this.loadIndicators(startDate, endDate);
+      }
     });
   }
-   
+   private normalizeDate(date: any): Date | null {
+    if (!date) {
+      return null;
+    }
+
+    if (date instanceof Date) {
+      return date;
+    }
+
+    if (typeof date === 'string') {
+      return new Date(date);
+    }
+
+    if (typeof date === 'object' && typeof date.toDate === 'function') {
+      return date.toDate();
+    }
+
+    return null;
+  }
   // Doughnut
   public doughnutChartLabels: string[] = ['Completados'];
   public doughnutChartData: ChartData<'doughnut'> = {
@@ -139,4 +147,39 @@ export class IndicatorsComponent implements AfterViewInit{
       },
     ],
   };
+   private loadIndicators(start: Date, end: Date): void {
+    this.isLoadingResults = true;
+    this.processService.getIndicators(start.toISOString(), end.toISOString()).subscribe({
+      next: r => {
+        console.log(r)
+        this.indicator = r;
+
+        this.barChartData.datasets=[{ data: [this.indicator.completedELearning,this.indicator.averageELearningCompleted], label: 'Procesos',
+          backgroundColor : ['#9DC9D2 ']
+        }]
+        var percentage = Math.round(this.indicator.completedProcesses*100/this.indicator.totalProcesses)
+        this.doughnutChartData.datasets = [
+        { data: [percentage,100-percentage],
+            backgroundColor:[
+              '#7d82cc',
+              '#ced0ed'
+            ]
+          },
+        ]
+        //console.log(this.doughnutChartData)
+        var percentage = this.indicator.totalProcesses>0?Math.round(this.indicator.completedProcesses/this.indicator.totalProcesses*100):0;
+        const doughnutChart = Chart.getChart('indicator-doughnut-chart');
+        if (doughnutChart?.options?.plugins?.annotation?.annotations?.["label1"]) {
+          doughnutChart.options.plugins.annotation.annotations["label1"].content=
+          [percentage+'%','completados']
+        }
+        doughnutChart?.update()
+        Chart.getChart('indicator-bar-chart')?.update()
+        this.isLoadingResults = false;
+      },
+      error: () => {
+        this.isLoadingResults = false;
+      }
+    });
+  }
 }

@@ -25,13 +25,14 @@ import { UserService } from '../../service/user.service';
 import { UserData } from '../../entity/user';
 import { Router } from '@angular/router';
 import { AnddesCustomPaginatorIntl } from '../../service/anndes.custom.paginator.intl';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-users',
   standalone: true,
   imports: [MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule,
             MatIconModule,MatButtonModule,
-            CommonModule,MatProgressBarModule],
+            CommonModule,MatProgressBarModule,MatTooltipModule],
   providers: [{provide: MatPaginatorIntl, useClass: AnddesCustomPaginatorIntl}],          
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
@@ -152,6 +153,9 @@ export class UsersComponent implements AfterViewInit{
             //firstUser.Jefe!=undefined &&
             firstUser.correo!=undefined 
   }
+  descargarPlantilla() {
+    window.open('https://myanddes.anddes.com:8443/files/public/111/filename/plantilla','_blank');
+  }
 }
 
 export interface UserLoadData {
@@ -172,7 +176,6 @@ export interface UserLoadData {
     MatDialogTitle,
     MatDialogContent,
     MatDialogActions,
-    MatDialogClose,
     CommonModule
   ],
 })

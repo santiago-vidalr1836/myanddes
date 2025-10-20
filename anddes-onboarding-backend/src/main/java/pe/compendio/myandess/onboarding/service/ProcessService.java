@@ -370,13 +370,12 @@ public class ProcessService {
 
             processActivityContent.setResult(result);
             processActivityContent.setProgress(100);
-
+            processActivityContent.setPassingScore(processActivityContent.getContent().getPassingScore());
             if (result >= processActivityContent.getContent().getPassingScore()) {
                 processActivityContent.setStatus("SUCCESSFUL");
             } else {
                 processActivityContent.setStatus("FAILED");
             }
-
             processActivityContentRepository.save(processActivityContent);
             reviewProcessActivity(optional.get().getProcessActivity().getProcess(), optional.get().getProcessActivity());
 

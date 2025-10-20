@@ -53,7 +53,6 @@ export class ElearningContentCardComponent {
         this.currentCard = cardsUnreaded[0];
         setTimeout(()=>{
           this.canGoToNextCard= this.currentCard!.card.type!=Constants.ELEARNING_CONTENT_CARD_TYPE_VIDEO;
-          this.canGoToNextCard = true;
         },2*1000)
         this.currentIndex= this.dto.processActivityContent.cards.findIndex(card=>card==cardsUnreaded[0])+1;
       }else {
@@ -112,7 +111,6 @@ export class ElearningContentCardComponent {
       this.currentCard = cardsUnreaded[0];
       setTimeout(()=>{
         this.canGoToNextCard= this.currentCard!.card.type!=Constants.ELEARNING_CONTENT_CARD_TYPE_VIDEO;
-        this.canGoToNextCard = true;
       },2*1000)
       this.currentIndex= this.dto.processActivityContent.cards.findIndex(card=>card==cardsUnreaded[0])+1;
     }else{

@@ -1,3 +1,4 @@
+
 .tools{
     display: flex;
     flex-direction: row !important;
@@ -11,6 +12,8 @@
     width: 345px;
     border: 1px solid #707070;
     border-radius: 12px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 .tool-image{
     //height: 220px;
@@ -57,23 +60,15 @@
     color: #424242;
     text-transform: uppercase;
     opacity: 1;
+
 }
-@media (min-width: 1280px) {
+@media (min-width: 1240px) {
     ::ng-deep #content-box{
         margin: 0px 183px 0px 183px !important;
     }
-    .tools{
-        justify-content: flex-start;
-        margin-left: 58px;
-    }
 }
 @media (min-width: 1600px) {
-
     ::ng-deep #content-box{
         margin: 0px 344px 0px 344px !important;
-    }
-    .tools{
-        justify-content: flex-start;
-        margin-left: 58px;
     }
 }

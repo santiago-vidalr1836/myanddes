@@ -22,5 +22,6 @@ public class ReportMatrixRowDTO {
   private double generalProgress;
   private String processState;
   private double elearningProgress;
-  private Map<String, Double> elearningResults;
+  private Map<String, ReportMatrixELearningResultDTO> elearningResults;
+  private boolean delayed;
 }

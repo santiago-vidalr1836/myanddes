@@ -43,6 +43,10 @@ export interface ElearningReportRow {
   delayed: boolean;
 }
 
+export interface MatrixResultRow{
+  result : number | undefined;
+  approved : boolean | undefined;
+}
 export interface MatrixReportRow {
   processId: string;
   dni: string;
@@ -52,7 +56,7 @@ export interface MatrixReportRow {
   generalProgress: number;
   processState: string;
   elearningProgress: number;
-  results: Record<string, number | null>;
+  results: Record<string, MatrixResultRow | null>;
   delayed : boolean
 }
 

@@ -30,7 +30,7 @@ import { HttpResponse } from '@angular/common/http';
 export class ProcessesComponent implements AfterViewInit{
   isLoadingResults = true;
   resultsLength = 0;
-  displayedColumns: string[] = ['id', 'user', 'startDate', 'status', 'results', 'action'];
+  displayedColumns: string[] = ['id', 'user', 'startDate', 'status', 'action'];
   data:Process[]=[]
   dataSource : MatTableDataSource<Process>= new MatTableDataSource();
 

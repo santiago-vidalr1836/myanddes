@@ -11,6 +11,7 @@
                 </mat-progress-spinner>
                 <span class="progress">{{activityCompleted}}/{{totalActivities}}</span>
             </div>
+            <div class="activities">
             @for (processActivityGroup of processActivitiesGroups; track processActivityGroup) {
             <div class="group-background" [style.background-color]="processActivityGroup.colorBackground">
                 <br>
@@ -44,6 +45,7 @@
                 <br>
             </div>
             }
+            </div>
         </div>
     </div>
     <br>

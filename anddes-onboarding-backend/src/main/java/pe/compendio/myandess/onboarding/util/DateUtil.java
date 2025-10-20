@@ -10,4 +10,7 @@ public class DateUtil {
     var now= LocalDateTime.now();
     return  now.format(DateTimeFormatter.ofPattern("yyyyMMdd_hhmm"));
   }
+  public static String getDateFormatted(LocalDate date,String format){
+    return  date.format(DateTimeFormatter.ofPattern(format));
+  }
 }

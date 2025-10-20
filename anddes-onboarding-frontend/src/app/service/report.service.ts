@@ -9,6 +9,7 @@ import {
   ElearningReportRow,
   GeneralReportRow,
   MatrixReportRow,
+  MatrixResultRow,
   PagedReportResponse,
   ReportQuery,
   ReportRowState,
@@ -69,29 +70,11 @@ export class ReportService {
             generalProgress: Number(row.generalProgress ?? 0),
             processState: row.processState ?? '',
             elearningProgress: Number(row.elearningProgress ?? 0),
-            results: this.normalizeElearningResults(row.elearningResults),
+            results: row.elearningResults,
             delayed : row.delayed
           })),
         }))
       );
-  }
-
-  private normalizeElearningResults(results: Record<string, unknown> | null | undefined): Record<string,  number | null> {
-    if (!results) {
-      return {};
-    }
-
-    return Object.entries(results).reduce<Record<string, number | null>>((acc, [key, value]) => {
-      if (value == null || value === '') {
-        acc[key] = null;
-      } else if (typeof value === 'number') {
-        acc[key] = value;
-      } else {
-        const parsed = Number(value);
-        acc[key] = Number.isNaN(parsed) ? null : parsed;
-      }
-      return acc;
-    }, {});
   }
 
   getGeneralDetail(

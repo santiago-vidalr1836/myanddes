@@ -18,7 +18,7 @@
                 <div class="anddes-column process-activity-content-card"> 
                     <img  class="process-activity-content-image" [src]="processActivityContent.content.image">
                     <span class="process-activity-content-name-text">{{processActivityContent.content.name}}</span>
-                    <span class="process-activity-content-date-text">Fecha l&iacute;mite: {{process.startDate | date:'EEE dd/MM':'':'es'}}</span>
+                    <span class="process-activity-content-date-text">Fecha l&iacute;mite: {{addDays(process.startDate, 7) | date:'EEE dd/MM':'':'es'}}</span>
                     <mat-progress-bar class="process-activity-content-progress" [value]="processActivityContent.progress"></mat-progress-bar>
                     <div class="process-activity-content-action">
                         <button mat-button (click)="detail(processActivityContent)"><span class="process-activity-content-button">Ingresar</span></button>

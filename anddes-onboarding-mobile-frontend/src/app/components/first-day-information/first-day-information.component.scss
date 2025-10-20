@@ -14,8 +14,8 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    gap:24px
+    justify-content: center !important;
+    gap:50px
 }
 .card-item{
     display: flex;

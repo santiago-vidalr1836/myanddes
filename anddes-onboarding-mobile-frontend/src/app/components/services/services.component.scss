@@ -2,7 +2,7 @@
     margin-left: 5%;
     margin-right: 5%;
     display: flex;
-    flex-direction: row;
+    flex-direction: row ;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
@@ -82,10 +82,10 @@
     ::ng-deep #content-box{
         margin: 0px 183px 0px 183px !important;
     }
-    .service-section{
+    /*.service-section{
         justify-content: flex-start;
         margin-left: 58px;
-    }
+    }*/
     .card-service{
         width: 250px;
     }
@@ -95,10 +95,10 @@
     ::ng-deep #content-box{
         margin: 0px 344px 0px 344px !important;
     }
-    .service-section{
+    /*.service-section{
         justify-content: flex-start;
         margin-left: 58px;
-    }
+    }*/
     .card-service{
         width: 250px;
     }
