@@ -64,7 +64,9 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
       onTap: () => _model.unfocusNode.canRequestFocus
           ? FocusScope.of(context).requestFocus(_model.unfocusNode)
           : FocusScope.of(context).unfocus(),
-      content: FutureBuilder(
+      content: FutureBuilder<List<ProcessActivityContent?>>(
+        future: _onboardingService.findRemoteProccessActivityContents(
+            widget.processId, widget.processActivityId),
         builder: (context, snapshot) {
           if ((snapshot.connectionState == ConnectionState.none ||
               snapshot.connectionState == ConnectionState.waiting)
@@ -83,10 +85,18 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
               return Text(snapshot.error.toString());
             }
           }
+          final processActivityContents = snapshot.data ?? [];
+          if (processActivityContents.isEmpty) {
+            return const SizedBox();
+          }
           return ListView.builder(
-            itemCount: snapshot.data!.length,
+            itemCount: processActivityContents.length,
             itemBuilder: (context, index) {
-              ProcessActivityContent processActivityContent = snapshot.data![index]!;
+              final item = processActivityContents[index];
+              if (item == null) {
+                return const SizedBox.shrink();
+              }
+              ProcessActivityContent processActivityContent = item;
               return Column(
                 children: <Widget>[
                   Padding(
@@ -258,8 +268,7 @@ class _ELearningContentWidgetState extends State<ELearningContentWidget> {
               );
             },
           );
-        },
-        future: _onboardingService.findRemoteProccessActivityContents(widget.processId, widget.processActivityId),
+        }
       ),
     );
   }

@@ -70,12 +70,6 @@ Future<void> _dbUpdatesVersion_1(Database db) async {
   batch.execute(
       'CREATE TABLE services_detail(id INTEGER PRIMARY KEY, description TEXT, title TEXT,service_id INTEGER,hidden INTEGER,icon TEXT) ');
   batch.execute(
-      'CREATE TABLE elearning_content(id INTEGER PRIMARY KEY,name TEXT,image TEXT,finished INTEGER,started INTEGER,progress INTEGER,result INTEGER,sent INTEGER,position INTEGER) ');
-  batch.execute(
-      'CREATE TABLE elearning_content_card(id INTEGER PRIMARY KEY,title TEXT,type TEXT,draft INTEGER,content TEXT,deleted INTEGER,position INTEGER,read INTEGER,date_read TEXT,url_video TEXT,url_poster TEXT,elearning_content_id INTEGER) ');
-  batch.execute(
-      'CREATE TABLE elearning_content_card_option(id INTEGER PRIMARY KEY,description TEXT,correct INTEGER,checked INTEGER,elearning_content_card_id INTEGER) ');
-  batch.execute(
       'CREATE TABLE first_day_information_item(id INTEGER PRIMARY KEY,title TEXT,description TEXT,body TEXT,addFromServices INTEGER,type TEXT, icon TEXT) ');
   batch.execute(
       'CREATE TABLE ceo_presentation(id INTEGER PRIMARY KEY, urlVideo TEXT, urlPoster TEXT) ');
@@ -96,7 +90,6 @@ Future<void> _dbUpdatesVersion_1(Database db) async {
 _dbUpdatesVersion_2(Database db) async{
   Batch batch = db.batch();
   // Run the CREATE TABLE statement on the database.
-  batch.execute('CREATE TABLE process_activity_content_card_answer(id INTEGER PRIMARY KEY,processId INTEGER,processActivityId INTEGER,processActivityContentId INTEGER,eLearningContentCardOption INTEGER,readDateMobile INTEGER  ,sent INTEGER)');
   await batch.commit();
 }
 class MyApp extends StatefulWidget {

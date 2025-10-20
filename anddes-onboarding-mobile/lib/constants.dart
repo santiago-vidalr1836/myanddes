@@ -16,10 +16,10 @@ class Constants {
   static const defaultResponseType = "code";
   static const String redirectUrl = "customscheme://login";
   //DEV ENVIROMENT
-  static const String clientId = "852c72f6-693f-4017-a1c6-4127502a1b17";
+  static const String clientId = "47d51745-c58d-496a-9c9e-7bd84b8f3850";
   static const String tenantId = "8200d982-c551-4dd5-8dc7-2d649035f4f3";
-  static const String defaultScopes = '852c72f6-693f-4017-a1c6-4127502a1b17/.default offline_access';
-  static const baseUri = "http://10.0.2.2:8080";
+  static const String defaultScopes = '47d51745-c58d-496a-9c9e-7bd84b8f3850/.default offline_access';
+  static const baseUri = "http://192.168.1.53:8080";
   //ANDDES ENVIROMENT
   //static const String clientId = "2f93afcf-7018-48cf-9ac3-f22dd3f21a5f";
   //static const String tenantId = "2e7c2c87-0ed1-48f9-a17a-76261219bf54";

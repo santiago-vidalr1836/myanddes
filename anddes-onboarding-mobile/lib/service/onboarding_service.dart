@@ -3,9 +3,6 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:mi_anddes_mobile_app/model/elearning_content.dart';
-import 'package:mi_anddes_mobile_app/model/elearning_content_card.dart';
-import 'package:mi_anddes_mobile_app/model/elearning_content_card_option.dart';
 import 'package:mi_anddes_mobile_app/model/elearning_result.dart';
 import 'package:mi_anddes_mobile_app/model/first_day_information_item.dart';
 import 'package:mi_anddes_mobile_app/model/onboarding.dart';
@@ -19,7 +16,6 @@ import 'package:mi_anddes_mobile_app/model/remote_induction.dart';
 import 'package:mi_anddes_mobile_app/model/team_member.dart';
 
 import 'package:mi_anddes_mobile_app/repository/ceo_presentation_repository.dart';
-import 'package:mi_anddes_mobile_app/repository/elearning_content_repository.dart';
 import 'package:mi_anddes_mobile_app/repository/onsite_induction_repository.dart';
 import 'package:mi_anddes_mobile_app/repository/pending_process_activity_repository.dart';
 import 'package:mi_anddes_mobile_app/repository/process_activity_repository.dart';
@@ -32,7 +28,6 @@ import '../constants.dart';
 import '../model/ceo_presentation.dart';
 import '../model/process.dart';
 import '../repository/first_day_information_item_repository.dart';
-import '../repository/process_activity_content_answer_repository.dart';
 import 'auth_service.dart';
 
 class OnboardingService {
@@ -42,11 +37,9 @@ class OnboardingService {
   late CEOPresentationRepository _ceoPresentationRepository;
   late OnsiteInductionRepository _onsiteInductionRepository;
   late RemoteInductionRepository _remoteInductionRepository;
-  late ELearningContentRepository _eLearningContentRepository;
   late FirstDayInformationItemRepository _firstDayInformationItemRepository;
   late PendingProcessActivityRepository _pendingProcessActivityRepository;
-  late ProcessActivityContentCardAnswerRepository
-      _processActivityContentCardAnswerRepository;
+
 
   OnboardingService() {
     _processRepository = ProcessRepository();
@@ -55,11 +48,8 @@ class OnboardingService {
     _ceoPresentationRepository = CEOPresentationRepository();
     _onsiteInductionRepository = OnsiteInductionRepository();
     _remoteInductionRepository = RemoteInductionRepository();
-    _eLearningContentRepository = ELearningContentRepository();
     _firstDayInformationItemRepository = FirstDayInformationItemRepository();
     _pendingProcessActivityRepository = PendingProcessActivityRepository();
-    _processActivityContentCardAnswerRepository =
-        ProcessActivityContentCardAnswerRepository();
   }
 
   Future<void> syncProcess(int userId) async {
@@ -147,11 +137,6 @@ class OnboardingService {
       if (onboarding.team != null) {
         await _teamMemberRepository.addAll(onboarding.team!);
       }
-
-      if (onboarding.eLearningContents != null &&
-          onboarding.eLearningContents!.isNotEmpty) {
-        await _eLearningContentRepository.addAll(onboarding.eLearningContents!);
-      }
       if (onboarding.firstDayInformationItems != null &&
           onboarding.firstDayInformationItems!.isNotEmpty) {
         await _firstDayInformationItemRepository
@@ -176,14 +161,6 @@ class OnboardingService {
 
   Future<List<TeamMember>?> findTeam() {
     return _teamMemberRepository.findAll();
-  }
-
-  Future<List<ELearningContent>?> findELearningContents() {
-    return _eLearningContentRepository.findAll();
-  }
-
-  Future<ELearningContent?> findELearningContentsById(int id) async {
-    return await _eLearningContentRepository.findById(id);
   }
 
   Future<List<FirstDayInformationItem>?> findFirstDayInformationItems() {
@@ -242,12 +219,6 @@ class OnboardingService {
     return activity;
   }
 
-  Future<void> updateCard(
-      int parentId, ELearningContentCard eLearningContentCard) async {
-    await _eLearningContentRepository.updateCard(
-        parentId, eLearningContentCard);
-  }
-
   Future<ELearningResult> getResult(int userId, String processId,
       String processActivityId, int contentId) async {
     var accessToken = await AuthService().getAccessToken();
@@ -267,65 +238,6 @@ class OnboardingService {
     }
     return ELearningResult(result: null);
   }
-
-  Future<ELearningResult> calculateResult(int userId, String processId,
-      String processActivityId, int contentId) async {
-    var accessToken = await AuthService().getAccessToken();
-    final uri = Uri.parse(
-        "${Constants.baseUri}/onboarding/$userId/process/$processId/activities/$processActivityId/content/$contentId");
-
-    var elearningContent = await findELearningContentsById(contentId);
-
-    final response = await http.post(uri,
-        headers: {
-          "Authorization": "Bearer ${accessToken?.value ?? ""}",
-          "Content-Type": 'application/json'
-        },
-        body: jsonEncode(elearningContent!.toJson()));
-
-    if (response.statusCode == 200) {
-      final body = jsonDecode(utf8.decode(response.bodyBytes));
-      ELearningResult eLearningResult = ELearningResult.fromJson(body);
-      return eLearningResult;
-    } else if (response.statusCode == 401) {
-      throw UnauthorizedException();
-    } else if (response.statusCode == 500) {
-      throw Exception();
-    }
-    return ELearningResult(result: null);
-  }
-
-  Future<void> updateContent(
-      ProcessActivityContentCardAnswer processActivityContentCardAnswer) async {
-    await _processActivityContentCardAnswerRepository
-        .updateById(processActivityContentCardAnswer);
-  }
-
-  Future<void> updateOption(
-      int parentId, ELearningContentCardOption option) async {
-    await _eLearningContentRepository.updateOption(parentId, option);
-  }
-
-  Future<void> sendPendingELearningContents() async {
-    Process? process = await findProcess();
-    ProcessActivity? processActivity =
-        await findProcessActivityByCode(Constants.ACTIVITY_INDUCTION_ELEARNING);
-
-    List<ProcessActivityContentCardAnswer>? answers =
-        await _processActivityContentCardAnswerRepository.findAll();
-    if (process != null &&
-        processActivity != null &&
-        answers != null &&
-        answers.isNotEmpty) {
-      for (ProcessActivityContentCardAnswer answer in answers) {
-        if (!answer.sent) {
-          answer.sent = true;
-          await updateContent(answer);
-        }
-      }
-    }
-  }
-
   Future<void> sendPendingProcessActivity() async {
     List<PendingProcessActivity>? pendingProcessActivities =
         await _pendingProcessActivityRepository
@@ -351,75 +263,88 @@ class OnboardingService {
       }
     }
   }
+  Future<ELearningResult> calculateResult(int userId, String processId,
+      String processActivityId, int contentId) async {
+    var accessToken = await AuthService().getAccessToken();
+    final uri = Uri.parse(
+        "${Constants.baseUri}/onboarding/$userId/process/$processId/activities/$processActivityId/content/$contentId");
 
+    final latestContent = await findRemoteProcessActivityContent(
+        processId, processActivityId, contentId.toString());
+    if (latestContent == null) {
+      throw Exception("No se encontró contenido para calcular el resultado");
+    }
+
+    final response = await http.post(uri,
+        headers: {
+          "Authorization": "Bearer ${accessToken?.value ?? ""}",
+          "Content-Type": 'application/json'
+        },
+        body: jsonEncode(latestContent.toJson()));
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(utf8.decode(response.bodyBytes));
+      ELearningResult eLearningResult = ELearningResult.fromJson(body);
+      return eLearningResult;
+    } else if (response.statusCode == 401) {
+      throw UnauthorizedException();
+    } else if (response.statusCode == 500) {
+      throw Exception();
+    }
+    return ELearningResult(result: null);
+  }
   Future<List<ProcessActivityContent?>> findRemoteProccessActivityContents(
       String processId, String processActivityId) async {
     try {
-      List<ELearningContent> contents =
-          await _eLearningContentRepository.findAll();
-      ProcessActivityContent? processActivityContent;
       var accessToken = await AuthService().getAccessToken();
 
-      List<Response> responses = await Future.wait<
-          Response>(contents.map((item) => http.get(
-              Uri.parse(
-                  "${Constants.baseUri}/onboarding/v2/1/process/$processId/activities/$processActivityId/content?eLearningContentId=${item.id}"),
-              headers: {
-                "Authorization": "Bearer ${accessToken?.value ?? ""}",
-                "Content-Type": 'application/json'
-              })));
-      List<ELearningContent?> elearningContents = await Future.wait(contents
-          .map((item) => _eLearningContentRepository.findById(item.id)));
+      final uri = Uri.parse(
+          "${Constants.baseUri}/onboarding/1/process/$processId/activities/$processActivityId/content");
 
-      List<ProcessActivityContent?> list = responses.map((response) {
-        if (response.statusCode == 200) {
-          ProcessActivityContent? processActivityContent;
-          log("response=${utf8.decode(response.bodyBytes)}");
-          if (response.bodyBytes.isNotEmpty) {
-            final body = jsonDecode(utf8.decode(response.bodyBytes));
-            processActivityContent = ProcessActivityContent.fromJson(body);
-          } else {
-            if (response.request != null &&
-                response.request!.url.queryParameters
-                    .containsKey("eLearningContentId")) {
-              ELearningContent? eLearningContent = elearningContents.firstWhere(
-                  (e) =>
-                      e?.id.toString() ==
-                      response
-                          .request!.url.queryParameters["eLearningContentId"]!);
-              if (eLearningContent != null) {
-                processActivityContent = ProcessActivityContent(
-                    id: 0, content: eLearningContent, cards: [],progress: 0.0);
-              } else {
-                throw Exception("El curso no existe");
-              }
-            } else {
-              throw Exception("Hubo un error con el llamado al api");
-            }
-          }
-          return processActivityContent;
-        } else if (response.statusCode == 401) {
-          throw UnauthorizedException();
-        } else if (response.statusCode == 500) {
-          throw Exception();
-        }
-      }).toList();
-
-      list.sort((a, b) {
-        int result;
-        if (a == null ) {
-          result = 1;
-        } else if (b == null) {
-          result = -1;
-        } else {
-          // Ascending Order
-          result = a.content.position!.compareTo(b.content.position!);
-        }
-        return result;
+      final response = await http.get(uri, headers: {
+        "Authorization": "Bearer ${accessToken?.value ?? ""}",
+        "Content-Type": 'application/json'
       });
-      return list;
+
+      if (response.statusCode == 200) {
+        if (response.bodyBytes.isEmpty) {
+          return [];
+        }
+        final body = jsonDecode(utf8.decode(response.bodyBytes));
+        List<ProcessActivityContent?>? list;
+        if (body is List) {
+          list = body
+              .map((item) => item == null
+              ? null
+              : ProcessActivityContent.fromJson(item as Map<String, dynamic>)).cast<ProcessActivityContent?>()
+              .toList();
+        } else if (body is Map<String, dynamic>) {
+          list = [ProcessActivityContent.fromJson(body)];
+        } else {
+          list = [];
+        }
+        list.sort((a, b) {
+          int result;
+          if (a == null ) {
+            result = 1;
+          } else if (b == null) {
+            result = -1;
+          } else {
+            // Ascending Order
+            result = a.content.position!.compareTo(b.content.position!);
+          }
+          return result;
+        });
+        return list;
+      } else if (response.statusCode == 204) {
+        return [];
+      } else if (response.statusCode == 401) {
+        throw UnauthorizedException();
+      } else if (response.statusCode == 500) {
+        throw Exception();
+      }
+      throw Exception();
     } catch (e) {
-      print(e);
       log("Error findRemoteProccessActivityContents: ${e.toString()}");
       rethrow;
     }

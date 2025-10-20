@@ -155,7 +155,6 @@ class _SplashWidgetState extends State<SplashWidget> {
             var process = await _onboardingService.findProcess();
             if (process != null) {
               await _onboardingService.sendPendingProcessActivity();
-              await _onboardingService.sendPendingELearningContents();
 
               await _onboardingService.syncProcessActivity(user.id!, process.id);
               await _onboardingService.syncOnboarding(user.id!, process.id);
