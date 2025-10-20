@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:mi_anddes_mobile_app/model/elearning_content.dart';
 import 'package:mi_anddes_mobile_app/model/elearning_result.dart';
 import 'package:mi_anddes_mobile_app/model/first_day_information_item.dart';
 import 'package:mi_anddes_mobile_app/model/onboarding.dart';
@@ -346,6 +347,43 @@ class OnboardingService {
       throw Exception();
     } catch (e) {
       log("Error findRemoteProccessActivityContents: ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  Future<List<ELearningContent>> listRemoteELearningContents() async {
+    try {
+      var accessToken = await AuthService().getAccessToken();
+
+      final uri = Uri.parse(
+          "${Constants.baseUri}/activities/code/${Constants.ACTIVITY_INDUCTION_ELEARNING}");
+
+      final response = await http.get(uri, headers: {
+        "Authorization": "Bearer ${accessToken?.value ?? ""}",
+        "Content-Type": 'application/json'
+      });
+
+      if (response.statusCode == 200) {
+        if (response.bodyBytes.isEmpty) {
+          return [];
+        }
+        final body = jsonDecode(utf8.decode(response.bodyBytes));
+        if (body is List) {
+          return body
+              .map((item) => ELearningContent.fromJson(item as Map<String, dynamic>))
+              .toList();
+        }
+        return [];
+      } else if (response.statusCode == 204) {
+        return [];
+      } else if (response.statusCode == 401) {
+        throw UnauthorizedException();
+      } else if (response.statusCode == 500) {
+        throw Exception();
+      }
+      throw Exception();
+    } catch (e) {
+      log("Error listRemoteELearningContents: ${e.toString()}");
       rethrow;
     }
   }
